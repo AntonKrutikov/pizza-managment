@@ -1,0 +1,232 @@
+{
+  "categories": [
+    {
+      "id": "pizza",
+      "name": "Pizza",
+      "items": [
+        {
+          "id": 1,
+          "name": "Margherita",
+          "category": "pizza",
+          "price": 220
+        },
+        {
+          "id": 2,
+          "name": "Prosciutto",
+          "category": "pizza",
+          "price": 300
+        },
+        {
+          "id": 3,
+          "name": "Salame",
+          "category": "pizza",
+          "price": 260
+        },
+        {
+          "id": 4,
+          "name": "Prosciutto Cotto",
+          "category": "pizza",
+          "price": 260
+        },
+        {
+          "id": 5,
+          "name": "4 Formaggi",
+          "category": "pizza",
+          "price": 280
+        },
+        {
+          "id": 6,
+          "name": "Vegetariana",
+          "category": "pizza",
+          "price": 280
+        },
+        {
+          "id": 7,
+          "name": "Al Funghi",
+          "category": "pizza",
+          "price": 260
+        },
+        {
+          "id": 8,
+          "name": "Capricciosa",
+          "category": "pizza",
+          "price": 350
+        },
+        {
+          "id": 9,
+          "name": "Bianca",
+          "category": "pizza",
+          "price": 260
+        },
+        {
+          "id": 10,
+          "name": "Chicken",
+          "category": "pizza",
+          "price": 260
+        },
+        {
+          "id": 11,
+          "name": "Italian Sausage",
+          "category": "pizza",
+          "price": 260
+        },
+        {
+          "id": 12,
+          "name": "Tuna",
+          "category": "pizza",
+          "price": 260
+        },
+        {
+          "id": 13,
+          "name": "Salame Ham Mushroom",
+          "category": "pizza",
+          "price": 350
+        },
+        {
+          "id": 14,
+          "name": "Prosciutto Cotto Mushroom",
+          "category": "pizza",
+          "price": 280
+        },
+        {
+          "id": 15,
+          "name": "Hawaiian Ham",
+          "category": "pizza",
+          "price": 280
+        },
+        {
+          "id": 16,
+          "name": "Hawaiian Chicken",
+          "category": "pizza",
+          "price": 280
+        }
+      ]
+    },
+    {
+      "id": "quesadilla",
+      "name": "Quesadilla",
+      "items": [
+        {
+          "id": 17,
+          "name": "Cheese",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 80
+            },
+            {
+              "size": "4",
+              "price": 150
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "Chicken",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 80
+            },
+            {
+              "size": "4",
+              "price": 150
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "Beef",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 100
+            },
+            {
+              "size": "4",
+              "price": 190
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "Ham",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 80
+            },
+            {
+              "size": "4",
+              "price": 150
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "Spinach",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 80
+            },
+            {
+              "size": "4",
+              "price": 150
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "Mushroom",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 80
+            },
+            {
+              "size": "4",
+              "price": 150
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "Pepperoni",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 100
+            },
+            {
+              "size": "4",
+              "price": 190
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "Nutella",
+          "category": "quesadilla",
+          "variants": [
+            {
+              "size": "2",
+              "price": 80
+            },
+            {
+              "size": "4",
+              "price": 150
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

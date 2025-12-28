@@ -1,7 +1,26 @@
 export class OrderService {
 	constructor() {
-		this.orders = []
-		this.orderCounter = 0
+		this.loadFromStorage()
+	}
+
+	loadFromStorage() {
+		const saved = localStorage.getItem('pizzaShopOrders')
+		if (saved) {
+			const data = JSON.parse(saved)
+			this.orders = data.orders || []
+			this.orderCounter = data.orderCounter || 0
+		} else {
+			this.orders = []
+			this.orderCounter = 0
+		}
+	}
+
+	saveToStorage() {
+		const data = {
+			orders: this.orders,
+			orderCounter: this.orderCounter
+		}
+		localStorage.setItem('pizzaShopOrders', JSON.stringify(data))
 	}
 
 	addOrder(order) {
@@ -15,12 +34,31 @@ export class OrderService {
 			served: false,
 		}
 		this.orders.push(newOrder)
+		this.saveToStorage()
+		return newOrder
 	}
 
 	markAsServed(orderId) {
 		const order = this.orders.find((o) => o.id === orderId)
 		if (order) {
 			order.served = true
+			this.saveToStorage()
+		}
+	}
+
+	markAsPaid(orderId) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order) {
+			order.paid = true
+			this.saveToStorage()
+		}
+	}
+
+	removeOrder(orderId) {
+		const index = this.orders.findIndex((o) => o.id === orderId)
+		if (index !== -1) {
+			this.orders.splice(index, 1)
+			this.saveToStorage()
 		}
 	}
 

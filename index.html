@@ -12,101 +12,39 @@
     <h1>Pizza Shop Management</h1>
 
     <nav class="screen-nav">
-        <button class="nav-tab active" data-screen="create-order">Create Order</button>
+        <button class="nav-tab active" data-screen="take-order">Take Order</button>
         <button class="nav-tab" data-screen="ongoing-orders">Ongoing Orders</button>
         <button class="nav-tab" data-screen="orders-history">Orders History</button>
     </nav>
 
     <div class="screens-container">
-        <section id="order-form-section" class="screen active" data-screen="create-order">
+        <section id="order-form-section" class="screen active" data-screen="take-order">
             <div class="order-form-header">
-                <h2>Create Order</h2>
+                <h2>Take Order</h2>
                 <button type="button" id="reset-order">Reset</button>
             </div>
+
             <form id="order-form">
-                <label for="pizza-type">Pizza Type:</label>
-                <div id="pizza-type-grid">
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Margherita" data-price="220">
-                        <span class="pizza-name">Pizza Margherita</span>
-                        <span class="pizza-price">220 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Prosciutto" data-price="300">
-                        <span class="pizza-name">Pizza Prosciutto</span>
-                        <span class="pizza-price">300 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Salame" data-price="260">
-                        <span class="pizza-name">Pizza Salame</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Tuna" data-price="260">
-                        <span class="pizza-name">Pizza Tuna</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza 4 Cheese" data-price="280">
-                        <span class="pizza-name">Pizza 4 Cheese</span>
-                        <span class="pizza-price">280 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Vegeteriana" data-price="280">
-                        <span class="pizza-name">Pizza Vegeteriana</span>
-                        <span class="pizza-price">280 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza All Funghi" data-price="260">
-                        <span class="pizza-name">Pizza All Funghi</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Capiciossa" data-price="350">
-                        <span class="pizza-name">Pizza Capiciossa</span>
-                        <span class="pizza-price">350 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Nuttela" data-price="260">
-                        <span class="pizza-name">Pizza Nuttela</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Bianca" data-price="260">
-                        <span class="pizza-name">Pizza Bianca</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Garlic Cheese" data-price="260">
-                        <span class="pizza-name">Pizza Garlic Cheese</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Prosciutto Cotto" data-price="260">
-                        <span class="pizza-name">Pizza Prosciutto Cotto</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Italian Sausage" data-price="260">
-                        <span class="pizza-name">Pizza Italian Sausage</span>
-                        <span class="pizza-price">260 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Prosciutto Cotto Mushroom" data-price="280">
-                        <span class="pizza-name">Pizza Prosciutto Cotto Mushroom</span>
-                        <span class="pizza-price">280 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Hawaian Ham" data-price="280">
-                        <span class="pizza-name">Pizza Hawaian Ham</span>
-                        <span class="pizza-price">280 THB</span>
-                    </label>
-                    <label class="pizza-card">
-                        <input type="radio" name="pizzaType" value="Pizza Hawaian Chicken" data-price="280">
-                        <span class="pizza-name">Pizza Hawaian Chicken</span>
-                        <span class="pizza-price">280 THB</span>
-                    </label>
+                <div id="menu-items-container">
+                    <!-- Menu categories and items will be loaded from data/menu.json -->
                 </div>
+            </form>
+
+            <!-- Floating button to scroll to order section -->
+            <button type="button" id="goto-order-btn" style="display: none;">
+                <span class="cart-count">0</span>
+            </button>
+
+            <!-- Current order items -->
+            <div id="current-order-section" style="display: none;">
+                <h3>Current Order Items</h3>
+                <ul id="current-order-items"></ul>
+                <div class="order-total">
+                    <strong>Total: <span id="order-total-amount">0</span> THB</strong>
+                </div>
+            </div>
+
+            <div id="order-options" style="display: none;">
                 <label for="paid-status">Payment Status:</label>
                 <div id="paid-status-grid">
                     <label class="paid-card paid-yes">
@@ -129,8 +67,56 @@
                         <span>Take Away</span>
                     </label>
                 </div>
-                <button type="submit" id="add-order" disabled>Add Order</button>
-            </form>
+
+                <!-- Table number -->
+                <div id="table-number-section">
+                    <label>Table Number (optional):</label>
+                    <div id="table-number-grid">
+                        <button type="button" class="number-btn" data-table="1">1</button>
+                        <button type="button" class="number-btn" data-table="2">2</button>
+                        <button type="button" class="number-btn" data-table="3">3</button>
+                        <button type="button" class="number-btn" data-table="4">4</button>
+                        <button type="button" class="number-btn" data-table="5">5</button>
+                        <button type="button" class="number-btn" data-table="6">6</button>
+                        <button type="button" class="number-btn" data-table="7">7</button>
+                        <button type="button" class="number-btn" data-table="8">8</button>
+                        <button type="button" class="number-btn" data-table="9">9</button>
+                        <button type="button" class="number-btn" data-table="10">10</button>
+                    </div>
+                </div>
+
+                <!-- Sound indicator -->
+                <div id="sound-indicator-section">
+                    <label>Sound Indicator (optional):</label>
+                    <div id="sound-indicator-grid">
+                        <button type="button" class="number-btn" data-sound="1">1</button>
+                        <button type="button" class="number-btn" data-sound="2">2</button>
+                        <button type="button" class="number-btn" data-sound="3">3</button>
+                        <button type="button" class="number-btn" data-sound="4">4</button>
+                        <button type="button" class="number-btn" data-sound="5">5</button>
+                        <button type="button" class="number-btn" data-sound="6">6</button>
+                        <button type="button" class="number-btn" data-sound="7">7</button>
+                        <button type="button" class="number-btn" data-sound="8">8</button>
+                        <button type="button" class="number-btn" data-sound="9">9</button>
+                        <button type="button" class="number-btn" data-sound="10">10</button>
+                    </div>
+                </div>
+
+                <!-- Customer description -->
+                <div id="customer-description-section">
+                    <label>Customer (optional):</label>
+                    <div id="customer-grid">
+                        <button type="button" class="customer-btn" data-customer="Man">👨 Man</button>
+                        <button type="button" class="customer-btn" data-customer="Woman">👩 Woman</button>
+                        <button type="button" class="customer-btn" data-customer="Children">👶 Children</button>
+                        <button type="button" class="customer-btn" data-customer="Couple">👫 Couple</button>
+                        <button type="button" class="customer-btn" data-customer="Family">👨‍👩‍👧‍👦 Family</button>
+                        <button type="button" class="customer-btn" data-customer="Group">👥 Group</button>
+                    </div>
+                </div>
+
+                <button type="button" id="send-order" disabled>Send to Cook</button>
+            </div>
         </section>
 
         <section id="orders-section" class="screen" data-screen="ongoing-orders">
