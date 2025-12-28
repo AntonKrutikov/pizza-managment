@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Shop Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Pizza Shop Management</h1>
+
+    <nav class="screen-nav">
+        <button class="nav-tab active" data-screen="create-order">Create Order</button>
+        <button class="nav-tab" data-screen="ongoing-orders">Ongoing Orders</button>
+    </nav>
+
+    <div class="screens-container">
+        <section id="order-form-section" class="screen active" data-screen="create-order">
+            <div class="order-form-header">
+                <h2>Create Order</h2>
+                <button type="button" id="reset-order">Reset</button>
+            </div>
+            <form id="order-form">
+                <label for="pizza-type">Pizza Type:</label>
+                <div id="pizza-type-grid">
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Margherita" data-price="220">
+                        <span class="pizza-name">Pizza Margherita</span>
+                        <span class="pizza-price">220 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Prosciutto" data-price="300">
+                        <span class="pizza-name">Pizza Prosciutto</span>
+                        <span class="pizza-price">300 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Salame" data-price="260">
+                        <span class="pizza-name">Pizza Salame</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Tuna" data-price="260">
+                        <span class="pizza-name">Pizza Tuna</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza 4 Cheese" data-price="280">
+                        <span class="pizza-name">Pizza 4 Cheese</span>
+                        <span class="pizza-price">280 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Vegeteriana" data-price="280">
+                        <span class="pizza-name">Pizza Vegeteriana</span>
+                        <span class="pizza-price">280 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza All Funghi" data-price="260">
+                        <span class="pizza-name">Pizza All Funghi</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Capiciossa" data-price="350">
+                        <span class="pizza-name">Pizza Capiciossa</span>
+                        <span class="pizza-price">350 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Nuttela" data-price="260">
+                        <span class="pizza-name">Pizza Nuttela</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Bianca" data-price="260">
+                        <span class="pizza-name">Pizza Bianca</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Garlic Cheese" data-price="260">
+                        <span class="pizza-name">Pizza Garlic Cheese</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Prosciutto Cotto" data-price="260">
+                        <span class="pizza-name">Pizza Prosciutto Cotto</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Italian Sausage" data-price="260">
+                        <span class="pizza-name">Pizza Italian Sausage</span>
+                        <span class="pizza-price">260 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Prosciutto Cotto Mushroom" data-price="280">
+                        <span class="pizza-name">Pizza Prosciutto Cotto Mushroom</span>
+                        <span class="pizza-price">280 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Hawaian Ham" data-price="280">
+                        <span class="pizza-name">Pizza Hawaian Ham</span>
+                        <span class="pizza-price">280 THB</span>
+                    </label>
+                    <label class="pizza-card">
+                        <input type="radio" name="pizzaType" value="Pizza Hawaian Chicken" data-price="280">
+                        <span class="pizza-name">Pizza Hawaian Chicken</span>
+                        <span class="pizza-price">280 THB</span>
+                    </label>
+                </div>
+                <label for="paid-status">Payment Status:</label>
+                <div id="paid-status-grid">
+                    <label class="paid-card paid-yes">
+                        <input type="radio" name="paid" value="true">
+                        <span>Paid</span>
+                    </label>
+                    <label class="paid-card paid-no">
+                        <input type="radio" name="paid" value="false">
+                        <span>Not Paid</span>
+                    </label>
+                </div>
+                <label for="eat-type">Order Type:</label>
+                <div id="eat-type-grid">
+                    <label class="eat-card">
+                        <input type="radio" name="eatType" value="eat-in">
+                        <span>Eat In</span>
+                    </label>
+                    <label class="eat-card">
+                        <input type="radio" name="eatType" value="take-away">
+                        <span>Take Away</span>
+                    </label>
+                </div>
+                <button type="submit" id="add-order" disabled>Add Order</button>
+            </form>
+        </section>
+
+        <section id="orders-section" class="screen" data-screen="ongoing-orders">
+            <h2>Ongoing Orders</h2>
+            <ul id="orders-list"></ul>
+        </section>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
