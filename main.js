@@ -1,16 +1,22 @@
 import { OrderService } from "./js/orderService.js"
-import { renderOrders } from "./js/orderList.js"
+import { renderOrders, renderHistoryOrders } from "./js/orderList.js"
 
 const orderService = new OrderService()
 
 const orderForm = document.getElementById("order-form")
 const ordersList = document.getElementById("orders-list")
+const historyList = document.getElementById("history-list")
 const navTabs = document.querySelectorAll(".nav-tab")
 const screens = document.querySelectorAll(".screen")
 
 function updateOrders() {
 	const orders = orderService.getOrders()
 	renderOrders(orders, ordersList, orderService)
+}
+
+function updateHistory() {
+	const servedOrders = orderService.getServedOrders()
+	renderHistoryOrders(servedOrders, historyList)
 }
 
 function updateTimers() {
@@ -29,8 +35,8 @@ orderForm.addEventListener("submit", function (e) {
 	const pizzaType = orderForm.elements["pizzaType"].value
 	const paid = orderForm.elements["paid"].value === "true"
 	const eatType = orderForm.elements["eatType"].value
-	const selectedPizza = orderForm.elements["pizzaType"]
-	const price = selectedPizza.dataset.price
+	const selectedPizza = Array.from(orderForm.elements["pizzaType"]).find((radio) => radio.checked)
+	const price = selectedPizza ? selectedPizza.dataset.price : "0"
 	orderService.addOrder({ pizzaType, paid, eatType, price })
 	updateOrders()
 	// Reset form selections after adding order
@@ -79,6 +85,7 @@ ordersList.addEventListener("click", function (e) {
 		const orderId = parseInt(e.target.dataset.orderId)
 		orderService.markAsServed(orderId)
 		updateOrders()
+		updateHistory()
 	}
 })
 
@@ -98,9 +105,11 @@ navTabs.forEach((tab) => {
 			screenToShow.classList.add("active")
 		}
 
-		// If switching to ongoing orders, update the list
+		// Update the appropriate list when switching screens
 		if (targetScreen === "ongoing-orders") {
 			updateOrders()
+		} else if (targetScreen === "orders-history") {
+			updateHistory()
 		}
 	})
 })
@@ -112,3 +121,4 @@ setInterval(updateTimers, 1000)
 checkFormComplete()
 
 updateOrders()
+updateHistory()

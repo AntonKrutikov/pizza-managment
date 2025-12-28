@@ -1,12 +1,15 @@
 export class OrderService {
 	constructor() {
 		this.orders = []
+		this.orderCounter = 0
 	}
 
 	addOrder(order) {
+		this.orderCounter++
 		const newOrder = {
 			...order,
 			id: Date.now(),
+			orderNo: this.orderCounter,
 			timestamp: Date.now(),
 			time: new Date().toLocaleTimeString(),
 			served: false,
@@ -24,6 +27,11 @@ export class OrderService {
 	getOrders() {
 		// Return only unserved orders, sorted by time received (oldest first)
 		return this.orders.filter((o) => !o.served).slice()
+	}
+
+	getServedOrders() {
+		// Return only served orders, sorted by most recent first
+		return this.orders.filter((o) => o.served).slice().reverse()
 	}
 
 	getElapsedTime(timestamp) {
