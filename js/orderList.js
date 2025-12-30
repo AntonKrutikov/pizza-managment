@@ -22,6 +22,10 @@ export function renderOrders(orders, container, orderService) {
 
 		const li = document.createElement("li")
 		li.classList.add("order-item")
+		// Add class for served but unpaid orders (50% opacity)
+		if (order.served && !order.paid) {
+			li.classList.add("served-awaiting-payment")
+		}
 		li.dataset.orderId = order.id
 
 		// Left section: Order number, timestamp, and timer
@@ -81,6 +85,24 @@ export function renderOrders(orders, container, orderService) {
 		orderType.innerHTML = `<span class="type-badge">${typeIcon} ${typeText}</span>`
 		orderInfo.appendChild(orderType)
 
+		// Status icons (cooking if not served, money if not paid) - will be added to li later
+		const statusIcons = document.createElement("div")
+		statusIcons.classList.add("status-icons")
+		if (!order.served) {
+			const cookingIcon = document.createElement("span")
+			cookingIcon.classList.add("status-icon", "cooking-icon")
+			cookingIcon.textContent = "🍳"
+			cookingIcon.title = "Cooking"
+			statusIcons.appendChild(cookingIcon)
+		}
+		if (!order.paid) {
+			const moneyIcon = document.createElement("span")
+			moneyIcon.classList.add("status-icon", "money-icon")
+			moneyIcon.textContent = "💰"
+			moneyIcon.title = "Awaiting payment"
+			statusIcons.appendChild(moneyIcon)
+		}
+
 		// Optional details
 		if (order.tableNumber || order.soundIndicator || order.customerDescription) {
 			const optionalDetails = document.createElement("div")
@@ -88,13 +110,13 @@ export function renderOrders(orders, container, orderService) {
 
 			if (order.tableNumber) {
 				const tableDiv = document.createElement("div")
-				tableDiv.textContent = `Table: ${order.tableNumber}`
+				tableDiv.textContent = `Table: ${order.tableNumber} 🪑`
 				optionalDetails.appendChild(tableDiv)
 			}
 
 			if (order.soundIndicator) {
 				const soundDiv = document.createElement("div")
-				soundDiv.textContent = `Sound: #${order.soundIndicator}`
+				soundDiv.textContent = `Sound: #${order.soundIndicator} 🔔`
 				optionalDetails.appendChild(soundDiv)
 			}
 
@@ -109,36 +131,56 @@ export function renderOrders(orders, container, orderService) {
 			orderInfo.appendChild(optionalDetails)
 		}
 
-		// Right section: Serve button and payment status
+		// Right section: Status icons + Buttons
 		const orderActions = document.createElement("div")
 		orderActions.classList.add("order-actions")
+
+		// Add status icons on left side (if any)
+		if (statusIcons.children.length > 0) {
+			orderActions.appendChild(statusIcons)
+		}
+
+		// Buttons container on right side
+		const buttonsContainer = document.createElement("div")
+		buttonsContainer.classList.add("buttons-container")
 
 		// Show total price
 		const totalPrice = document.createElement("div")
 		totalPrice.classList.add("order-total-price")
 		totalPrice.textContent = `฿${order.price}`
-		orderActions.appendChild(totalPrice)
+		buttonsContainer.appendChild(totalPrice)
 
-		// Show "Not Paid" button (yellow) or "Paid" label
+		// Show "Not Paid" button (yellow) or "Paid" button (clickable to toggle back)
 		if (!order.paid) {
 			const markPaidBtn = document.createElement("button")
 			markPaidBtn.classList.add("mark-paid-btn")
 			markPaidBtn.textContent = "Not Paid"
 			markPaidBtn.dataset.orderId = order.id
-			orderActions.appendChild(markPaidBtn)
+			buttonsContainer.appendChild(markPaidBtn)
 		} else {
-			const paidLabel = document.createElement("div")
-			paidLabel.classList.add("paid-label")
-			paidLabel.textContent = "Paid ✓"
-			orderActions.appendChild(paidLabel)
+			const markUnpaidBtn = document.createElement("button")
+			markUnpaidBtn.classList.add("mark-unpaid-btn")
+			markUnpaidBtn.textContent = "Paid ✓"
+			markUnpaidBtn.dataset.orderId = order.id
+			buttonsContainer.appendChild(markUnpaidBtn)
 		}
 
-		// Serve button - always visible and enabled (customer can pay after serve)
-		const serveBtn = document.createElement("button")
-		serveBtn.classList.add("serve-btn")
-		serveBtn.textContent = "Serve"
-		serveBtn.dataset.orderId = order.id
-		orderActions.appendChild(serveBtn)
+		// Serve button - show "Served ✓" (clickable to toggle back) if already served, otherwise "Serve"
+		if (order.served) {
+			const markUnservedBtn = document.createElement("button")
+			markUnservedBtn.classList.add("mark-unserved-btn")
+			markUnservedBtn.textContent = "Served ✓"
+			markUnservedBtn.dataset.orderId = order.id
+			buttonsContainer.appendChild(markUnservedBtn)
+		} else {
+			const serveBtn = document.createElement("button")
+			serveBtn.classList.add("serve-btn")
+			serveBtn.textContent = "Serve"
+			serveBtn.dataset.orderId = order.id
+			buttonsContainer.appendChild(serveBtn)
+		}
+
+		orderActions.appendChild(buttonsContainer)
 
 		li.appendChild(orderHeader)
 		li.appendChild(orderInfo)
@@ -351,12 +393,12 @@ export function renderHistoryOrders(orders, container, orderService) {
 
 			// Add table number if provided
 			if (order.tableNumber) {
-				detailsText += ` | Table ${order.tableNumber}`
+				detailsText += ` | Table ${order.tableNumber} 🪑`
 			}
 
 			// Add sound indicator if provided
 			if (order.soundIndicator) {
-				detailsText += ` | Sound #${order.soundIndicator}`
+				detailsText += ` | Sound #${order.soundIndicator} 🔔`
 			}
 
 			// Add customer description if provided

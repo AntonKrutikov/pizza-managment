@@ -52,6 +52,11 @@ function createMenuItemCard(item) {
 	const card = document.createElement("div")
 	card.classList.add("menu-item-card")
 
+	// Add special class for custom price items
+	if (item.customPrice) {
+		card.classList.add("custom-price-card")
+	}
+
 	const nameSpan = document.createElement("span")
 	nameSpan.classList.add("item-name")
 	nameSpan.textContent = item.name
@@ -60,7 +65,9 @@ function createMenuItemCard(item) {
 	priceSpan.classList.add("item-price")
 
 	// Display price or price range
-	if (item.variants) {
+	if (item.customPrice) {
+		priceSpan.textContent = "Custom"
+	} else if (item.variants) {
 		const prices = item.variants.map((v) => v.price)
 		const minPrice = Math.min(...prices)
 		const maxPrice = Math.max(...prices)
@@ -76,7 +83,18 @@ function createMenuItemCard(item) {
 	const actionsDiv = document.createElement("div")
 	actionsDiv.classList.add("item-actions")
 
-	if (item.variants) {
+	if (item.customPrice) {
+		// For custom price items, show popup on click
+		const btn = document.createElement("button")
+		btn.type = "button"
+		btn.classList.add("add-item-btn-card")
+		btn.textContent = "Set Price"
+		btn.addEventListener("click", function (e) {
+			e.stopPropagation()
+			showCustomPricePopup(item.name, card)
+		})
+		actionsDiv.appendChild(btn)
+	} else if (item.variants) {
 		// For items with variants, add buttons for each variant
 		item.variants.forEach((variant) => {
 			const btn = document.createElement("button")
@@ -131,6 +149,81 @@ function addItemToOrder(displayName, price) {
 	updateFloatingButton()
 }
 
+// Custom price popup handling
+let currentCustomItemName = null
+let currentCustomCard = null
+
+function showCustomPricePopup(itemName, card) {
+	currentCustomItemName = itemName
+	currentCustomCard = card
+
+	const popup = document.getElementById("custom-price-popup")
+	const input = document.getElementById("custom-price-input")
+	const confirmBtn = document.getElementById("custom-price-confirm")
+
+	// Reset input
+	input.value = ""
+	confirmBtn.disabled = true
+
+	// Show popup
+	popup.style.display = "flex"
+
+	// Focus input after a short delay (for mobile keyboards)
+	setTimeout(() => input.focus(), 100)
+}
+
+function hideCustomPricePopup() {
+	const popup = document.getElementById("custom-price-popup")
+	popup.style.display = "none"
+
+	// Deselect card
+	if (currentCustomCard) {
+		currentCustomCard.classList.remove("selected")
+	}
+
+	currentCustomItemName = null
+	currentCustomCard = null
+}
+
+// Custom price popup event listeners
+document.getElementById("custom-price-input").addEventListener("input", function () {
+	const confirmBtn = document.getElementById("custom-price-confirm")
+	const value = parseInt(this.value)
+	confirmBtn.disabled = !value || value <= 0
+})
+
+document.getElementById("custom-price-cancel").addEventListener("click", hideCustomPricePopup)
+
+document.getElementById("custom-price-confirm").addEventListener("click", function () {
+	const input = document.getElementById("custom-price-input")
+	const price = parseInt(input.value)
+
+	if (price && price > 0 && currentCustomItemName) {
+		addItemToOrder(currentCustomItemName, price)
+		hideCustomPricePopup()
+	}
+})
+
+// Close popup on overlay click
+document.getElementById("custom-price-popup").addEventListener("click", function (e) {
+	if (e.target === this) {
+		hideCustomPricePopup()
+	}
+})
+
+// Handle Enter key in custom price input
+document.getElementById("custom-price-input").addEventListener("keydown", function (e) {
+	if (e.key === "Enter") {
+		const confirmBtn = document.getElementById("custom-price-confirm")
+		if (!confirmBtn.disabled) {
+			confirmBtn.click()
+		}
+	}
+	if (e.key === "Escape") {
+		hideCustomPricePopup()
+	}
+})
+
 // Track if current order section is in viewport
 let isOrderSectionVisible = false
 
@@ -180,6 +273,22 @@ let currentOrderItems = []
 function updateOrders() {
 	const orders = orderService.getOrders()
 	renderOrders(orders, ordersList, orderService)
+	updateOrdersBadge(orders.length)
+}
+
+function updateOrdersBadge(count) {
+	const navBadge = document.getElementById("ongoing-orders-badge")
+	const headerBadge = document.getElementById("ongoing-orders-header-badge")
+
+	if (count > 0) {
+		navBadge.textContent = count
+		navBadge.style.display = "inline"
+		headerBadge.textContent = count
+		headerBadge.style.display = "inline"
+	} else {
+		navBadge.style.display = "none"
+		headerBadge.style.display = "none"
+	}
 }
 
 function updateHistory() {
@@ -409,19 +518,108 @@ document.getElementById("reset-order").addEventListener("click", function () {
 	checkSendOrderReady()
 })
 
+// Helper function to animate order completion with 5s countdown before moving to history
+// triggeredBy: 'serve' (clicked serve when already paid) or 'paid' (clicked paid when already served)
+function completeOrderWithAnimation(orderId, triggeredBy) {
+	const wrapper = ordersList.querySelector(`.order-item-wrapper[data-order-id="${orderId}"]`)
+	if (wrapper) {
+		const orderItem = wrapper.querySelector(".order-item")
+
+		// Create countdown overlay
+		const countdownOverlay = document.createElement("div")
+		countdownOverlay.classList.add("countdown-overlay")
+		countdownOverlay.innerHTML = `
+			<div class="countdown-content">
+				<div class="countdown-text">✅ Completed</div>
+				<div class="countdown-number">5</div>
+				<button type="button" class="countdown-cancel-btn">Cancel</button>
+			</div>
+		`
+		orderItem.appendChild(countdownOverlay)
+
+		// Start countdown
+		let seconds = 5
+		const countdownNumber = countdownOverlay.querySelector(".countdown-number")
+		const cancelBtn = countdownOverlay.querySelector(".countdown-cancel-btn")
+
+		const countdownInterval = setInterval(() => {
+			seconds--
+			countdownNumber.textContent = seconds
+
+			if (seconds <= 0) {
+				clearInterval(countdownInterval)
+				wrapper.classList.add("completing")
+				// Wait for fade animation to finish
+				setTimeout(() => {
+					updateOrders()
+					updateHistory()
+				}, 500)
+			}
+		}, 1000)
+
+		// Handle cancel button click - restore order to previous state
+		cancelBtn.addEventListener("click", (e) => {
+			e.stopPropagation()
+			clearInterval(countdownInterval)
+			countdownOverlay.remove()
+			// Restore to state before the action that triggered countdown
+			if (triggeredBy === 'serve') {
+				// Was paid, clicked serve -> revert serve (back to paid + not served)
+				orderService.markAsUnserved(orderId)
+			} else {
+				// Was served, clicked paid -> revert paid (back to served + not paid)
+				orderService.markAsUnpaid(orderId)
+			}
+			updateOrders()
+		})
+	} else {
+		updateOrders()
+		updateHistory()
+	}
+}
+
 // Handle serve button clicks
 ordersList.addEventListener("click", function (e) {
 	if (e.target.classList.contains("serve-btn")) {
 		const orderId = parseInt(e.target.dataset.orderId)
+		const order = orderService.orders.find((o) => o.id === orderId)
+
+		// Mark as served (stays in ongoing if not paid)
 		orderService.markAsServed(orderId)
-		updateOrders()
-		updateHistory()
+
+		// Only move to history if both served AND paid
+		if (order && order.paid) {
+			completeOrderWithAnimation(orderId, 'serve')
+		} else {
+			updateOrders()
+		}
 	}
 
 	// Handle mark paid button clicks
 	if (e.target.classList.contains("mark-paid-btn")) {
 		const orderId = parseInt(e.target.dataset.orderId)
+		const order = orderService.orders.find((o) => o.id === orderId)
 		orderService.markAsPaid(orderId)
+
+		// If already served, move to history now with animation
+		if (order && order.served) {
+			completeOrderWithAnimation(orderId, 'paid')
+		} else {
+			updateOrders()
+		}
+	}
+
+	// Handle mark unpaid button clicks (toggle paid back to unpaid)
+	if (e.target.classList.contains("mark-unpaid-btn")) {
+		const orderId = parseInt(e.target.dataset.orderId)
+		orderService.markAsUnpaid(orderId)
+		updateOrders()
+	}
+
+	// Handle mark unserved button clicks (toggle served back to unserved)
+	if (e.target.classList.contains("mark-unserved-btn")) {
+		const orderId = parseInt(e.target.dataset.orderId)
+		orderService.markAsUnserved(orderId)
 		updateOrders()
 	}
 })

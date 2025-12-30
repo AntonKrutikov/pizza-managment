@@ -13,7 +13,7 @@
 
     <nav class="screen-nav">
         <button class="nav-tab active" data-screen="take-order">Take Order</button>
-        <button class="nav-tab" data-screen="ongoing-orders">Ongoing Orders</button>
+        <button class="nav-tab" data-screen="ongoing-orders">Ongoing Orders <span id="ongoing-orders-badge" class="nav-badge" style="display: none;">0</span></button>
         <button class="nav-tab" data-screen="orders-history">Orders History</button>
     </nav>
 
@@ -70,7 +70,7 @@
 
                 <!-- Table number -->
                 <div id="table-number-section">
-                    <label>Table Number (optional):</label>
+                    <label>🪑 Table Number (optional):</label>
                     <div id="table-number-grid">
                         <button type="button" class="number-btn" data-table="1">1</button>
                         <button type="button" class="number-btn" data-table="2">2</button>
@@ -87,7 +87,7 @@
 
                 <!-- Sound indicator -->
                 <div id="sound-indicator-section">
-                    <label>Sound Indicator (optional):</label>
+                    <label>🔔 Sound Indicator (optional):</label>
                     <div id="sound-indicator-grid">
                         <button type="button" class="number-btn" data-sound="1">1</button>
                         <button type="button" class="number-btn" data-sound="2">2</button>
@@ -120,7 +120,7 @@
         </section>
 
         <section id="orders-section" class="screen" data-screen="ongoing-orders">
-            <h2>Ongoing Orders</h2>
+            <h2>Ongoing Orders <span id="ongoing-orders-header-badge" class="header-badge" style="display: none;">0</span></h2>
             <ul id="orders-list"></ul>
         </section>
 
@@ -128,6 +128,21 @@
             <h2>Orders History</h2>
             <ul id="history-list"></ul>
         </section>
+    </div>
+
+    <!-- Custom Price Popup -->
+    <div id="custom-price-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Custom Pizza Price</h3>
+            <div class="popup-input-group">
+                <label for="custom-price-input">Enter price (THB):</label>
+                <input type="number" id="custom-price-input" min="1" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="popup-buttons">
+                <button type="button" id="custom-price-cancel" class="popup-btn-cancel">Cancel</button>
+                <button type="button" id="custom-price-confirm" class="popup-btn-confirm">Add to Order</button>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="main.js"></script>

@@ -45,6 +45,34 @@ h1 {
   color: #fff;
 }
 
+.nav-badge {
+  background: #e74c3c;
+  color: #fff;
+  font-size: 0.75em;
+  font-weight: bold;
+  padding: 0.2em 0.5em;
+  border-radius: 10px;
+  margin-left: 0.3em;
+  min-width: 1.2em;
+  text-align: center;
+}
+
+.nav-tab.active .nav-badge {
+  background: #fff;
+  color: #d35400;
+}
+
+.header-badge {
+  background: #d35400;
+  color: #fff;
+  font-size: 0.6em;
+  font-weight: bold;
+  padding: 0.2em 0.6em;
+  border-radius: 12px;
+  margin-left: 0.5em;
+  vertical-align: middle;
+}
+
 .screens-container {
   position: relative;
   min-height: 400px;
@@ -362,12 +390,49 @@ ul#orders-list {
   z-index: 0;
   opacity: 0;
   pointer-events: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .order-item-wrapper.swiped .delete-order-btn {
   opacity: 1;
   pointer-events: auto;
   z-index: 1;
+}
+
+/* Served but unpaid order - awaiting payment (use rgba background instead of opacity) */
+.order-item.served-awaiting-payment {
+  background: rgba(223, 223, 1, 0.25);
+}
+
+.order-item.served-awaiting-payment .order-header,
+.order-item.served-awaiting-payment .order-info {
+  opacity: 0.5;
+}
+
+/* Fade out animation for completed orders */
+.order-item-wrapper.completing {
+  animation: fadeOutSlide 0.5s ease forwards;
+}
+
+@keyframes fadeOutSlide {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 300px;
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(50px);
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
 }
 
 .delete-order-btn:hover {
@@ -464,6 +529,79 @@ ul#orders-list {
   font-weight: 600;
 }
 
+.status-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  align-items: center;
+}
+
+.status-icon {
+  font-size: 1.3em;
+  background: #fff;
+  padding: 0.2em 0.35em;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Countdown overlay for completed orders */
+.countdown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(39, 174, 96, 0.9);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: fadeIn 0.3s ease;
+}
+
+.countdown-content {
+  text-align: center;
+  color: #fff;
+}
+
+.countdown-text {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 0.3em;
+}
+
+.countdown-number {
+  font-size: 2.5em;
+  font-weight: bold;
+  background: rgba(255,255,255,0.2);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.countdown-cancel-btn {
+  margin-top: 1em;
+  background: rgba(255,255,255,0.3);
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 0.6em 1.5em;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.countdown-cancel-btn:hover {
+  background: rgba(255,255,255,0.5);
+  transform: scale(1.05);
+}
+
 .optional-details {
   display: flex;
   gap: 1em;
@@ -479,6 +617,13 @@ ul#orders-list {
 }
 
 .order-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.8em;
+}
+
+.buttons-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -533,13 +678,55 @@ ul#orders-list {
   transform: scale(1.05);
 }
 
-.paid-label {
+.served-label {
   background: #27ae60;
   color: #fff;
   padding: 0.5em 1em;
   border-radius: 6px;
   font-weight: bold;
   font-size: 1em;
+  min-width: 100px;
+  text-align: center;
+}
+
+.mark-unpaid-btn {
+  min-width: 100px;
+  padding: 0.8em 1.5em;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 1.1em;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: #27ae60;
+  color: #fff;
+  border: none;
+}
+
+.mark-unpaid-btn:hover {
+  background: #229954;
+  transform: scale(1.05);
+}
+
+.mark-unserved-btn {
+  min-width: 100px;
+  padding: 0.8em 1.5em;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 1.1em;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: #27ae60;
+  color: #fff;
+  border: none;
+}
+
+.mark-unserved-btn:hover {
+  background: #229954;
+  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
@@ -573,7 +760,9 @@ ul#orders-list {
   }
 
   .serve-btn,
-  .mark-paid-btn {
+  .mark-paid-btn,
+  .mark-unpaid-btn,
+  .mark-unserved-btn {
     flex: 1 1 auto;
     min-width: 120px;
   }
@@ -586,7 +775,9 @@ ul#orders-list {
 
 @media (max-width: 768px) {
   .serve-btn,
-  .mark-paid-btn {
+  .mark-paid-btn,
+  .mark-unpaid-btn,
+  .mark-unserved-btn {
     padding: 0.7em 1.2em;
     font-size: 1em;
   }
@@ -999,4 +1190,113 @@ ul#orders-list {
 .eat-card span {
   font-size: 1.1em;
   margin: 0;
+}
+
+/* Custom Price Popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 90%;
+  width: 320px;
+  text-align: center;
+}
+
+.popup-content h3 {
+  margin: 0 0 1.5em 0;
+  color: #d35400;
+  font-size: 1.4em;
+}
+
+.popup-input-group {
+  margin-bottom: 1.5em;
+}
+
+.popup-input-group label {
+  display: block;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  color: #333;
+}
+
+.popup-input-group input {
+  width: 100%;
+  padding: 1em;
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.popup-input-group input:focus {
+  outline: none;
+  border-color: #d35400;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 1em;
+}
+
+.popup-btn-cancel,
+.popup-btn-confirm {
+  flex: 1;
+  padding: 1em;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.popup-btn-cancel {
+  background: #eee;
+  color: #333;
+}
+
+.popup-btn-cancel:hover {
+  background: #ddd;
+}
+
+.popup-btn-confirm {
+  background: #27ae60;
+  color: #fff;
+}
+
+.popup-btn-confirm:hover {
+  background: #229954;
+}
+
+.popup-btn-confirm:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* Custom price card styling */
+.menu-item-card.custom-price-card {
+  border-style: dashed;
+  border-color: #d35400;
+}
+
+.menu-item-card.custom-price-card .item-price {
+  font-style: italic;
+  color: #888;
 }

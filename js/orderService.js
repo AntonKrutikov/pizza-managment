@@ -46,10 +46,26 @@ export class OrderService {
 		}
 	}
 
+	markAsUnserved(orderId) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order) {
+			order.served = false
+			this.saveToStorage()
+		}
+	}
+
 	markAsPaid(orderId) {
 		const order = this.orders.find((o) => o.id === orderId)
 		if (order) {
 			order.paid = true
+			this.saveToStorage()
+		}
+	}
+
+	markAsUnpaid(orderId) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order) {
+			order.paid = false
 			this.saveToStorage()
 		}
 	}
@@ -63,13 +79,14 @@ export class OrderService {
 	}
 
 	getOrders() {
-		// Return only unserved orders, sorted by time received (oldest first)
-		return this.orders.filter((o) => !o.served).slice()
+		// Return orders that are not completed (completed = served AND paid)
+		// This includes: unserved orders AND served-but-unpaid orders
+		return this.orders.filter((o) => !o.served || (o.served && !o.paid)).slice()
 	}
 
 	getServedOrders() {
-		// Return only served orders, sorted by most recent first
-		return this.orders.filter((o) => o.served).slice().reverse()
+		// Return only completed orders (served AND paid), sorted by most recent first
+		return this.orders.filter((o) => o.served && o.paid).slice().reverse()
 	}
 
 	getElapsedTime(timestamp) {
