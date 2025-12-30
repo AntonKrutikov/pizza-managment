@@ -9,7 +9,14 @@
 </head>
 
 <body>
-    <h1>Pizza Shop Management</h1>
+    <header class="app-header">
+        <h1>Pizza Shop Management</h1>
+        <button type="button" id="analytics-btn" class="analytics-btn" title="Analytics">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 20V10M12 20V4M6 20v-6"/>
+            </svg>
+        </button>
+    </header>
 
     <nav class="screen-nav">
         <button class="nav-tab active" data-screen="take-order">Take Order</button>
@@ -127,6 +134,117 @@
         <section id="history-section" class="screen" data-screen="orders-history">
             <h2>Orders History</h2>
             <ul id="history-list"></ul>
+        </section>
+
+        <section id="analytics-section" class="screen" data-screen="analytics">
+            <div class="analytics-header">
+                <button type="button" id="analytics-back-btn" class="analytics-back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back
+                </button>
+                <h2>Analytics Dashboard</h2>
+            </div>
+
+            <!-- Period Tabs -->
+            <div class="analytics-tabs">
+                <button class="analytics-tab active" data-period="daily">Today</button>
+                <button class="analytics-tab" data-period="weekly">This Week</button>
+                <button class="analytics-tab" data-period="monthly">This Month</button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="analytics-summary">
+                <div class="summary-card">
+                    <div class="summary-icon revenue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Total Revenue</span>
+                        <span class="summary-value" id="total-revenue">0 THB</span>
+                        <span class="summary-change" id="revenue-change"></span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon orders-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Total Orders</span>
+                        <span class="summary-value" id="total-orders">0</span>
+                        <span class="summary-change" id="orders-change"></span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon avg-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Avg. Order Value</span>
+                        <span class="summary-value" id="avg-order">0 THB</span>
+                        <span class="summary-change" id="avg-change"></span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon items-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Items Sold</span>
+                        <span class="summary-value" id="items-sold">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="analytics-charts">
+                <!-- Order Type Breakdown -->
+                <div class="chart-card">
+                    <h3>Order Type</h3>
+                    <div class="chart-container">
+                        <div id="order-type-chart" class="pie-chart"></div>
+                        <div id="order-type-legend" class="chart-legend"></div>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown -->
+                <div class="chart-card">
+                    <h3>Sales by Category</h3>
+                    <div class="chart-container">
+                        <div id="category-chart" class="pie-chart"></div>
+                        <div id="category-legend" class="chart-legend"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Items -->
+            <div class="analytics-section">
+                <h3>Top Selling Items</h3>
+                <div id="top-items-list" class="top-items-list"></div>
+            </div>
+
+            <!-- Sales Trend -->
+            <div class="analytics-section">
+                <h3 id="trend-title">Sales Trend</h3>
+                <div id="sales-trend-chart" class="bar-chart-container"></div>
+            </div>
+
+            <!-- Peak Hours -->
+            <div class="analytics-section">
+                <h3>Peak Hours (Today)</h3>
+                <div id="peak-hours" class="peak-hours"></div>
+            </div>
         </section>
     </div>
 

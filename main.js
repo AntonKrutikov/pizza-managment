@@ -1,7 +1,9 @@
 import { OrderService } from "./js/orderService.js"
 import { renderOrders, renderHistoryOrders } from "./js/orderList.js"
+import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
 
 const orderService = new OrderService()
+const analytics = new Analytics(orderService)
 
 const orderForm = document.getElementById("order-form")
 const ordersList = document.getElementById("orders-list")
@@ -670,3 +672,184 @@ checkSendOrderReady()
 
 updateOrders()
 updateHistory()
+
+// ============================================
+// Analytics Page Functionality
+// ============================================
+
+let currentAnalyticsPeriod = "daily"
+let previousScreen = "take-order"
+
+// Show analytics page
+document.getElementById("analytics-btn").addEventListener("click", function () {
+	// Store current screen to return to
+	const activeTab = document.querySelector(".nav-tab.active")
+	if (activeTab) {
+		previousScreen = activeTab.dataset.screen
+	}
+
+	// Hide nav tabs and show analytics
+	document.querySelector(".screen-nav").style.display = "none"
+	navTabs.forEach((t) => t.classList.remove("active"))
+	screens.forEach((s) => s.classList.remove("active"))
+
+	const analyticsScreen = document.querySelector('.screen[data-screen="analytics"]')
+	if (analyticsScreen) {
+		analyticsScreen.classList.add("active")
+	}
+
+	// Update analytics data
+	updateAnalytics()
+})
+
+// Back button from analytics
+document.getElementById("analytics-back-btn").addEventListener("click", function () {
+	// Show nav tabs again
+	document.querySelector(".screen-nav").style.display = "flex"
+
+	// Return to previous screen
+	screens.forEach((s) => s.classList.remove("active"))
+	const previousScreenEl = document.querySelector(`.screen[data-screen="${previousScreen}"]`)
+	if (previousScreenEl) {
+		previousScreenEl.classList.add("active")
+	}
+
+	// Restore nav tab
+	navTabs.forEach((t) => {
+		t.classList.remove("active")
+		if (t.dataset.screen === previousScreen) {
+			t.classList.add("active")
+		}
+	})
+})
+
+// Analytics period tabs
+document.querySelectorAll(".analytics-tab").forEach((tab) => {
+	tab.addEventListener("click", function () {
+		document.querySelectorAll(".analytics-tab").forEach((t) => t.classList.remove("active"))
+		tab.classList.add("active")
+		currentAnalyticsPeriod = tab.dataset.period
+		updateAnalytics()
+	})
+})
+
+// Update analytics display
+function updateAnalytics() {
+	let stats, comparison, trendData, trendTitle
+
+	if (currentAnalyticsPeriod === "daily") {
+		stats = analytics.getDailyStats()
+		comparison = analytics.getComparison(analytics.getTodayOrders(), analytics.getYesterdayOrders())
+		trendData = Object.entries(analytics.getHourlyBreakdown())
+			.filter(([hour]) => parseInt(hour) >= 8 && parseInt(hour) <= 22)
+			.map(([hour, data]) => ({
+				label: `${hour}:00`,
+				value: data.orders,
+			}))
+		trendTitle = "Orders by Hour (Today)"
+	} else if (currentAnalyticsPeriod === "weekly") {
+		stats = analytics.getWeeklyStats()
+		comparison = analytics.getComparison(analytics.getWeekOrders(), analytics.getLastWeekOrders())
+		trendData = analytics.getWeeklyBreakdown().map((day) => ({
+			label: day.date,
+			value: day.orders,
+		}))
+		trendTitle = "Orders by Day (This Week)"
+	} else {
+		stats = analytics.getMonthlyStats()
+		comparison = analytics.getComparison(analytics.getMonthOrders(), analytics.getLastMonthOrders())
+		// For monthly, show weekly breakdown
+		trendData = analytics.getWeeklyBreakdown().map((day) => ({
+			label: day.date,
+			value: day.orders,
+		}))
+		trendTitle = "Recent Orders Trend"
+	}
+
+	// Update summary cards
+	document.getElementById("total-revenue").textContent = `${stats.totalRevenue.toLocaleString()} THB`
+	document.getElementById("total-orders").textContent = stats.totalOrders
+	document.getElementById("avg-order").textContent = `${stats.averageOrderValue} THB`
+	document.getElementById("items-sold").textContent = stats.itemsSold
+
+	// Update comparison indicators
+	updateComparisonBadge("revenue-change", comparison.revenueChange)
+	updateComparisonBadge("orders-change", comparison.ordersChange)
+	updateComparisonBadge("avg-change", comparison.avgOrderChange)
+
+	// Update Order Type pie chart
+	const orderTypeData = [
+		{ label: "Eat In", value: stats.ordersByType["eat-in"] || 0 },
+		{ label: "Take Away", value: stats.ordersByType["take-away"] || 0 },
+	]
+	document.getElementById("order-type-chart").innerHTML = generatePieChart(orderTypeData, 120)
+	document.getElementById("order-type-legend").innerHTML = generateLegend(orderTypeData)
+
+	// Update Category pie chart
+	const categoryData = Object.entries(stats.categoryBreakdown).map(([name, data]) => ({
+		label: name,
+		value: data.count,
+	}))
+	document.getElementById("category-chart").innerHTML = generatePieChart(categoryData, 120)
+	document.getElementById("category-legend").innerHTML = generateLegend(categoryData)
+
+	// Update top items list
+	const topItemsList = document.getElementById("top-items-list")
+	if (stats.topItemsSorted.length === 0) {
+		topItemsList.innerHTML = '<div class="analytics-empty">No items sold yet</div>'
+	} else {
+		topItemsList.innerHTML = stats.topItemsSorted
+			.map(
+				([name, count], index) => `
+			<div class="top-item">
+				<div class="top-item-rank ${index < 3 ? "rank-" + (index + 1) : ""}">${index + 1}</div>
+				<span class="top-item-name">${name}</span>
+				<span class="top-item-count">${count} sold</span>
+			</div>
+		`
+			)
+			.join("")
+	}
+
+	// Update sales trend chart
+	document.getElementById("trend-title").textContent = trendTitle
+	document.getElementById("sales-trend-chart").innerHTML = generateBarChart(trendData, 400, 180)
+
+	// Update peak hours
+	const peakHours = analytics.getPeakHours()
+	const peakHoursContainer = document.getElementById("peak-hours")
+
+	if (peakHours.length === 0 || peakHours.every((h) => h.orders === 0)) {
+		peakHoursContainer.innerHTML = '<div class="analytics-empty">No data for peak hours</div>'
+	} else {
+		const maxOrders = Math.max(...peakHours.map((h) => h.orders), 1)
+		peakHoursContainer.innerHTML = peakHours
+			.filter((h) => h.orders > 0)
+			.map(
+				(hour) => `
+			<div class="peak-hour-item">
+				<span class="peak-hour-time">${hour.hour}:00</span>
+				<div class="peak-hour-bar">
+					<div class="peak-hour-fill" style="width: ${(hour.orders / maxOrders) * 100}%"></div>
+				</div>
+				<span class="peak-hour-count">${hour.orders} orders</span>
+			</div>
+		`
+			)
+			.join("")
+	}
+}
+
+function updateComparisonBadge(elementId, change) {
+	const element = document.getElementById(elementId)
+	if (change === 0) {
+		element.textContent = ""
+		element.className = "summary-change"
+	} else if (change > 0) {
+		element.textContent = `+${change}% vs prev`
+		element.className = "summary-change positive"
+	} else {
+		element.textContent = `${change}% vs prev`
+		element.className = "summary-change negative"
+	}
+}
