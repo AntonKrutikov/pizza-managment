@@ -57,6 +57,15 @@ function createMenuItemCard(item) {
 		card.classList.add("custom-price-card")
 	}
 
+	// Add image if available
+	if (item.image) {
+		const img = document.createElement("img")
+		img.src = item.image
+		img.alt = item.name
+		img.classList.add("item-image")
+		card.appendChild(img)
+	}
+
 	const nameSpan = document.createElement("span")
 	nameSpan.classList.add("item-name")
 	nameSpan.textContent = item.name
@@ -91,7 +100,7 @@ function createMenuItemCard(item) {
 		btn.textContent = "Set Price"
 		btn.addEventListener("click", function (e) {
 			e.stopPropagation()
-			showCustomPricePopup(item.name, card)
+			showCustomPricePopup(item.name, item.image, card)
 		})
 		actionsDiv.appendChild(btn)
 	} else if (item.variants) {
@@ -103,7 +112,7 @@ function createMenuItemCard(item) {
 			btn.textContent = `Add ${variant.size}`
 			btn.addEventListener("click", function (e) {
 				e.stopPropagation() // Prevent card click event
-				addItemToOrder(`${item.name} (${variant.size})`, variant.price)
+				addItemToOrder(`${item.name} (${variant.size})`, variant.price, item.image)
 				// Deselect card after adding
 				card.classList.remove("selected")
 			})
@@ -117,7 +126,7 @@ function createMenuItemCard(item) {
 		btn.textContent = "Add"
 		btn.addEventListener("click", function (e) {
 			e.stopPropagation() // Prevent card click event
-			addItemToOrder(item.name, item.price)
+			addItemToOrder(item.name, item.price, item.image)
 			// Deselect card after adding
 			card.classList.remove("selected")
 		})
@@ -138,10 +147,11 @@ function createMenuItemCard(item) {
 }
 
 // Add item to order (helper function)
-function addItemToOrder(displayName, price) {
+function addItemToOrder(displayName, price, image) {
 	currentOrderItems.push({
 		name: displayName,
 		price: price,
+		image: image || null,
 	})
 
 	updateCurrentOrderDisplay()
@@ -151,10 +161,12 @@ function addItemToOrder(displayName, price) {
 
 // Custom price popup handling
 let currentCustomItemName = null
+let currentCustomItemImage = null
 let currentCustomCard = null
 
-function showCustomPricePopup(itemName, card) {
+function showCustomPricePopup(itemName, itemImage, card) {
 	currentCustomItemName = itemName
+	currentCustomItemImage = itemImage
 	currentCustomCard = card
 
 	const popup = document.getElementById("custom-price-popup")
@@ -182,6 +194,7 @@ function hideCustomPricePopup() {
 	}
 
 	currentCustomItemName = null
+	currentCustomItemImage = null
 	currentCustomCard = null
 }
 
@@ -199,7 +212,7 @@ document.getElementById("custom-price-confirm").addEventListener("click", functi
 	const price = parseInt(input.value)
 
 	if (price && price > 0 && currentCustomItemName) {
-		addItemToOrder(currentCustomItemName, price)
+		addItemToOrder(currentCustomItemName, price, currentCustomItemImage)
 		hideCustomPricePopup()
 	}
 })

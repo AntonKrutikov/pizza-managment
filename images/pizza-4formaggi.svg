@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pizza base -->
+  <circle cx="50" cy="50" r="45" fill="#F4D03F" stroke="#D35400" stroke-width="3"/>
+  <!-- Four cheese sections -->
+  <!-- Mozzarella (white) -->
+  <path d="M50 50 L50 12 A38 38 0 0 1 88 50 Z" fill="#F5F5DC"/>
+  <!-- Gorgonzola (blue-ish) -->
+  <path d="M50 50 L88 50 A38 38 0 0 1 50 88 Z" fill="#B8D4E3"/>
+  <!-- Parmesan (yellow) -->
+  <path d="M50 50 L50 88 A38 38 0 0 1 12 50 Z" fill="#F7DC6F"/>
+  <!-- Fontina (orange) -->
+  <path d="M50 50 L12 50 A38 38 0 0 1 50 12 Z" fill="#F5CBA7"/>
+  <!-- Center circle -->
+  <circle cx="50" cy="50" r="8" fill="#FFF" stroke="#DDD" stroke-width="1"/>
+  <!-- Cheese texture dots -->
+  <circle cx="65" cy="30" r="2" fill="#E8E8D0"/>
+  <circle cx="75" cy="40" r="1.5" fill="#E8E8D0"/>
+  <circle cx="70" cy="65" r="2" fill="#9FC5D8"/>
+  <circle cx="60" cy="75" r="1.5" fill="#9FC5D8"/>
+  <circle cx="35" cy="70" r="2" fill="#E5C860"/>
+  <circle cx="25" cy="60" r="1.5" fill="#E5C860"/>
+  <circle cx="30" cy="35" r="2" fill="#E8B88A"/>
+  <circle cx="40" cy="25" r="1.5" fill="#E8B88A"/>
+</svg>

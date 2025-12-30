@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pizza base -->
+  <circle cx="50" cy="50" r="45" fill="#F4D03F" stroke="#D35400" stroke-width="3"/>
+  <!-- Tomato sauce -->
+  <circle cx="50" cy="50" r="38" fill="#E74C3C"/>
+  <!-- Mozzarella spots -->
+  <circle cx="28" cy="35" r="4" fill="#F5F5DC"/>
+  <circle cx="72" cy="65" r="4" fill="#F5F5DC"/>
+  <!-- Ham pieces around -->
+  <rect x="22" y="55" width="11" height="8" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="68" y="40" width="11" height="8" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="25" y="25" width="10" height="8" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="68" y="72" width="10" height="8" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <!-- Pineapple chunks around -->
+  <rect x="65" y="25" width="8" height="6" rx="2" fill="#F1C40F" stroke="#D4AC0D" stroke-width="1"/>
+  <rect x="22" y="70" width="8" height="6" rx="2" fill="#F1C40F" stroke="#D4AC0D" stroke-width="1"/>
+  <rect x="75" y="55" width="7" height="6" rx="2" fill="#F1C40F" stroke="#D4AC0D" stroke-width="1"/>
+  <!-- Center icons: Pineapple and Ham -->
+  <g transform="translate(50,50)">
+    <!-- Pineapple (left side) -->
+    <g transform="translate(-10,0)">
+      <!-- Pineapple body -->
+      <ellipse cx="0" cy="2" rx="7" ry="9" fill="#F1C40F" stroke="#D4AC0D" stroke-width="1"/>
+      <!-- Pineapple pattern -->
+      <path d="M-4 -2 L4 -2 M-5 2 L5 2 M-4 6 L4 6" stroke="#D4AC0D" stroke-width="0.8"/>
+      <path d="M-2 -5 L-2 9 M2 -5 L2 9" stroke="#D4AC0D" stroke-width="0.8"/>
+      <!-- Crown leaves -->
+      <path d="M0 -8 L-3 -14 M0 -8 L0 -15 M0 -8 L3 -14" stroke="#27AE60" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <!-- Ham slice (right side) -->
+    <g transform="translate(10,0)">
+      <ellipse cx="0" cy="0" rx="8" ry="6" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1.5"/>
+      <ellipse cx="-2" cy="-1" rx="3" ry="2" fill="#FF9999"/>
+      <ellipse cx="3" cy="1" rx="2" ry="1.5" fill="#FF9999"/>
+    </g>
+  </g>
+</svg>

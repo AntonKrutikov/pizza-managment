@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pizza base -->
+  <circle cx="50" cy="50" r="45" fill="#F4D03F" stroke="#D35400" stroke-width="3"/>
+  <!-- Tomato sauce -->
+  <circle cx="50" cy="50" r="38" fill="#E74C3C"/>
+  <!-- Mozzarella spots -->
+  <circle cx="30" cy="30" r="4" fill="#F5F5DC"/>
+  <circle cx="70" cy="70" r="4" fill="#F5F5DC"/>
+  <circle cx="75" cy="35" r="3" fill="#F5F5DC"/>
+  <!-- Cooked ham pieces around -->
+  <rect x="22" y="25" width="12" height="9" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="66" y="25" width="12" height="9" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="72" y="55" width="11" height="9" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="60" y="72" width="12" height="9" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="25" y="65" width="11" height="9" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <!-- Center ham icon (ham leg shape) -->
+  <g transform="translate(50,50)">
+    <ellipse cx="0" cy="0" rx="12" ry="8" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1.5"/>
+    <rect x="-14" y="-3" width="6" height="6" rx="1" fill="#8B4513"/>
+    <ellipse cx="-2" cy="-2" rx="3" ry="2" fill="#FF9999"/>
+    <ellipse cx="4" cy="2" rx="2" ry="1.5" fill="#FF9999"/>
+  </g>
+</svg>

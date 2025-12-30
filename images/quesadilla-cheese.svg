@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Quesadilla (folded tortilla) -->
+  <path d="M10 55 Q50 20 90 55 L90 60 Q50 95 10 60 Z" fill="#F5DEB3" stroke="#D2B48C" stroke-width="2"/>
+  <!-- Top tortilla layer -->
+  <path d="M10 55 Q50 20 90 55" fill="none" stroke="#C4A76C" stroke-width="1"/>
+  <!-- Melted cheese oozing out -->
+  <path d="M15 57 Q20 62 18 67 Q16 72 20 75" fill="none" stroke="#F4D03F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M35 58 Q38 65 35 72" fill="none" stroke="#F4D03F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M55 58 Q52 65 55 72" fill="none" stroke="#F4D03F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M75 57 Q78 64 75 70" fill="none" stroke="#F4D03F" stroke-width="4" stroke-linecap="round"/>
+  <!-- Grill marks -->
+  <g stroke="#C4A76C" stroke-width="2" opacity="0.5">
+    <path d="M25 45 Q50 35 75 45"/>
+    <path d="M20 52 Q50 42 80 52"/>
+  </g>
+</svg>

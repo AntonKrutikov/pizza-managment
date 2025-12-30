@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pizza base -->
+  <circle cx="50" cy="50" r="45" fill="#F4D03F" stroke="#D35400" stroke-width="3"/>
+  <!-- Tomato sauce -->
+  <circle cx="50" cy="50" r="38" fill="#E74C3C"/>
+  <!-- Mozzarella -->
+  <circle cx="50" cy="50" r="5" fill="#F5F5DC"/>
+  <!-- Ham pieces -->
+  <rect x="25" y="30" width="12" height="10" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <rect x="60" y="62" width="12" height="10" rx="2" fill="#FFB6C1" stroke="#E8A0A8" stroke-width="1"/>
+  <!-- Mushrooms -->
+  <path d="M62 30 Q58 24 65 24 Q72 24 68 30 L65 38 Z" fill="#D5DBDB" stroke="#BDC3C7" stroke-width="1"/>
+  <path d="M28 60 Q24 54 31 54 Q38 54 34 60 L31 68 Z" fill="#D5DBDB" stroke="#BDC3C7" stroke-width="1"/>
+  <!-- Artichoke hearts -->
+  <ellipse cx="45" cy="30" rx="6" ry="8" fill="#8FBC8F"/>
+  <path d="M42 28 Q45 22 48 28" fill="none" stroke="#6B8E6B" stroke-width="1"/>
+  <path d="M43 30 Q45 26 47 30" fill="none" stroke="#6B8E6B" stroke-width="1"/>
+  <ellipse cx="70" cy="48" rx="6" ry="8" fill="#8FBC8F"/>
+  <!-- Olives -->
+  <ellipse cx="38" cy="70" rx="5" ry="4" fill="#2C3E50"/>
+  <ellipse cx="55" cy="75" rx="5" ry="4" fill="#2C3E50"/>
+</svg>

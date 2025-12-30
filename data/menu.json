@@ -8,103 +8,120 @@
           "id": 1,
           "name": "Margherita",
           "category": "pizza",
-          "price": 220
+          "price": 220,
+          "image": "images/pizza-margherita.svg"
         },
         {
           "id": 2,
           "name": "Prosciutto",
           "category": "pizza",
-          "price": 300
+          "price": 300,
+          "image": "images/pizza-prosciutto.svg"
         },
         {
           "id": 3,
           "name": "Salame",
           "category": "pizza",
-          "price": 260
+          "price": 260,
+          "image": "images/pizza-salame.svg"
         },
         {
           "id": 4,
           "name": "Prosciutto Cotto",
           "category": "pizza",
-          "price": 260
+          "price": 260,
+          "image": "images/pizza-prosciutto-cotto.svg"
         },
         {
           "id": 5,
           "name": "4 Formaggi",
           "category": "pizza",
-          "price": 280
+          "price": 280,
+          "image": "images/pizza-4formaggi.svg"
         },
         {
           "id": 6,
           "name": "Vegetariana",
           "category": "pizza",
-          "price": 280
+          "price": 280,
+          "image": "images/pizza-vegetariana.svg"
         },
         {
           "id": 7,
           "name": "Al Funghi",
           "category": "pizza",
-          "price": 260
+          "price": 260,
+          "image": "images/pizza-funghi.svg"
         },
         {
           "id": 8,
           "name": "Capricciosa",
           "category": "pizza",
-          "price": 350
+          "price": 350,
+          "image": "images/pizza-capricciosa.svg"
         },
         {
           "id": 9,
           "name": "Bianca",
           "category": "pizza",
-          "price": 260
+          "price": 260,
+          "image": "images/pizza-bianca.svg"
         },
         {
           "id": 10,
           "name": "Chicken",
           "category": "pizza",
-          "price": 260
+          "price": 260,
+          "image": "images/pizza-chicken.svg"
         },
         {
           "id": 11,
           "name": "Italian Sausage",
           "category": "pizza",
-          "price": 260
+          "price": 260,
+          "image": "images/pizza-italian-sausage.svg"
         },
         {
           "id": 12,
           "name": "Tuna",
           "category": "pizza",
-          "price": 260
+          "price": 260,
+          "image": "images/pizza-tuna.svg"
         },
         {
           "id": 13,
           "name": "Salame Ham Mushroom",
           "category": "pizza",
-          "price": 350
+          "price": 350,
+          "image": "images/pizza-salame-ham-mushroom.svg"
         },
         {
           "id": 14,
           "name": "Prosciutto Cotto Mushroom",
           "category": "pizza",
-          "price": 280
+          "price": 280,
+          "image": "images/pizza-prosciutto-cotto-mushroom.svg"
         },
         {
           "id": 15,
           "name": "Hawaiian Ham",
           "category": "pizza",
-          "price": 280
+          "price": 280,
+          "image": "images/pizza-hawaiian-ham.svg"
         },
         {
           "id": 16,
           "name": "Hawaiian Chicken",
           "category": "pizza",
-          "price": 280
+          "price": 280,
+          "image": "images/pizza-hawaiian-chicken.svg"
         },
         {
           "id": 17,
           "name": "Custom",
           "category": "pizza",
-          "customPrice": true
+          "customPrice": true,
+          "image": "images/pizza-custom.svg"
         }
       ]
     },
@@ -116,6 +133,7 @@
           "id": 18,
           "name": "Cheese",
           "category": "quesadilla",
+          "image": "images/quesadilla-cheese.svg",
           "variants": [
             {
               "size": "2",
@@ -131,6 +149,7 @@
           "id": 19,
           "name": "Chicken",
           "category": "quesadilla",
+          "image": "images/quesadilla-chicken.svg",
           "variants": [
             {
               "size": "2",
@@ -146,6 +165,7 @@
           "id": 20,
           "name": "Beef",
           "category": "quesadilla",
+          "image": "images/quesadilla-beef.svg",
           "variants": [
             {
               "size": "2",
@@ -161,6 +181,7 @@
           "id": 21,
           "name": "Ham",
           "category": "quesadilla",
+          "image": "images/quesadilla-ham.svg",
           "variants": [
             {
               "size": "2",
@@ -176,6 +197,7 @@
           "id": 22,
           "name": "Spinach",
           "category": "quesadilla",
+          "image": "images/quesadilla-spinach.svg",
           "variants": [
             {
               "size": "2",
@@ -191,6 +213,7 @@
           "id": 23,
           "name": "Mushroom",
           "category": "quesadilla",
+          "image": "images/quesadilla-mushroom.svg",
           "variants": [
             {
               "size": "2",
@@ -206,6 +229,7 @@
           "id": 24,
           "name": "Pepperoni",
           "category": "quesadilla",
+          "image": "images/quesadilla-pepperoni.svg",
           "variants": [
             {
               "size": "2",
@@ -221,6 +245,7 @@
           "id": 25,
           "name": "Nutella",
           "category": "quesadilla",
+          "image": "images/quesadilla-nutella.svg",
           "variants": [
             {
               "size": "2",

@@ -53,18 +53,38 @@ export function renderOrders(orders, container, orderService) {
 		const orderInfo = document.createElement("div")
 		orderInfo.classList.add("order-info")
 
-		// Items list with prices
+		// Items list with images in a row
 		const itemsList = document.createElement("div")
 		itemsList.classList.add("order-items-list")
 
 		// Use the items array if available (new format), otherwise fallback to pizzaType string
 		if (order.items && Array.isArray(order.items)) {
+			// Create images row container
+			const imagesRow = document.createElement("div")
+			imagesRow.classList.add("order-items-images-row")
+
 			order.items.forEach(item => {
 				const itemDiv = document.createElement("div")
 				itemDiv.classList.add("order-item-entry")
+
+				// Add image if available
+				if (item.image) {
+					const img = document.createElement("img")
+					img.src = item.image
+					img.alt = item.name
+					img.classList.add("order-item-image")
+					img.title = `${item.name} - ฿${item.price}`
+					imagesRow.appendChild(img)
+				}
+
 				itemDiv.innerHTML = `<span class="item-name-text">${item.name} - ฿${item.price}</span>`
 				itemsList.appendChild(itemDiv)
 			})
+
+			// Add images row before items list if there are any images
+			if (imagesRow.children.length > 0) {
+				orderInfo.appendChild(imagesRow)
+			}
 		} else {
 			// Fallback for old orders
 			const items = order.pizzaType.split(", ")

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pizza base -->
+  <circle cx="50" cy="50" r="45" fill="#F4D03F" stroke="#D35400" stroke-width="3"/>
+  <!-- Tomato sauce -->
+  <circle cx="50" cy="50" r="38" fill="#E74C3C"/>
+  <!-- Mozzarella spots -->
+  <circle cx="28" cy="40" r="4" fill="#F5F5DC"/>
+  <circle cx="72" cy="60" r="4" fill="#F5F5DC"/>
+  <circle cx="65" cy="28" r="3" fill="#F5F5DC"/>
+  <!-- Italian sausage crumbles around -->
+  <g fill="#8B4513">
+    <ellipse cx="28" cy="28" rx="5" ry="3" transform="rotate(-20 28 28)"/>
+    <ellipse cx="72" cy="28" rx="5" ry="3" transform="rotate(15 72 28)"/>
+    <ellipse cx="78" cy="52" rx="5" ry="3" transform="rotate(-10 78 52)"/>
+    <ellipse cx="70" cy="74" rx="5" ry="3" transform="rotate(25 70 74)"/>
+    <ellipse cx="30" cy="72" rx="5" ry="3" transform="rotate(-15 30 72)"/>
+    <ellipse cx="20" cy="52" rx="4" ry="3" transform="rotate(10 20 52)"/>
+  </g>
+  <!-- Center sausage icon (whole sausage link) -->
+  <g transform="translate(50,50)">
+    <!-- Main sausage body -->
+    <ellipse cx="0" cy="0" rx="16" ry="7" fill="#8B4513" stroke="#5D3A1A" stroke-width="1.5"/>
+    <!-- Sausage ends -->
+    <ellipse cx="-14" cy="0" rx="3" ry="5" fill="#6B3410"/>
+    <ellipse cx="14" cy="0" rx="3" ry="5" fill="#6B3410"/>
+    <!-- Casing twist marks -->
+    <path d="M-8 -5 Q-8 0 -8 5" stroke="#5D3A1A" stroke-width="1" fill="none"/>
+    <path d="M8 -5 Q8 0 8 5" stroke="#5D3A1A" stroke-width="1" fill="none"/>
+    <!-- Highlight -->
+    <ellipse cx="-3" cy="-3" rx="6" ry="2" fill="#A0522D" opacity="0.5"/>
+  </g>
+</svg>

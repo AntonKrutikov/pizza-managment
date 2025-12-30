@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Quesadilla (folded tortilla) -->
+  <path d="M10 55 Q50 20 90 55 L90 60 Q50 95 10 60 Z" fill="#F5DEB3" stroke="#D2B48C" stroke-width="2"/>
+  <!-- Top tortilla layer -->
+  <path d="M10 55 Q50 20 90 55" fill="none" stroke="#C4A76C" stroke-width="1"/>
+  <!-- Melted cheese -->
+  <path d="M20 57 Q23 63 20 68" fill="none" stroke="#F4D03F" stroke-width="3" stroke-linecap="round"/>
+  <path d="M75 57 Q78 63 75 68" fill="none" stroke="#F4D03F" stroke-width="3" stroke-linecap="round"/>
+  <!-- Spinach leaves visible -->
+  <ellipse cx="35" cy="60" rx="10" ry="5" fill="#27AE60"/>
+  <ellipse cx="50" cy="58" rx="8" ry="4" fill="#2ECC71"/>
+  <ellipse cx="65" cy="60" rx="9" ry="5" fill="#27AE60"/>
+  <!-- Leaf veins -->
+  <path d="M30 60 L40 60" stroke="#1E8449" stroke-width="0.5"/>
+  <path d="M46 58 L54 58" stroke="#1E8449" stroke-width="0.5"/>
+  <path d="M60 60 L70 60" stroke="#1E8449" stroke-width="0.5"/>
+  <!-- Grill marks -->
+  <g stroke="#C4A76C" stroke-width="2" opacity="0.5">
+    <path d="M25 45 Q50 35 75 45"/>
+    <path d="M20 52 Q50 42 80 52"/>
+  </g>
+</svg>

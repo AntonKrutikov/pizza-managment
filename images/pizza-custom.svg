@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pizza base -->
+  <circle cx="50" cy="50" r="45" fill="#F4D03F" stroke="#D35400" stroke-width="3" stroke-dasharray="8 4"/>
+  <!-- Tomato sauce -->
+  <circle cx="50" cy="50" r="38" fill="#E74C3C"/>
+  <!-- Question mark symbol -->
+  <text x="50" y="62" font-family="Arial, sans-serif" font-size="45" font-weight="bold" fill="#FFF" text-anchor="middle">?</text>
+  <!-- Plus signs around -->
+  <g fill="#FFF" font-family="Arial, sans-serif" font-size="16" font-weight="bold">
+    <text x="25" y="35" text-anchor="middle">+</text>
+    <text x="75" y="35" text-anchor="middle">+</text>
+    <text x="25" y="75" text-anchor="middle">+</text>
+    <text x="75" y="75" text-anchor="middle">+</text>
+  </g>
+</svg>
