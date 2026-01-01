@@ -60,7 +60,27 @@ function createMenuItemCard(item) {
 	}
 
 	// Add image if available
-	if (item.image) {
+	if (item.baseImage && item.iconImage) {
+		// Side by side: quesadilla on left, type icon on right with colored circle
+		const imageContainer = document.createElement("div")
+		imageContainer.classList.add("item-image-sidebyside")
+
+		const leftImg = document.createElement("img")
+		leftImg.src = item.baseImage  // Quesadilla on left
+		leftImg.alt = "Quesadilla"
+		leftImg.classList.add("item-image-left")
+
+		const rightImg = document.createElement("img")
+		rightImg.src = item.iconImage  // Type icon on right
+		rightImg.alt = item.name
+		rightImg.classList.add("item-image-right")
+		// Add type-specific class for colored circle (replace spaces with hyphens)
+		rightImg.classList.add(`type-${item.name.toLowerCase().replace(/\s+/g, '-')}`)
+
+		imageContainer.appendChild(leftImg)
+		imageContainer.appendChild(rightImg)
+		card.appendChild(imageContainer)
+	} else if (item.image) {
 		const img = document.createElement("img")
 		img.src = item.image
 		img.alt = item.name
@@ -94,6 +114,11 @@ function createMenuItemCard(item) {
 	const actionsDiv = document.createElement("div")
 	actionsDiv.classList.add("item-actions")
 
+	// Prepare image data for order
+	const imageData = item.baseImage && item.iconImage
+		? { baseImage: item.baseImage, iconImage: item.iconImage }
+		: item.image || null
+
 	if (item.customPrice) {
 		// For custom price items, show popup on click
 		const btn = document.createElement("button")
@@ -102,7 +127,7 @@ function createMenuItemCard(item) {
 		btn.textContent = "Set Price"
 		btn.addEventListener("click", function (e) {
 			e.stopPropagation()
-			showCustomPricePopup(item.name, item.image, card)
+			showCustomPricePopup(item.name, imageData, card)
 		})
 		actionsDiv.appendChild(btn)
 	} else if (item.variants) {
@@ -114,7 +139,7 @@ function createMenuItemCard(item) {
 			btn.textContent = `Add ${variant.size}`
 			btn.addEventListener("click", function (e) {
 				e.stopPropagation() // Prevent card click event
-				addItemToOrder(`${item.name} (${variant.size})`, variant.price, item.image)
+				addItemToOrder(`${item.name} (${variant.size})`, variant.price, imageData)
 				// Deselect card after adding
 				card.classList.remove("selected")
 			})
@@ -128,7 +153,7 @@ function createMenuItemCard(item) {
 		btn.textContent = "Add"
 		btn.addEventListener("click", function (e) {
 			e.stopPropagation() // Prevent card click event
-			addItemToOrder(item.name, item.price, item.image)
+			addItemToOrder(item.name, item.price, imageData)
 			// Deselect card after adding
 			card.classList.remove("selected")
 		})
@@ -723,14 +748,332 @@ document.getElementById("analytics-back-btn").addEventListener("click", function
 	})
 })
 
+// Analytics state for period navigation
+let selectedWeekIndex = 0
+let selectedMonthIndex = 0
+let weeksWithData = []
+let monthsWithData = []
+let calendarMonth = new Date().getMonth()
+let calendarYear = new Date().getFullYear()
+let calendarWeekOffset = 0 // 0 = first week of month, 1 = second week, etc.
+let selectedCalendarDate = null
+
 // Analytics period tabs
 document.querySelectorAll(".analytics-tab").forEach((tab) => {
 	tab.addEventListener("click", function () {
 		document.querySelectorAll(".analytics-tab").forEach((t) => t.classList.remove("active"))
 		tab.classList.add("active")
 		currentAnalyticsPeriod = tab.dataset.period
+
+		// Show/hide period selector and calendar view
+		const periodSelector = document.getElementById("period-selector")
+		const calendarView = document.getElementById("calendar-view")
+		const analyticsContent = document.querySelectorAll(".analytics-summary, .analytics-charts, .analytics-section")
+
+		if (currentAnalyticsPeriod === "weekly") {
+			periodSelector.style.display = "flex"
+			calendarView.style.display = "none"
+			analyticsContent.forEach(el => el.style.display = "")
+			initWeekSelector()
+		} else if (currentAnalyticsPeriod === "monthly") {
+			periodSelector.style.display = "flex"
+			calendarView.style.display = "none"
+			analyticsContent.forEach(el => el.style.display = "")
+			initMonthSelector()
+		} else if (currentAnalyticsPeriod === "calendar") {
+			periodSelector.style.display = "none"
+			calendarView.style.display = "block"
+			// Hide analytics content until a day is selected
+			if (!selectedCalendarDate) {
+				analyticsContent.forEach(el => el.style.display = "none")
+			}
+			renderCalendar()
+		} else {
+			periodSelector.style.display = "none"
+			calendarView.style.display = "none"
+			analyticsContent.forEach(el => el.style.display = "")
+		}
+
 		updateAnalytics()
 	})
+})
+
+// Week selector navigation
+function initWeekSelector() {
+	weeksWithData = analytics.getWeeksWithData()
+	selectedWeekIndex = 0
+	updatePeriodLabel()
+}
+
+function initMonthSelector() {
+	monthsWithData = analytics.getMonthsWithData()
+	selectedMonthIndex = 0
+	updatePeriodLabel()
+}
+
+function updatePeriodLabel() {
+	const label = document.getElementById("period-label")
+	const prevBtn = document.getElementById("period-prev")
+	const nextBtn = document.getElementById("period-next")
+
+	if (currentAnalyticsPeriod === "weekly") {
+		if (weeksWithData.length === 0) {
+			label.textContent = "No data available"
+			prevBtn.disabled = true
+			nextBtn.disabled = true
+			return
+		}
+
+		const weekStart = weeksWithData[selectedWeekIndex]
+		const weekEnd = new Date(weekStart)
+		weekEnd.setDate(weekStart.getDate() + 6)
+
+		const today = new Date()
+		const currentWeekStart = new Date(today)
+		currentWeekStart.setDate(today.getDate() - today.getDay())
+		currentWeekStart.setHours(0, 0, 0, 0)
+
+		if (weekStart.getTime() === currentWeekStart.getTime()) {
+			label.textContent = "This Week"
+		} else {
+			const startStr = weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+			const endStr = weekEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+			label.textContent = `${startStr} - ${endStr}`
+		}
+
+		prevBtn.disabled = selectedWeekIndex >= weeksWithData.length - 1
+		nextBtn.disabled = selectedWeekIndex <= 0
+
+	} else if (currentAnalyticsPeriod === "monthly") {
+		if (monthsWithData.length === 0) {
+			label.textContent = "No data available"
+			prevBtn.disabled = true
+			nextBtn.disabled = true
+			return
+		}
+
+		const { year, month } = monthsWithData[selectedMonthIndex]
+		const today = new Date()
+
+		if (year === today.getFullYear() && month === today.getMonth()) {
+			label.textContent = "This Month"
+		} else {
+			const date = new Date(year, month, 1)
+			label.textContent = date.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+		}
+
+		prevBtn.disabled = selectedMonthIndex >= monthsWithData.length - 1
+		nextBtn.disabled = selectedMonthIndex <= 0
+	}
+}
+
+// Period navigation buttons
+document.getElementById("period-prev").addEventListener("click", () => {
+	if (currentAnalyticsPeriod === "weekly" && selectedWeekIndex < weeksWithData.length - 1) {
+		selectedWeekIndex++
+		updatePeriodLabel()
+		updateAnalytics()
+	} else if (currentAnalyticsPeriod === "monthly" && selectedMonthIndex < monthsWithData.length - 1) {
+		selectedMonthIndex++
+		updatePeriodLabel()
+		updateAnalytics()
+	}
+})
+
+document.getElementById("period-next").addEventListener("click", () => {
+	if (currentAnalyticsPeriod === "weekly" && selectedWeekIndex > 0) {
+		selectedWeekIndex--
+		updatePeriodLabel()
+		updateAnalytics()
+	} else if (currentAnalyticsPeriod === "monthly" && selectedMonthIndex > 0) {
+		selectedMonthIndex--
+		updatePeriodLabel()
+		updateAnalytics()
+	}
+})
+
+// Calendar functionality - get weeks in a month
+function getWeeksInMonth(year, month) {
+	const firstDay = new Date(year, month, 1)
+	const lastDay = new Date(year, month + 1, 0)
+	const daysInMonth = lastDay.getDate()
+	const firstDayOfWeek = firstDay.getDay()
+
+	const weeks = []
+	let currentDay = 1 - firstDayOfWeek // Start from Sunday of first week (may be negative)
+
+	while (currentDay <= daysInMonth) {
+		const week = []
+		for (let i = 0; i < 7; i++) {
+			const day = currentDay + i
+			if (day >= 1 && day <= daysInMonth) {
+				week.push(day)
+			} else {
+				week.push(null) // Empty cell
+			}
+		}
+		weeks.push(week)
+		currentDay += 7
+	}
+
+	return weeks
+}
+
+function renderCalendar() {
+	const grid = document.getElementById("calendar-grid")
+	const monthLabel = document.getElementById("calendar-month-label")
+	const weekLabel = document.getElementById("calendar-week-label")
+
+	monthLabel.textContent = new Date(calendarYear, calendarMonth, 1).toLocaleDateString("en-US", {
+		month: "long",
+		year: "numeric"
+	})
+
+	const weeks = getWeeksInMonth(calendarYear, calendarMonth)
+	const totalWeeks = weeks.length
+
+	// Clamp week offset to valid range
+	if (calendarWeekOffset >= totalWeeks) calendarWeekOffset = totalWeeks - 1
+	if (calendarWeekOffset < 0) calendarWeekOffset = 0
+
+	const currentWeek = weeks[calendarWeekOffset]
+	const orderCounts = analytics.getDailyOrderCountsForMonth(calendarYear, calendarMonth)
+	const today = new Date()
+
+	// Update week label
+	const firstDayOfWeek = currentWeek.find(d => d !== null)
+	const lastDayOfWeek = [...currentWeek].reverse().find(d => d !== null)
+	weekLabel.textContent = `${firstDayOfWeek} - ${lastDayOfWeek}`
+
+	let html = ""
+
+	// Render only the current week
+	for (let i = 0; i < 7; i++) {
+		const day = currentWeek[i]
+
+		if (day === null) {
+			html += '<div class="calendar-day empty"></div>'
+			continue
+		}
+
+		const dayData = orderCounts[day]
+		const hasData = dayData && dayData.count > 0
+		const isToday = today.getFullYear() === calendarYear &&
+			today.getMonth() === calendarMonth &&
+			today.getDate() === day
+		const isSelected = selectedCalendarDate &&
+			selectedCalendarDate.getFullYear() === calendarYear &&
+			selectedCalendarDate.getMonth() === calendarMonth &&
+			selectedCalendarDate.getDate() === day
+
+		let classes = "calendar-day"
+		if (hasData) classes += " has-data"
+		else classes += " no-data"
+		if (isToday) classes += " today"
+		if (isSelected) classes += " selected"
+
+		html += `<div class="${classes}" data-day="${day}">
+			<span class="calendar-day-number">${day}</span>
+			${hasData ? `<span class="calendar-day-orders">${dayData.count} orders</span>` : ""}
+			${hasData ? `<span class="calendar-day-revenue">${dayData.revenue.toLocaleString()}฿</span>` : ""}
+		</div>`
+	}
+
+	grid.innerHTML = html
+
+	// Add click handlers
+	grid.querySelectorAll(".calendar-day.has-data").forEach(dayEl => {
+		dayEl.addEventListener("click", () => {
+			const day = parseInt(dayEl.dataset.day)
+			selectedCalendarDate = new Date(calendarYear, calendarMonth, day)
+
+			// Update selection visual
+			grid.querySelectorAll(".calendar-day").forEach(d => d.classList.remove("selected"))
+			dayEl.classList.add("selected")
+
+			// Show analytics content
+			document.querySelectorAll(".analytics-summary, .analytics-charts, .analytics-section").forEach(el => {
+				el.style.display = ""
+			})
+
+			// Update selected info
+			const info = document.getElementById("calendar-selected-info")
+			info.classList.add("has-selection")
+			info.innerHTML = `<strong>${selectedCalendarDate.toLocaleDateString("en-US", {
+				weekday: "long",
+				month: "long",
+				day: "numeric",
+				year: "numeric"
+			})}</strong>`
+
+			updateAnalytics()
+		})
+	})
+
+	// Update info section
+	const info = document.getElementById("calendar-selected-info")
+	if (!selectedCalendarDate) {
+		info.classList.remove("has-selection")
+		info.innerHTML = "Select a day with orders to view analytics"
+	}
+}
+
+// Calendar month navigation
+document.getElementById("calendar-prev-month").addEventListener("click", () => {
+	calendarMonth--
+	if (calendarMonth < 0) {
+		calendarMonth = 11
+		calendarYear--
+	}
+	// Go to last week of the new month
+	const weeks = getWeeksInMonth(calendarYear, calendarMonth)
+	calendarWeekOffset = weeks.length - 1
+	renderCalendar()
+})
+
+document.getElementById("calendar-next-month").addEventListener("click", () => {
+	calendarMonth++
+	if (calendarMonth > 11) {
+		calendarMonth = 0
+		calendarYear++
+	}
+	// Go to first week of the new month
+	calendarWeekOffset = 0
+	renderCalendar()
+})
+
+// Calendar week navigation
+document.getElementById("calendar-prev-week").addEventListener("click", () => {
+	const weeks = getWeeksInMonth(calendarYear, calendarMonth)
+	if (calendarWeekOffset > 0) {
+		calendarWeekOffset--
+	} else {
+		// Go to previous month's last week
+		calendarMonth--
+		if (calendarMonth < 0) {
+			calendarMonth = 11
+			calendarYear--
+		}
+		const prevWeeks = getWeeksInMonth(calendarYear, calendarMonth)
+		calendarWeekOffset = prevWeeks.length - 1
+	}
+	renderCalendar()
+})
+
+document.getElementById("calendar-next-week").addEventListener("click", () => {
+	const weeks = getWeeksInMonth(calendarYear, calendarMonth)
+	if (calendarWeekOffset < weeks.length - 1) {
+		calendarWeekOffset++
+	} else {
+		// Go to next month's first week
+		calendarMonth++
+		if (calendarMonth > 11) {
+			calendarMonth = 0
+			calendarYear++
+		}
+		calendarWeekOffset = 0
+	}
+	renderCalendar()
 })
 
 // Update analytics display
@@ -748,13 +1091,73 @@ function updateAnalytics() {
 			}))
 		trendTitle = "Orders by Hour (Today)"
 	} else if (currentAnalyticsPeriod === "weekly") {
-		stats = analytics.getWeeklyStats()
-		comparison = analytics.getComparison(analytics.getWeekOrders(), analytics.getLastWeekOrders())
-		trendData = analytics.getWeeklyBreakdown().map((day) => ({
-			label: day.date,
-			value: day.orders,
-		}))
-		trendTitle = "Orders by Day (This Week)"
+		const selectedWeek = weeksWithData[selectedWeekIndex]
+		if (selectedWeek) {
+			stats = analytics.getStatsForWeek(selectedWeek)
+			// Compare with previous week if available
+			const prevWeek = weeksWithData[selectedWeekIndex + 1]
+			if (prevWeek) {
+				comparison = analytics.getComparison(
+					analytics.getOrdersForWeek(selectedWeek),
+					analytics.getOrdersForWeek(prevWeek)
+				)
+			} else {
+				comparison = { revenueChange: 0, ordersChange: 0, avgOrderChange: 0 }
+			}
+			trendData = analytics.getBreakdownForWeek(selectedWeek).map((day) => ({
+				label: day.date,
+				value: day.orders,
+			}))
+			trendTitle = "Orders by Day"
+		} else {
+			stats = analytics.getWeeklyStats()
+			comparison = { revenueChange: 0, ordersChange: 0, avgOrderChange: 0 }
+			trendData = []
+			trendTitle = "No Data"
+		}
+	} else if (currentAnalyticsPeriod === "monthly") {
+		const selectedMonth = monthsWithData[selectedMonthIndex]
+		if (selectedMonth) {
+			stats = analytics.getStatsForMonth(selectedMonth.year, selectedMonth.month)
+			// Compare with previous month if available
+			const prevMonth = monthsWithData[selectedMonthIndex + 1]
+			if (prevMonth) {
+				comparison = analytics.getComparison(
+					analytics.getOrdersForMonth(selectedMonth.year, selectedMonth.month),
+					analytics.getOrdersForMonth(prevMonth.year, prevMonth.month)
+				)
+			} else {
+				comparison = { revenueChange: 0, ordersChange: 0, avgOrderChange: 0 }
+			}
+			trendData = analytics.getBreakdownForMonth(selectedMonth.year, selectedMonth.month).map((day) => ({
+				label: day.date,
+				value: day.orders,
+			}))
+			trendTitle = "Orders by Day"
+		} else {
+			stats = analytics.getMonthlyStats()
+			comparison = { revenueChange: 0, ordersChange: 0, avgOrderChange: 0 }
+			trendData = []
+			trendTitle = "No Data"
+		}
+	} else if (currentAnalyticsPeriod === "calendar") {
+		if (selectedCalendarDate) {
+			stats = analytics.getStatsForDay(selectedCalendarDate)
+			// No comparison for specific day view
+			comparison = { revenueChange: 0, ordersChange: 0, avgOrderChange: 0 }
+			trendData = Object.entries(analytics.getHourlyBreakdownForDay(selectedCalendarDate))
+				.filter(([hour]) => parseInt(hour) >= 8 && parseInt(hour) <= 22)
+				.map(([hour, data]) => ({
+					label: `${hour}:00`,
+					value: data.orders,
+				}))
+			trendTitle = "Orders by Hour"
+		} else {
+			stats = { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0, itemsSold: 0, ordersByType: {}, categoryBreakdown: {}, topItemsSorted: [] }
+			comparison = { revenueChange: 0, ordersChange: 0, avgOrderChange: 0 }
+			trendData = []
+			trendTitle = "Select a day to view analytics"
+		}
 	} else {
 		stats = analytics.getMonthlyStats()
 		comparison = analytics.getComparison(analytics.getMonthOrders(), analytics.getLastMonthOrders())
@@ -800,11 +1203,12 @@ function updateAnalytics() {
 	} else {
 		topItemsList.innerHTML = stats.topItemsSorted
 			.map(
-				([name, count], index) => `
+				(item, index) => `
 			<div class="top-item">
 				<div class="top-item-rank ${index < 3 ? "rank-" + (index + 1) : ""}">${index + 1}</div>
-				<span class="top-item-name">${name}</span>
-				<span class="top-item-count">${count} sold</span>
+				<span class="top-item-name">${item.name}</span>
+				<span class="top-item-category ${item.category.toLowerCase()}">${item.category}</span>
+				<span class="top-item-count">${item.count} sold</span>
 			</div>
 		`
 			)
@@ -815,11 +1219,21 @@ function updateAnalytics() {
 	document.getElementById("trend-title").textContent = trendTitle
 	document.getElementById("sales-trend-chart").innerHTML = generateBarChart(trendData, 400, 180)
 
-	// Update peak hours
-	const peakHours = analytics.getPeakHours()
+	// Update peak hours based on period
+	let peakHours
+	if (currentAnalyticsPeriod === "calendar" && selectedCalendarDate) {
+		peakHours = analytics.getPeakHoursForDay(selectedCalendarDate)
+	} else if (currentAnalyticsPeriod === "weekly" && weeksWithData[selectedWeekIndex]) {
+		peakHours = analytics.getPeakHoursForWeek(weeksWithData[selectedWeekIndex])
+	} else if (currentAnalyticsPeriod === "monthly" && monthsWithData[selectedMonthIndex]) {
+		const m = monthsWithData[selectedMonthIndex]
+		peakHours = analytics.getPeakHoursForMonth(m.year, m.month)
+	} else {
+		peakHours = analytics.getPeakHours()
+	}
 	const peakHoursContainer = document.getElementById("peak-hours")
 
-	if (peakHours.length === 0 || peakHours.every((h) => h.orders === 0)) {
+	if (!peakHours || peakHours.length === 0 || peakHours.every((h) => h.orders === 0)) {
 		peakHoursContainer.innerHTML = '<div class="analytics-empty">No data for peak hours</div>'
 	} else {
 		const maxOrders = Math.max(...peakHours.map((h) => h.orders), 1)

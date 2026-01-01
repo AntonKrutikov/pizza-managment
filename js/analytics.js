@@ -74,7 +74,6 @@ export class Analytics {
 				order.items.forEach((item) => {
 					stats.itemsSold++
 					const itemName = item.name.split(" (")[0] // Remove size variant
-					stats.topItems[itemName] = (stats.topItems[itemName] || 0) + 1
 
 					// Category breakdown - check image path first, then item name
 					let category = "Other"
@@ -95,6 +94,13 @@ export class Analytics {
 							category = "Quesadilla"
 						}
 					}
+
+					// Track top items with category
+					if (!stats.topItems[itemName]) {
+						stats.topItems[itemName] = { count: 0, category: category }
+					}
+					stats.topItems[itemName].count++
+
 					if (!stats.categoryBreakdown[category]) {
 						stats.categoryBreakdown[category] = { count: 0, revenue: 0 }
 					}
@@ -107,9 +113,10 @@ export class Analytics {
 		// Calculate average order value
 		stats.averageOrderValue = stats.totalOrders > 0 ? Math.round(stats.totalRevenue / stats.totalOrders) : 0
 
-		// Sort top items
+		// Sort top items (now includes category)
 		stats.topItemsSorted = Object.entries(stats.topItems)
-			.sort((a, b) => b[1] - a[1])
+			.map(([name, data]) => ({ name, count: data.count, category: data.category }))
+			.sort((a, b) => b.count - a.count)
 			.slice(0, 10)
 
 		return stats
@@ -217,6 +224,208 @@ export class Analytics {
 	getPeakHours() {
 		const hourly = this.getHourlyBreakdown()
 		return Object.entries(hourly)
+			.map(([hour, data]) => ({ hour: parseInt(hour), ...data }))
+			.sort((a, b) => b.orders - a.orders)
+			.slice(0, 3)
+	}
+
+	// Get orders for a specific week (weekStart is a Date object for Sunday)
+	getOrdersForWeek(weekStart) {
+		const weekEnd = new Date(weekStart)
+		weekEnd.setDate(weekStart.getDate() + 6)
+		return this.getOrdersInRange(weekStart, weekEnd)
+	}
+
+	// Get orders for a specific month
+	getOrdersForMonth(year, month) {
+		const startOfMonth = new Date(year, month, 1)
+		const endOfMonth = new Date(year, month + 1, 0)
+		return this.getOrdersInRange(startOfMonth, endOfMonth)
+	}
+
+	// Get orders for a specific day
+	getOrdersForDay(date) {
+		return this.getOrdersInRange(date, date)
+	}
+
+	// Get all weeks that have data (returns array of week start dates)
+	getWeeksWithData() {
+		const orders = this.getAllCompletedOrders()
+		if (orders.length === 0) return []
+
+		const weeks = new Map()
+
+		orders.forEach(order => {
+			const date = new Date(order.timestamp)
+			const dayOfWeek = date.getDay()
+			const weekStart = new Date(date)
+			weekStart.setDate(date.getDate() - dayOfWeek)
+			weekStart.setHours(0, 0, 0, 0)
+
+			const key = weekStart.getTime()
+			if (!weeks.has(key)) {
+				weeks.set(key, weekStart)
+			}
+		})
+
+		return Array.from(weeks.values()).sort((a, b) => b.getTime() - a.getTime())
+	}
+
+	// Get all months that have data (returns array of {year, month} objects)
+	getMonthsWithData() {
+		const orders = this.getAllCompletedOrders()
+		if (orders.length === 0) return []
+
+		const months = new Map()
+
+		orders.forEach(order => {
+			const date = new Date(order.timestamp)
+			const key = `${date.getFullYear()}-${date.getMonth()}`
+			if (!months.has(key)) {
+				months.set(key, { year: date.getFullYear(), month: date.getMonth() })
+			}
+		})
+
+		return Array.from(months.values()).sort((a, b) => {
+			if (a.year !== b.year) return b.year - a.year
+			return b.month - a.month
+		})
+	}
+
+	// Get daily order data for a month (for calendar display)
+	getDailyOrderCountsForMonth(year, month) {
+		const startOfMonth = new Date(year, month, 1)
+		const endOfMonth = new Date(year, month + 1, 0)
+		const orders = this.getOrdersInRange(startOfMonth, endOfMonth)
+
+		const data = {}
+		orders.forEach(order => {
+			const date = new Date(order.timestamp)
+			const day = date.getDate()
+			if (!data[day]) {
+				data[day] = { count: 0, revenue: 0 }
+			}
+			data[day].count++
+			data[day].revenue += parseInt(order.price) || 0
+		})
+
+		return data
+	}
+
+	// Get stats for a specific week
+	getStatsForWeek(weekStart) {
+		return this.calculateStats(this.getOrdersForWeek(weekStart))
+	}
+
+	// Get stats for a specific month
+	getStatsForMonth(year, month) {
+		return this.calculateStats(this.getOrdersForMonth(year, month))
+	}
+
+	// Get stats for a specific day
+	getStatsForDay(date) {
+		return this.calculateStats(this.getOrdersForDay(date))
+	}
+
+	// Get breakdown for a specific week (daily)
+	getBreakdownForWeek(weekStart) {
+		const days = []
+		for (let i = 0; i < 7; i++) {
+			const date = new Date(weekStart)
+			date.setDate(weekStart.getDate() + i)
+			const dayOrders = this.getOrdersForDay(date)
+			const stats = this.calculateStats(dayOrders)
+			days.push({
+				date: date.toLocaleDateString("en-US", { weekday: "short" }),
+				fullDate: new Date(date),
+				orders: stats.totalOrders,
+				revenue: stats.totalRevenue,
+			})
+		}
+		return days
+	}
+
+	// Get breakdown for a specific month (daily)
+	getBreakdownForMonth(year, month) {
+		const days = []
+		const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+		for (let i = 1; i <= daysInMonth; i++) {
+			const date = new Date(year, month, i)
+			const dayOrders = this.getOrdersForDay(date)
+			const stats = this.calculateStats(dayOrders)
+			days.push({
+				date: i.toString(),
+				fullDate: new Date(date),
+				orders: stats.totalOrders,
+				revenue: stats.totalRevenue,
+			})
+		}
+		return days
+	}
+
+	// Get hourly breakdown for a specific day
+	getHourlyBreakdownForDay(date) {
+		const dayOrders = this.getOrdersForDay(date)
+		const hours = {}
+
+		for (let i = 0; i < 24; i++) {
+			hours[i] = { orders: 0, revenue: 0 }
+		}
+
+		dayOrders.forEach((order) => {
+			const hour = new Date(order.timestamp).getHours()
+			hours[hour].orders++
+			hours[hour].revenue += parseInt(order.price) || 0
+		})
+
+		return hours
+	}
+
+	// Get peak hours for a specific day
+	getPeakHoursForDay(date) {
+		const hourly = this.getHourlyBreakdownForDay(date)
+		return Object.entries(hourly)
+			.map(([hour, data]) => ({ hour: parseInt(hour), ...data }))
+			.sort((a, b) => b.orders - a.orders)
+			.slice(0, 3)
+	}
+
+	// Get peak hours for a specific week
+	getPeakHoursForWeek(weekStart) {
+		const orders = this.getOrdersForWeek(weekStart)
+		const hourlyStats = {}
+
+		orders.forEach(order => {
+			const hour = new Date(order.timestamp).getHours()
+			if (!hourlyStats[hour]) {
+				hourlyStats[hour] = { orders: 0, revenue: 0 }
+			}
+			hourlyStats[hour].orders++
+			hourlyStats[hour].revenue += parseInt(order.price) || 0
+		})
+
+		return Object.entries(hourlyStats)
+			.map(([hour, data]) => ({ hour: parseInt(hour), ...data }))
+			.sort((a, b) => b.orders - a.orders)
+			.slice(0, 3)
+	}
+
+	// Get peak hours for a specific month
+	getPeakHoursForMonth(year, month) {
+		const orders = this.getOrdersForMonth(year, month)
+		const hourlyStats = {}
+
+		orders.forEach(order => {
+			const hour = new Date(order.timestamp).getHours()
+			if (!hourlyStats[hour]) {
+				hourlyStats[hour] = { orders: 0, revenue: 0 }
+			}
+			hourlyStats[hour].orders++
+			hourlyStats[hour].revenue += parseInt(order.price) || 0
+		})
+
+		return Object.entries(hourlyStats)
 			.map(([hour, data]) => ({ hour: parseInt(hour), ...data }))
 			.sort((a, b) => b.orders - a.orders)
 			.slice(0, 3)

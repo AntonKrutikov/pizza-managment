@@ -150,8 +150,43 @@
             <!-- Period Tabs -->
             <div class="analytics-tabs">
                 <button class="analytics-tab active" data-period="daily">Today</button>
-                <button class="analytics-tab" data-period="weekly">This Week</button>
-                <button class="analytics-tab" data-period="monthly">This Month</button>
+                <button class="analytics-tab" data-period="weekly">Week</button>
+                <button class="analytics-tab" data-period="monthly">Month</button>
+                <button class="analytics-tab" data-period="calendar">Calendar</button>
+            </div>
+
+            <!-- Sub-navigation for Week/Month selection -->
+            <div id="period-selector" class="period-selector" style="display: none;">
+                <button class="period-nav-btn" id="period-prev">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <span id="period-label" class="period-label">Current Period</span>
+                <button class="period-nav-btn" id="period-next">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Calendar View -->
+            <div id="calendar-view" class="calendar-view" style="display: none;">
+                <div class="nav-row">
+                    <button class="nav-btn" id="calendar-prev-month">‹</button>
+                    <span id="calendar-month-label" class="nav-label">January 2025</span>
+                    <button class="nav-btn" id="calendar-next-month">›</button>
+                </div>
+                <div class="nav-row small">
+                    <button class="nav-btn small" id="calendar-prev-week">‹</button>
+                    <span id="calendar-week-label" class="nav-label small">Week 1</span>
+                    <button class="nav-btn small" id="calendar-next-week">›</button>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                </div>
+                <div id="calendar-grid" class="calendar-grid"></div>
+                <div id="calendar-selected-info" class="calendar-selected-info"></div>
             </div>
 
             <!-- Summary Cards -->

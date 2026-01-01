@@ -502,11 +502,76 @@ ul#orders-list {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Side by side images in order list (quesadilla left, type icon right) */
+.order-item-image-sidebyside {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.order-item-image-left {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.order-item-image-right {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  padding: 5px;
+  border-radius: 50%;
+  background: #f0f0f0;
+}
+
+/* Type-specific circle colors for order list - Quesadillas */
+.order-item-image-right.type-cheese { background: #fde047; }
+.order-item-image-right.type-chicken { background: #fed7aa; }
+.order-item-image-right.type-beef { background: #fca5a5; }
+.order-item-image-right.type-ham { background: #fda4af; }
+.order-item-image-right.type-spinach { background: #bbf7d0; }
+.order-item-image-right.type-mushroom { background: #e9d5ff; }
+.order-item-image-right.type-pepperoni { background: #fecaca; }
+.order-item-image-right.type-nutella { background: #d4a574; }
+
+/* Type-specific circle colors for order list - Pizzas */
+.order-item-image-right.type-margherita { background: #fecaca; }
+.order-item-image-right.type-prosciutto { background: #fda4af; }
+.order-item-image-right.type-salame { background: #f87171; }
+.order-item-image-right.type-prosciutto-cotto { background: #fda4af; }
+.order-item-image-right.type-4-formaggi { background: #fde047; }
+.order-item-image-right.type-vegetariana { background: #bbf7d0; }
+.order-item-image-right.type-al-funghi { background: #e9d5ff; }
+.order-item-image-right.type-capricciosa { background: #fcd6bb; }
+.order-item-image-right.type-bianca { background: #f5f5f5; }
+.order-item-image-right.type-italian-sausage { background: #d4a574; }
+.order-item-image-right.type-tuna { background: #a5d8ff; }
+.order-item-image-right.type-salame-ham-mushroom { background: #fcd6bb; }
+.order-item-image-right.type-prosciutto-cotto-mushroom { background: #fcd6bb; }
+.order-item-image-right.type-hawaiian-ham { background: #fef08a; }
+.order-item-image-right.type-hawaiian-chicken { background: #fef08a; }
+.order-item-image-right.type-custom { background: #fed7aa; }
+
 @media (max-width: 768px) {
   .order-item-image {
     width: 35px;
     height: 35px;
     padding: 3px;
+  }
+
+  .order-item-image-left {
+    width: 38px;
+    height: 38px;
+  }
+
+  .order-item-image-right {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
   }
 }
 
@@ -1032,12 +1097,75 @@ ul#orders-list {
   height: 60px;
   object-fit: contain;
   margin-bottom: 0.5em;
+  mix-blend-mode: multiply;
 }
+
+/* Side by side images for quesadillas (quesadilla left, type icon right) */
+.item-image-sidebyside {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 0.5em;
+}
+
+.item-image-left {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.item-image-right {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  padding: 6px;
+  border-radius: 50%;
+  background: #f0f0f0;
+}
+
+/* Type-specific circle colors - Quesadillas */
+.item-image-right.type-cheese { background: #fde047; }
+.item-image-right.type-chicken { background: #fed7aa; }
+.item-image-right.type-beef { background: #fca5a5; }
+.item-image-right.type-ham { background: #fda4af; }
+.item-image-right.type-spinach { background: #bbf7d0; }
+.item-image-right.type-mushroom { background: #e9d5ff; }
+.item-image-right.type-pepperoni { background: #fecaca; }
+.item-image-right.type-nutella { background: #d4a574; }
+
+/* Type-specific circle colors - Pizzas */
+.item-image-right.type-margherita { background: #fecaca; }
+.item-image-right.type-prosciutto { background: #fda4af; }
+.item-image-right.type-salame { background: #f87171; }
+.item-image-right.type-prosciutto-cotto { background: #fda4af; }
+.item-image-right.type-4-formaggi { background: #fde047; }
+.item-image-right.type-vegetariana { background: #bbf7d0; }
+.item-image-right.type-al-funghi { background: #e9d5ff; }
+.item-image-right.type-capricciosa { background: #fcd6bb; }
+.item-image-right.type-bianca { background: #f5f5f5; }
+.item-image-right.type-italian-sausage { background: #d4a574; }
+.item-image-right.type-tuna { background: #a5d8ff; }
+.item-image-right.type-salame-ham-mushroom { background: #fcd6bb; }
+.item-image-right.type-prosciutto-cotto-mushroom { background: #fcd6bb; }
+.item-image-right.type-hawaiian-ham { background: #fef08a; }
+.item-image-right.type-hawaiian-chicken { background: #fef08a; }
+.item-image-right.type-custom { background: #fed7aa; }
 
 @media (max-width: 768px) {
   .item-image {
     width: 50px;
     height: 50px;
+  }
+
+  .item-image-left {
+    width: 42px;
+    height: 42px;
+  }
+
+  .item-image-right {
+    width: 32px;
+    height: 32px;
+    padding: 5px;
   }
 }
 
@@ -1437,6 +1565,230 @@ ul#orders-list {
   color: #fff;
 }
 
+/* Period Selector (Week/Month navigation) */
+.period-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  margin-bottom: 1.5em;
+  padding: 0.8em;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.period-nav-btn {
+  background: #f0f0f0;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.period-nav-btn:hover:not(:disabled) {
+  background: #d35400;
+  color: #fff;
+}
+
+.period-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.period-label {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #333;
+  min-width: 180px;
+  text-align: center;
+}
+
+/* Calendar View */
+.calendar-view {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.2em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5em;
+}
+
+/* Navigation Row Component */
+.nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  margin-bottom: 0.8em;
+}
+
+.nav-row.small {
+  gap: 0.6em;
+  margin-bottom: 0.6em;
+}
+
+.nav-btn {
+  background: #f0f0f0;
+  border: none;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 1.8em;
+  font-weight: 300;
+  color: #555;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.nav-btn.small {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 1.5em;
+  background: #e8e8e8;
+}
+
+.nav-btn:hover {
+  background: #d35400;
+  color: #fff;
+}
+
+.nav-label {
+  font-weight: 600;
+  font-size: 1.3em;
+  color: #333;
+  min-width: 200px;
+  text-align: center;
+}
+
+.nav-label.small {
+  font-size: 1em;
+  font-weight: 500;
+  color: #666;
+  min-width: 100px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1em;
+  color: #666;
+  padding: 0.5em;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1em;
+  position: relative;
+  background: #f9f9f9;
+  padding: 4px 2px;
+  gap: 1px;
+}
+
+.calendar-day:hover:not(.empty):not(.no-data) {
+  background: #ffe8d9;
+}
+
+.calendar-day.empty {
+  background: transparent;
+  cursor: default;
+}
+
+.calendar-day.no-data {
+  color: #ccc;
+  cursor: default;
+}
+
+.calendar-day.has-data {
+  background: #e8f5e9;
+  font-weight: 600;
+}
+
+.calendar-day.has-data:hover {
+  background: #c8e6c9;
+}
+
+.calendar-day.selected {
+  background: #d35400;
+  color: #fff;
+}
+
+.calendar-day.today {
+  border: 2px solid #d35400;
+}
+
+.calendar-day-number {
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.calendar-day-orders {
+  font-size: 0.75em;
+  color: #27ae60;
+  white-space: nowrap;
+}
+
+.calendar-day-revenue {
+  font-size: 0.7em;
+  color: #d35400;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.calendar-day.selected .calendar-day-orders,
+.calendar-day.selected .calendar-day-revenue {
+  color: #fff;
+}
+
+.calendar-selected-info {
+  margin-top: 1em;
+  padding: 1em;
+  background: #f9f9f9;
+  border-radius: 8px;
+  text-align: center;
+  color: #666;
+}
+
+.calendar-selected-info.has-selection {
+  background: #fff3e0;
+  color: #333;
+}
+
 /* Summary Cards */
 .analytics-summary {
   display: grid;
@@ -1659,6 +2011,29 @@ ul#orders-list {
   flex: 1;
   font-weight: 600;
   color: #333;
+}
+
+.top-item-category {
+  padding: 0.2em 0.6em;
+  border-radius: 10px;
+  font-size: 0.75em;
+  font-weight: 600;
+  margin-right: 0.5em;
+}
+
+.top-item-category.pizza {
+  background: #ffebcc;
+  color: #d35400;
+}
+
+.top-item-category.quesadilla {
+  background: #e8f5e9;
+  color: #27ae60;
+}
+
+.top-item-category.other {
+  background: #e8e8e8;
+  color: #666;
 }
 
 .top-item-count {

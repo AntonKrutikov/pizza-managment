@@ -67,14 +67,39 @@ export function renderOrders(orders, container, orderService) {
 				const itemDiv = document.createElement("div")
 				itemDiv.classList.add("order-item-entry")
 
-				// Add image if available
+				// Add image if available (handle both simple and composite images)
 				if (item.image) {
-					const img = document.createElement("img")
-					img.src = item.image
-					img.alt = item.name
-					img.classList.add("order-item-image")
-					img.title = `${item.name} - ฿${item.price}`
-					imagesRow.appendChild(img)
+					if (typeof item.image === 'object' && item.image.baseImage && item.image.iconImage) {
+						// Side by side: quesadilla on left, type icon on right
+						const imageContainer = document.createElement("div")
+						imageContainer.classList.add("order-item-image-sidebyside")
+
+						const leftImg = document.createElement("img")
+						leftImg.src = item.image.baseImage  // Quesadilla on left
+						leftImg.alt = "Quesadilla"
+						leftImg.classList.add("order-item-image-left")
+
+						const rightImg = document.createElement("img")
+						rightImg.src = item.image.iconImage  // Type icon on right
+						rightImg.alt = item.name
+						rightImg.classList.add("order-item-image-right")
+						// Add type-specific class for colored circle (replace spaces with hyphens)
+						const typeName = item.name.split(" (")[0].toLowerCase().replace(/\s+/g, '-')
+						rightImg.classList.add(`type-${typeName}`)
+
+						imageContainer.title = `${item.name} - ฿${item.price}`
+						imageContainer.appendChild(leftImg)
+						imageContainer.appendChild(rightImg)
+						imagesRow.appendChild(imageContainer)
+					} else {
+						// Simple image (string path)
+						const img = document.createElement("img")
+						img.src = item.image
+						img.alt = item.name
+						img.classList.add("order-item-image")
+						img.title = `${item.name} - ฿${item.price}`
+						imagesRow.appendChild(img)
+					}
 				}
 
 				itemDiv.innerHTML = `<span class="item-name-text">${item.name} - ฿${item.price}</span>`
