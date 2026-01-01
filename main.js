@@ -1267,3 +1267,165 @@ function updateComparisonBadge(elementId, change) {
 		element.className = "summary-change negative"
 	}
 }
+
+// ============================================
+// Settings Page Functionality
+// ============================================
+
+let settingsPreviousScreen = "take-order"
+
+// Show settings page
+document.getElementById("settings-btn").addEventListener("click", function () {
+	// Store current screen to return to
+	const activeTab = document.querySelector(".nav-tab.active")
+	if (activeTab) {
+		settingsPreviousScreen = activeTab.dataset.screen
+	}
+
+	// Hide nav tabs and show settings
+	document.querySelector(".screen-nav").style.display = "none"
+	navTabs.forEach((t) => t.classList.remove("active"))
+	screens.forEach((s) => s.classList.remove("active"))
+
+	const settingsScreen = document.querySelector('.screen[data-screen="settings"]')
+	if (settingsScreen) {
+		settingsScreen.classList.add("active")
+	}
+
+	// Update settings info
+	updateSettingsInfo()
+})
+
+// Back button from settings
+document.getElementById("settings-back-btn").addEventListener("click", function () {
+	// Show nav tabs again
+	document.querySelector(".screen-nav").style.display = "flex"
+
+	// Return to previous screen
+	screens.forEach((s) => s.classList.remove("active"))
+	const previousScreenEl = document.querySelector(`.screen[data-screen="${settingsPreviousScreen}"]`)
+	if (previousScreenEl) {
+		previousScreenEl.classList.add("active")
+	}
+
+	// Restore nav tab
+	navTabs.forEach((t) => {
+		t.classList.remove("active")
+		if (t.dataset.screen === settingsPreviousScreen) {
+			t.classList.add("active")
+		}
+	})
+})
+
+// Update settings info display
+function updateSettingsInfo() {
+	const totalOrders = orderService.orders.length
+	const completedOrders = orderService.orders.filter(o => o.served && o.paid).length
+	const storageData = localStorage.getItem('pizzaShopOrders') || ''
+	const storageSize = new Blob([storageData]).size
+
+	document.getElementById("settings-total-orders").textContent = totalOrders
+	document.getElementById("settings-completed-orders").textContent = completedOrders
+
+	// Format storage size
+	let sizeText
+	if (storageSize < 1024) {
+		sizeText = `${storageSize} B`
+	} else if (storageSize < 1024 * 1024) {
+		sizeText = `${(storageSize / 1024).toFixed(1)} KB`
+	} else {
+		sizeText = `${(storageSize / (1024 * 1024)).toFixed(2)} MB`
+	}
+	document.getElementById("settings-storage-used").textContent = sizeText
+}
+
+// Export database to JSON file
+document.getElementById("export-data-btn").addEventListener("click", function () {
+	const data = localStorage.getItem('pizzaShopOrders')
+	if (!data) {
+		alert("No data to export")
+		return
+	}
+
+	// Create export object with metadata
+	const exportData = {
+		exportDate: new Date().toISOString(),
+		appVersion: "1.0",
+		data: JSON.parse(data)
+	}
+
+	// Create download
+	const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+	const url = URL.createObjectURL(blob)
+	const a = document.createElement('a')
+	a.href = url
+	a.download = `pizza-shop-backup-${new Date().toISOString().split('T')[0]}.json`
+	document.body.appendChild(a)
+	a.click()
+	document.body.removeChild(a)
+	URL.revokeObjectURL(url)
+})
+
+// Import database from JSON file
+document.getElementById("import-data-input").addEventListener("change", function (e) {
+	const file = e.target.files[0]
+	if (!file) return
+
+	const reader = new FileReader()
+	reader.onload = function (e) {
+		try {
+			const importData = JSON.parse(e.target.result)
+
+			// Validate structure
+			let dataToImport
+			if (importData.data && importData.data.orders) {
+				// New format with metadata
+				dataToImport = importData.data
+			} else if (importData.orders) {
+				// Direct format
+				dataToImport = importData
+			} else {
+				throw new Error("Invalid file format")
+			}
+
+			// Confirm import
+			const confirmMsg = `This will replace your current data with:\n` +
+				`- ${dataToImport.orders.length} orders\n\n` +
+				`Continue?`
+
+			if (confirm(confirmMsg)) {
+				localStorage.setItem('pizzaShopOrders', JSON.stringify(dataToImport))
+				orderService.loadFromStorage()
+				updateOrders()
+				updateHistory()
+				updateSettingsInfo()
+				alert("Data imported successfully!")
+			}
+		} catch (err) {
+			alert("Error importing file: " + err.message)
+		}
+	}
+	reader.readAsText(file)
+
+	// Reset input so same file can be selected again
+	e.target.value = ''
+})
+
+// Clear all data
+document.getElementById("clear-data-btn").addEventListener("click", function () {
+	const confirmMsg = "Are you sure you want to delete ALL data?\n\n" +
+		"This action cannot be undone.\n\n" +
+		"Type 'DELETE' to confirm:"
+
+	const input = prompt(confirmMsg)
+	if (input === "DELETE") {
+		localStorage.removeItem('pizzaShopOrders')
+		orderService.loadFromStorage()
+		updateOrders()
+		updateHistory()
+		updateSettingsInfo()
+		alert("All data has been cleared.")
+	} else if (input !== null) {
+		alert("Deletion cancelled. You must type 'DELETE' to confirm.")
+	}
+})
