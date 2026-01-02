@@ -700,6 +700,22 @@ navTabs.forEach((tab) => {
 // Update timers every second
 setInterval(updateTimers, 1000)
 
+// Header clock (visible on desktop only via CSS)
+function updateHeaderClock() {
+	const clock = document.getElementById("header-clock")
+	if (clock) {
+		const now = new Date()
+		clock.textContent = now.toLocaleTimeString("en-US", {
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			hour12: false
+		})
+	}
+}
+updateHeaderClock()
+setInterval(updateHeaderClock, 1000)
+
 // Initial setup
 checkSendOrderReady()
 

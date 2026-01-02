@@ -1522,7 +1522,25 @@ ul#orders-list {
 
 .header-actions {
   display: flex;
+  align-items: center;
   gap: 0.5em;
+}
+
+.header-clock {
+  display: none;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #d35400;
+  padding: 0.5em 1em;
+  background: #fff;
+  border-radius: 8px;
+  margin-right: 0.5em;
+}
+
+@media (min-width: 768px) {
+  .header-clock {
+    display: block;
+  }
 }
 
 .header-action-btn {
