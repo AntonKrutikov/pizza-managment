@@ -387,6 +387,65 @@
         </div>
     </div>
 
+    <!-- Number Selector Popup (for table and sound indicator) -->
+    <div id="number-selector-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3 id="number-selector-title">Select Number</h3>
+            <div class="number-selector-grid" id="number-selector-grid">
+                <button type="button" class="number-selector-btn" data-value="1">1</button>
+                <button type="button" class="number-selector-btn" data-value="2">2</button>
+                <button type="button" class="number-selector-btn" data-value="3">3</button>
+                <button type="button" class="number-selector-btn" data-value="4">4</button>
+                <button type="button" class="number-selector-btn" data-value="5">5</button>
+                <button type="button" class="number-selector-btn" data-value="6">6</button>
+                <button type="button" class="number-selector-btn" data-value="7">7</button>
+                <button type="button" class="number-selector-btn" data-value="8">8</button>
+                <button type="button" class="number-selector-btn" data-value="9">9</button>
+                <button type="button" class="number-selector-btn" data-value="10">10</button>
+            </div>
+            <div class="popup-buttons-stack">
+                <button type="button" id="number-selector-confirm" class="popup-btn-confirm">Confirm</button>
+                <div class="popup-buttons-row">
+                    <button type="button" id="number-selector-clear" class="popup-btn-clear">Clear</button>
+                    <button type="button" id="number-selector-cancel" class="popup-btn-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eat Type Selector Popup -->
+    <div id="eat-type-selector-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Change Order Type</h3>
+            <div class="eat-type-selector-grid">
+                <button type="button" class="eat-type-selector-btn" data-value="eat-in">
+                    <span class="eat-type-icon">🍽️</span>
+                    <span>Eat In</span>
+                </button>
+                <button type="button" class="eat-type-selector-btn" data-value="take-away">
+                    <span class="eat-type-icon">📦</span>
+                    <span>Take Away</span>
+                </button>
+            </div>
+            <div class="popup-buttons-stack">
+                <button type="button" id="eat-type-selector-confirm" class="popup-btn-confirm">Confirm</button>
+                <button type="button" id="eat-type-selector-cancel" class="popup-btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Action Confirmation Popup (served/remove) -->
+    <div id="item-action-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3 id="item-action-title">Confirm Action</h3>
+            <p id="item-action-message" class="popup-message"></p>
+            <div class="popup-buttons-stack">
+                <button type="button" id="item-action-confirm" class="popup-btn-confirm">Confirm</button>
+                <button type="button" id="item-action-cancel" class="popup-btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="main.js"></script>
 </body>
 

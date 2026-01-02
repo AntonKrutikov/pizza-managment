@@ -1,8 +1,13 @@
 import { OrderService } from "./js/orderService.js"
-import { renderOrders, renderHistoryOrders } from "./js/orderList.js"
+import { renderOrders, renderHistoryOrders, initOrderPopups } from "./js/orderList.js"
 import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
 
 const orderService = new OrderService()
+
+// Initialize order popups (for table/sound/eat type selectors)
+initOrderPopups(orderService, () => {
+	updateOrders()
+})
 const analytics = new Analytics(orderService)
 
 const orderForm = document.getElementById("order-form")
@@ -313,9 +318,8 @@ let currentOrderItems = []
 function updateOrders() {
 	const orders = orderService.getOrders()
 	renderOrders(orders, ordersList, orderService, () => {
-		// Callback when order is deleted - update badge count
-		const updatedOrders = orderService.getOrders()
-		updateOrdersBadge(updatedOrders.length)
+		// Callback when order changes - update everything
+		updateOrders()
 	})
 	updateOrdersBadge(orders.length)
 }

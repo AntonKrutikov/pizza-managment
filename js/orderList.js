@@ -1,15 +1,194 @@
 // Helper function to get customer icon with text
 function getCustomerIcon(description) {
 	const iconMap = {
-		'Man': '👨',
-		'Woman': '👩',
-		'Children': '👶',
-		'Couple': '👫',
-		'Family': '👨‍👩‍👧‍👦',
-		'Group': '👥'
+		Man: "👨",
+		Woman: "👩",
+		Children: "👶",
+		Couple: "👫",
+		Family: "👨‍👩‍👧‍👦",
+		Group: "👥",
 	}
 	const icon = iconMap[description]
 	return icon ? `${icon} ${description}` : description
+}
+
+// Popup helper functions
+let currentPopupCallback = null
+let currentPopupOrderId = null
+let numberSelectorSelectedValue = null
+let eatTypeSelectorSelectedValue = null
+let itemActionCallback = null
+
+export function showNumberSelectorPopup(title, currentValue, orderId, callback) {
+	const popup = document.getElementById("number-selector-popup")
+	const titleEl = document.getElementById("number-selector-title")
+	const grid = document.getElementById("number-selector-grid")
+	const confirmBtn = document.getElementById("number-selector-confirm")
+
+	titleEl.textContent = title
+	currentPopupCallback = callback
+	currentPopupOrderId = orderId
+	numberSelectorSelectedValue = currentValue
+
+	// Update selected state
+	grid.querySelectorAll(".number-selector-btn").forEach((btn) => {
+		btn.classList.toggle("selected", btn.dataset.value === currentValue)
+	})
+
+	// Disable confirm if no selection
+	confirmBtn.disabled = !currentValue
+
+	popup.style.display = "flex"
+}
+
+export function hideNumberSelectorPopup() {
+	const popup = document.getElementById("number-selector-popup")
+	popup.style.display = "none"
+	currentPopupCallback = null
+	currentPopupOrderId = null
+	numberSelectorSelectedValue = null
+}
+
+export function showEatTypeSelectorPopup(currentValue, orderId, callback) {
+	const popup = document.getElementById("eat-type-selector-popup")
+	const confirmBtn = document.getElementById("eat-type-selector-confirm")
+	currentPopupCallback = callback
+	currentPopupOrderId = orderId
+	eatTypeSelectorSelectedValue = currentValue
+
+	// Update selected state
+	popup.querySelectorAll(".eat-type-selector-btn").forEach((btn) => {
+		btn.classList.toggle("selected", btn.dataset.value === currentValue)
+	})
+
+	// Disable confirm initially (need to select a different value)
+	confirmBtn.disabled = true
+
+	popup.style.display = "flex"
+}
+
+export function hideEatTypeSelectorPopup() {
+	const popup = document.getElementById("eat-type-selector-popup")
+	popup.style.display = "none"
+	currentPopupCallback = null
+	currentPopupOrderId = null
+	eatTypeSelectorSelectedValue = null
+}
+
+export function showItemActionPopup(title, message, callback) {
+	const popup = document.getElementById("item-action-popup")
+	const titleEl = document.getElementById("item-action-title")
+	const messageEl = document.getElementById("item-action-message")
+
+	titleEl.textContent = title
+	messageEl.textContent = message
+	itemActionCallback = callback
+
+	popup.style.display = "flex"
+}
+
+export function hideItemActionPopup() {
+	const popup = document.getElementById("item-action-popup")
+	popup.style.display = "none"
+	itemActionCallback = null
+}
+
+// Initialize popup event listeners (call once on page load)
+export function initOrderPopups(orderService, updateCallback) {
+	// Number selector popup - selection
+	const numberGrid = document.getElementById("number-selector-grid")
+	numberGrid.addEventListener("click", (e) => {
+		if (e.target.classList.contains("number-selector-btn")) {
+			const value = e.target.dataset.value
+			numberSelectorSelectedValue = value
+
+			// Update visual selection
+			numberGrid.querySelectorAll(".number-selector-btn").forEach((btn) => {
+				btn.classList.toggle("selected", btn.dataset.value === value)
+			})
+
+			// Enable confirm button
+			document.getElementById("number-selector-confirm").disabled = false
+		}
+	})
+
+	// Number selector confirm
+	document.getElementById("number-selector-confirm").addEventListener("click", () => {
+		if (currentPopupCallback && currentPopupOrderId && numberSelectorSelectedValue) {
+			currentPopupCallback(currentPopupOrderId, numberSelectorSelectedValue)
+			hideNumberSelectorPopup()
+			updateCallback()
+		}
+	})
+
+	document.getElementById("number-selector-cancel").addEventListener("click", hideNumberSelectorPopup)
+	document.getElementById("number-selector-clear").addEventListener("click", () => {
+		if (currentPopupCallback && currentPopupOrderId) {
+			currentPopupCallback(currentPopupOrderId, null)
+			hideNumberSelectorPopup()
+			updateCallback()
+		}
+	})
+
+	// Close on overlay click
+	document.getElementById("number-selector-popup").addEventListener("click", (e) => {
+		if (e.target.id === "number-selector-popup") {
+			hideNumberSelectorPopup()
+		}
+	})
+
+	// Eat type selector popup - selection only
+	const eatTypePopup = document.getElementById("eat-type-selector-popup")
+	eatTypePopup.querySelectorAll(".eat-type-selector-btn").forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const value = btn.dataset.value
+			eatTypeSelectorSelectedValue = value
+
+			// Update visual selection
+			eatTypePopup.querySelectorAll(".eat-type-selector-btn").forEach((b) => {
+				b.classList.toggle("selected", b.dataset.value === value)
+			})
+
+			// Enable confirm button
+			document.getElementById("eat-type-selector-confirm").disabled = false
+		})
+	})
+
+	// Eat type selector confirm
+	document.getElementById("eat-type-selector-confirm").addEventListener("click", () => {
+		if (currentPopupCallback && currentPopupOrderId && eatTypeSelectorSelectedValue) {
+			currentPopupCallback(currentPopupOrderId, eatTypeSelectorSelectedValue)
+			hideEatTypeSelectorPopup()
+			updateCallback()
+		}
+	})
+
+	document.getElementById("eat-type-selector-cancel").addEventListener("click", hideEatTypeSelectorPopup)
+
+	// Close on overlay click
+	eatTypePopup.addEventListener("click", (e) => {
+		if (e.target.id === "eat-type-selector-popup") {
+			hideEatTypeSelectorPopup()
+		}
+	})
+
+	// Item action popup
+	document.getElementById("item-action-confirm").addEventListener("click", () => {
+		if (itemActionCallback) {
+			itemActionCallback()
+			hideItemActionPopup()
+			updateCallback()
+		}
+	})
+
+	document.getElementById("item-action-cancel").addEventListener("click", hideItemActionPopup)
+
+	// Close on overlay click
+	document.getElementById("item-action-popup").addEventListener("click", (e) => {
+		if (e.target.id === "item-action-popup") {
+			hideItemActionPopup()
+		}
+	})
 }
 
 export function renderOrders(orders, container, orderService, onOrderChange = null) {
@@ -63,46 +242,108 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 			const imagesRow = document.createElement("div")
 			imagesRow.classList.add("order-items-images-row")
 
-			order.items.forEach(item => {
+			order.items.forEach((item, itemIndex) => {
 				const itemDiv = document.createElement("div")
 				itemDiv.classList.add("order-item-entry")
+				if (item.served) {
+					itemDiv.classList.add("item-served")
+				}
 
 				// Add image if available (handle both simple and composite images)
 				if (item.image) {
-					if (typeof item.image === 'object' && item.image.baseImage && item.image.iconImage) {
+					const imageWrapper = document.createElement("div")
+					imageWrapper.classList.add("order-item-image-wrapper")
+					if (item.served) {
+						imageWrapper.classList.add("item-served")
+					}
+					imageWrapper.title = `Click to mark as ${item.served ? "not served" : "served"}`
+
+					// Click to toggle served status
+					imageWrapper.addEventListener("click", (e) => {
+						e.stopPropagation()
+						const action = item.served ? "not served" : "served"
+						const title = item.served ? "Mark as Not Served" : "Mark as Served"
+						showItemActionPopup(title, `Mark "${item.name}" as ${action}?`, () => {
+							if (item.served) {
+								orderService.markItemAsUnserved(order.id, itemIndex)
+							} else {
+								orderService.markItemAsServed(order.id, itemIndex)
+							}
+						})
+					})
+
+					if (typeof item.image === "object" && item.image.baseImage && item.image.iconImage) {
 						// Side by side: quesadilla on left, type icon on right
 						const imageContainer = document.createElement("div")
 						imageContainer.classList.add("order-item-image-sidebyside")
 
 						const leftImg = document.createElement("img")
-						leftImg.src = item.image.baseImage  // Quesadilla on left
+						leftImg.src = item.image.baseImage
 						leftImg.alt = "Quesadilla"
 						leftImg.classList.add("order-item-image-left")
 
 						const rightImg = document.createElement("img")
-						rightImg.src = item.image.iconImage  // Type icon on right
+						rightImg.src = item.image.iconImage
 						rightImg.alt = item.name
 						rightImg.classList.add("order-item-image-right")
-						// Add type-specific class for colored circle (replace spaces with hyphens)
-						const typeName = item.name.split(" (")[0].toLowerCase().replace(/\s+/g, '-')
+						const typeName = item.name.split(" (")[0].toLowerCase().replace(/\s+/g, "-")
 						rightImg.classList.add(`type-${typeName}`)
 
-						imageContainer.title = `${item.name} - ฿${item.price}`
 						imageContainer.appendChild(leftImg)
 						imageContainer.appendChild(rightImg)
-						imagesRow.appendChild(imageContainer)
+						imageWrapper.appendChild(imageContainer)
 					} else {
 						// Simple image (string path)
 						const img = document.createElement("img")
 						img.src = item.image
 						img.alt = item.name
 						img.classList.add("order-item-image")
-						img.title = `${item.name} - ฿${item.price}`
-						imagesRow.appendChild(img)
+						imageWrapper.appendChild(img)
 					}
+
+					imagesRow.appendChild(imageWrapper)
 				}
 
-				itemDiv.innerHTML = `<span class="item-name-text">${item.name} - ฿${item.price}</span>`
+				// Item name span (clickable to mark as served)
+				const nameSpan = document.createElement("span")
+				nameSpan.classList.add("item-name-text")
+				nameSpan.textContent = `${item.name} - ฿${item.price}`
+				nameSpan.style.cursor = "pointer"
+				nameSpan.title = `Click to mark as ${item.served ? "not served" : "served"}`
+				nameSpan.addEventListener("click", (e) => {
+					e.stopPropagation()
+					const action = item.served ? "not served" : "served"
+					const title = item.served ? "Mark as Not Served" : "Mark as Served"
+					showItemActionPopup(title, `Mark "${item.name}" as ${action}?`, () => {
+						if (item.served) {
+							orderService.markItemAsUnserved(order.id, itemIndex)
+						} else {
+							orderService.markItemAsServed(order.id, itemIndex)
+						}
+					})
+				})
+				itemDiv.appendChild(nameSpan)
+
+				// Remove button (disabled if item is served)
+				if (order.items.length > 1) {
+					// Only show remove if more than 1 item
+					const removeBtn = document.createElement("button")
+					removeBtn.type = "button"
+					removeBtn.classList.add("item-remove-btn")
+					removeBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+					</svg>`
+					removeBtn.title = item.served ? "Cannot remove served item" : "Remove item"
+					removeBtn.disabled = item.served
+					removeBtn.addEventListener("click", (e) => {
+						e.stopPropagation()
+						showItemActionPopup("Remove Item", `Remove "${item.name}" from order #${order.orderNo}?`, () => {
+							orderService.removeItemFromOrder(order.id, itemIndex)
+						})
+					})
+					itemDiv.appendChild(removeBtn)
+				}
+
 				itemsList.appendChild(itemDiv)
 			})
 
@@ -113,7 +354,7 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		} else {
 			// Fallback for old orders
 			const items = order.pizzaType.split(", ")
-			items.forEach(item => {
+			items.forEach((item) => {
 				const itemDiv = document.createElement("div")
 				itemDiv.classList.add("order-item-entry")
 				itemDiv.innerHTML = `<span class="item-name-text">${item}</span>`
@@ -122,12 +363,22 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		}
 		orderInfo.appendChild(itemsList)
 
-		// Order type with white badge (icon inside badge)
+		// Order type with white badge (icon inside badge) - clickable to change
 		const orderType = document.createElement("div")
 		orderType.classList.add("order-type")
 		const typeIcon = order.eatType === "take-away" ? "📦" : "🍽️"
 		const typeText = order.eatType === "take-away" ? "Take Away" : "Eat In"
-		orderType.innerHTML = `<span class="type-badge">${typeIcon} ${typeText}</span>`
+		const typeBadge = document.createElement("span")
+		typeBadge.classList.add("type-badge", "type-badge-clickable")
+		typeBadge.innerHTML = `${typeIcon} ${typeText}`
+		typeBadge.title = "Click to change order type"
+		typeBadge.addEventListener("click", (e) => {
+			e.stopPropagation()
+			showEatTypeSelectorPopup(order.eatType, order.id, (orderId, newType) => {
+				orderService.updateEatType(orderId, newType)
+			})
+		})
+		orderType.appendChild(typeBadge)
 		orderInfo.appendChild(orderType)
 
 		// Status icons (cooking if not served, money if not paid) - will be added to li later
@@ -148,33 +399,48 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 			statusIcons.appendChild(moneyIcon)
 		}
 
-		// Optional details
-		if (order.tableNumber || order.soundIndicator || order.customerDescription) {
-			const optionalDetails = document.createElement("div")
-			optionalDetails.classList.add("optional-details")
+		// Optional details - always show table and sound options (clickable)
+		const optionalDetails = document.createElement("div")
+		optionalDetails.classList.add("optional-details")
 
-			if (order.tableNumber) {
-				const tableDiv = document.createElement("div")
-				tableDiv.textContent = `Table: ${order.tableNumber} 🪑`
-				optionalDetails.appendChild(tableDiv)
-			}
+		// Table number - clickable
+		const tableDiv = document.createElement("div")
+		tableDiv.classList.add("optional-detail-clickable")
+		tableDiv.innerHTML = order.tableNumber ? `Table: ${order.tableNumber} 🪑` : `+ Table 🪑`
+		tableDiv.title = "Click to set table number"
+		tableDiv.addEventListener("click", (e) => {
+			e.stopPropagation()
+			showNumberSelectorPopup("Select Table Number", order.tableNumber, order.id, (orderId, value) => {
+				orderService.updateTableNumber(orderId, value)
+			})
+		})
+		optionalDetails.appendChild(tableDiv)
 
-			if (order.soundIndicator) {
-				const soundDiv = document.createElement("div")
-				soundDiv.textContent = `Sound: #${order.soundIndicator} 🔔`
-				optionalDetails.appendChild(soundDiv)
-			}
+		// Sound indicator - clickable
+		const soundDiv = document.createElement("div")
+		soundDiv.classList.add("optional-detail-clickable")
+		soundDiv.innerHTML = order.soundIndicator ? `Sound: #${order.soundIndicator} 🔔` : `+ Sound 🔔`
+		soundDiv.title = "Click to set sound indicator"
+		soundDiv.addEventListener("click", (e) => {
+			e.stopPropagation()
+			showNumberSelectorPopup("Select Sound Indicator", order.soundIndicator, order.id, (orderId, value) => {
+				orderService.updateSoundIndicator(orderId, value)
+			})
+		})
+		optionalDetails.appendChild(soundDiv)
 
-			if (order.customerDescription) {
-				const customerDiv = document.createElement("div")
-				// Convert customer descriptions to icons
-				const customers = order.customerDescription.split(', ').map(c => getCustomerIcon(c)).join(' ')
-				customerDiv.textContent = customers
-				optionalDetails.appendChild(customerDiv)
-			}
-
-			orderInfo.appendChild(optionalDetails)
+		// Customer description (not editable for now)
+		if (order.customerDescription) {
+			const customerDiv = document.createElement("div")
+			const customers = order.customerDescription
+				.split(", ")
+				.map((c) => getCustomerIcon(c))
+				.join(" ")
+			customerDiv.textContent = customers
+			optionalDetails.appendChild(customerDiv)
 		}
+
+		orderInfo.appendChild(optionalDetails)
 
 		// Right section: Status icons + Buttons
 		const orderActions = document.createElement("div")
@@ -250,16 +516,16 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		let isSwiping = false
 
 		const resetSwipe = () => {
-			li.style.transition = 'transform 0.3s ease'
-			li.style.transform = 'translateX(0)'
-			wrapper.classList.remove('swiped')
+			li.style.transition = "transform 0.3s ease"
+			li.style.transform = "translateX(0)"
+			wrapper.classList.remove("swiped")
 		}
 
 		const onTouchStart = (e) => {
 			startX = e.touches[0].clientX
 			currentX = startX
 			isSwiping = true
-			li.style.transition = 'none'
+			li.style.transition = "none"
 		}
 
 		const onTouchMove = (e) => {
@@ -270,7 +536,7 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 			// Allow left swipe (negative) or right swipe to reset (positive when swiped)
 			if (diff < 0) {
 				li.style.transform = `translateX(${Math.max(diff, -100)}px)`
-			} else if (wrapper.classList.contains('swiped') && diff > 0) {
+			} else if (wrapper.classList.contains("swiped") && diff > 0) {
 				li.style.transform = `translateX(${Math.min(-100 + diff, 0)}px)`
 			}
 		}
@@ -278,18 +544,18 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		const onTouchEnd = () => {
 			if (!isSwiping) return
 			isSwiping = false
-			li.style.transition = 'transform 0.3s ease'
+			li.style.transition = "transform 0.3s ease"
 
 			const diff = currentX - startX
 
 			// If swiped left more than 50px, show delete button
 			if (diff < -50) {
-				li.style.transform = 'translateX(-100px)'
-				wrapper.classList.add('swiped')
+				li.style.transform = "translateX(-100px)"
+				wrapper.classList.add("swiped")
 			} else {
 				// Reset position
-				li.style.transform = 'translateX(0)'
-				wrapper.classList.remove('swiped')
+				li.style.transform = "translateX(0)"
+				wrapper.classList.remove("swiped")
 			}
 		}
 
@@ -297,11 +563,11 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		let isMouseDown = false
 		const onMouseDown = (e) => {
 			// Don't start swipe on button clicks
-			if (e.target.tagName === 'BUTTON') return
+			if (e.target.tagName === "BUTTON") return
 			startX = e.clientX
 			currentX = startX
 			isMouseDown = true
-			li.style.transition = 'none'
+			li.style.transition = "none"
 		}
 
 		const onMouseMove = (e) => {
@@ -312,7 +578,7 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 			// Allow left swipe (negative) or right swipe to reset (positive when swiped)
 			if (diff < 0) {
 				li.style.transform = `translateX(${Math.max(diff, -100)}px)`
-			} else if (wrapper.classList.contains('swiped') && diff > 0) {
+			} else if (wrapper.classList.contains("swiped") && diff > 0) {
 				li.style.transform = `translateX(${Math.min(-100 + diff, 0)}px)`
 			}
 		}
@@ -320,28 +586,28 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		const onMouseUp = () => {
 			if (!isMouseDown) return
 			isMouseDown = false
-			li.style.transition = 'transform 0.3s ease'
+			li.style.transition = "transform 0.3s ease"
 
 			const diff = currentX - startX
 
 			// If swiped left more than 50px, show delete button
 			if (diff < -50) {
-				li.style.transform = 'translateX(-100px)'
-				wrapper.classList.add('swiped')
+				li.style.transform = "translateX(-100px)"
+				wrapper.classList.add("swiped")
 			} else {
 				// Reset position
-				li.style.transform = 'translateX(0)'
-				wrapper.classList.remove('swiped')
+				li.style.transform = "translateX(0)"
+				wrapper.classList.remove("swiped")
 			}
 		}
 
-		li.addEventListener('touchstart', onTouchStart, { passive: true })
-		li.addEventListener('touchmove', onTouchMove, { passive: true })
-		li.addEventListener('touchend', onTouchEnd)
-		li.addEventListener('mousedown', onMouseDown)
-		li.addEventListener('mousemove', onMouseMove)
-		li.addEventListener('mouseup', onMouseUp)
-		li.addEventListener('mouseleave', onMouseUp)
+		li.addEventListener("touchstart", onTouchStart, { passive: true })
+		li.addEventListener("touchmove", onTouchMove, { passive: true })
+		li.addEventListener("touchend", onTouchEnd)
+		li.addEventListener("mousedown", onMouseDown)
+		li.addEventListener("mousemove", onMouseMove)
+		li.addEventListener("mouseup", onMouseUp)
+		li.addEventListener("mouseleave", onMouseUp)
 
 		wrapper.appendChild(li)
 		wrapper.appendChild(deleteBtn)
@@ -363,13 +629,13 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 	const ordersByDate = {}
 	orders.forEach((order) => {
 		const date = new Date(order.timestamp)
-		const dateKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+		const dateKey = date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
 
 		if (!ordersByDate[dateKey]) {
 			ordersByDate[dateKey] = {
 				orders: [],
 				total: 0,
-				timestamp: order.timestamp
+				timestamp: order.timestamp,
 			}
 		}
 
@@ -394,7 +660,7 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 		dateTitle.classList.add("history-date-title")
 
 		// Check if it's today
-		const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+		const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
 		const displayDate = dateKey === today ? `Today (${dateKey})` : dateKey
 		dateTitle.textContent = displayDate
 
@@ -449,7 +715,10 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 
 			// Add customer description if provided
 			if (order.customerDescription) {
-				const customers = order.customerDescription.split(', ').map(c => getCustomerIcon(c)).join(' ')
+				const customers = order.customerDescription
+					.split(", ")
+					.map((c) => getCustomerIcon(c))
+					.join(" ")
 				detailsText += ` | ${customers}`
 			}
 
@@ -506,7 +775,7 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 				startX = e.touches[0].clientX
 				currentX = startX
 				isSwiping = true
-				li.style.transition = 'none'
+				li.style.transition = "none"
 			}
 
 			const onTouchMove = (e) => {
@@ -517,7 +786,7 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 				// Allow left swipe (negative) or right swipe to reset (positive when swiped)
 				if (diff < 0) {
 					li.style.transform = `translateX(${Math.max(diff, -100)}px)`
-				} else if (wrapper.classList.contains('swiped') && diff > 0) {
+				} else if (wrapper.classList.contains("swiped") && diff > 0) {
 					li.style.transform = `translateX(${Math.min(-100 + diff, 0)}px)`
 				}
 			}
@@ -525,18 +794,18 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 			const onTouchEnd = () => {
 				if (!isSwiping) return
 				isSwiping = false
-				li.style.transition = 'transform 0.3s ease'
+				li.style.transition = "transform 0.3s ease"
 
 				const diff = currentX - startX
 
 				// If swiped left more than 50px, show delete button
 				if (diff < -50) {
-					li.style.transform = 'translateX(-100px)'
-					wrapper.classList.add('swiped')
+					li.style.transform = "translateX(-100px)"
+					wrapper.classList.add("swiped")
 				} else {
 					// Reset position
-					li.style.transform = 'translateX(0)'
-					wrapper.classList.remove('swiped')
+					li.style.transform = "translateX(0)"
+					wrapper.classList.remove("swiped")
 				}
 			}
 
@@ -544,11 +813,11 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 			let isMouseDown = false
 			const onMouseDown = (e) => {
 				// Don't start swipe on button clicks
-				if (e.target.tagName === 'BUTTON') return
+				if (e.target.tagName === "BUTTON") return
 				startX = e.clientX
 				currentX = startX
 				isMouseDown = true
-				li.style.transition = 'none'
+				li.style.transition = "none"
 			}
 
 			const onMouseMove = (e) => {
@@ -559,7 +828,7 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 				// Allow left swipe (negative) or right swipe to reset (positive when swiped)
 				if (diff < 0) {
 					li.style.transform = `translateX(${Math.max(diff, -100)}px)`
-				} else if (wrapper.classList.contains('swiped') && diff > 0) {
+				} else if (wrapper.classList.contains("swiped") && diff > 0) {
 					li.style.transform = `translateX(${Math.min(-100 + diff, 0)}px)`
 				}
 			}
@@ -567,28 +836,28 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 			const onMouseUp = () => {
 				if (!isMouseDown) return
 				isMouseDown = false
-				li.style.transition = 'transform 0.3s ease'
+				li.style.transition = "transform 0.3s ease"
 
 				const diff = currentX - startX
 
 				// If swiped left more than 50px, show delete button
 				if (diff < -50) {
-					li.style.transform = 'translateX(-100px)'
-					wrapper.classList.add('swiped')
+					li.style.transform = "translateX(-100px)"
+					wrapper.classList.add("swiped")
 				} else {
 					// Reset position
-					li.style.transform = 'translateX(0)'
-					wrapper.classList.remove('swiped')
+					li.style.transform = "translateX(0)"
+					wrapper.classList.remove("swiped")
 				}
 			}
 
-			li.addEventListener('touchstart', onTouchStart, { passive: true })
-			li.addEventListener('touchmove', onTouchMove, { passive: true })
-			li.addEventListener('touchend', onTouchEnd)
-			li.addEventListener('mousedown', onMouseDown)
-			li.addEventListener('mousemove', onMouseMove)
-			li.addEventListener('mouseup', onMouseUp)
-			li.addEventListener('mouseleave', onMouseUp)
+			li.addEventListener("touchstart", onTouchStart, { passive: true })
+			li.addEventListener("touchmove", onTouchMove, { passive: true })
+			li.addEventListener("touchend", onTouchEnd)
+			li.addEventListener("mousedown", onMouseDown)
+			li.addEventListener("mousemove", onMouseMove)
+			li.addEventListener("mouseup", onMouseUp)
+			li.addEventListener("mouseleave", onMouseUp)
 
 			wrapper.appendChild(li)
 			wrapper.appendChild(deleteBtn)

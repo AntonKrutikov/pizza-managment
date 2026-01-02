@@ -87,6 +87,68 @@ export class OrderService {
 		}
 	}
 
+	// Update order eat type (eat-in or take-away)
+	updateEatType(orderId, eatType) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order) {
+			order.eatType = eatType
+			this.saveToStorage()
+		}
+	}
+
+	// Update order table number
+	updateTableNumber(orderId, tableNumber) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order) {
+			order.tableNumber = tableNumber
+			this.saveToStorage()
+		}
+	}
+
+	// Update order sound indicator
+	updateSoundIndicator(orderId, soundIndicator) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order) {
+			order.soundIndicator = soundIndicator
+			this.saveToStorage()
+		}
+	}
+
+	// Remove item from order and recalculate price
+	removeItemFromOrder(orderId, itemIndex) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order && order.items && order.items[itemIndex]) {
+			const removedItem = order.items.splice(itemIndex, 1)[0]
+			order.price = order.items.reduce((sum, item) => sum + parseInt(item.price), 0)
+			order.pizzaType = order.items.map(item => item.name).join(", ")
+			this.saveToStorage()
+			return removedItem
+		}
+		return null
+	}
+
+	// Mark individual item as served
+	markItemAsServed(orderId, itemIndex) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order && order.items && order.items[itemIndex]) {
+			order.items[itemIndex].served = true
+			this.saveToStorage()
+			return true
+		}
+		return false
+	}
+
+	// Mark individual item as unserved
+	markItemAsUnserved(orderId, itemIndex) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order && order.items && order.items[itemIndex]) {
+			order.items[itemIndex].served = false
+			this.saveToStorage()
+			return true
+		}
+		return false
+	}
+
 	getOrders() {
 		// Return orders that are not completed (completed = served AND paid)
 		// This includes: unserved orders AND served-but-unpaid orders

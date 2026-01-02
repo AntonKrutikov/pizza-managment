@@ -585,13 +585,12 @@ ul#orders-list {
 
 .order-item-entry {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
   gap: 1em;
 }
 
 .item-name-text {
-  flex: 1;
   font-weight: 700;
   color: #2c3e50;
 }
@@ -1462,6 +1461,24 @@ ul#orders-list {
   gap: 1em;
 }
 
+.popup-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+}
+
+.popup-buttons-row {
+  display: flex;
+  gap: 1em;
+}
+
+.popup-message {
+  margin: 0 0 1.5em 0;
+  font-size: 1.1em;
+  color: #555;
+  line-height: 1.4;
+}
+
 .popup-btn-cancel,
 .popup-btn-confirm {
   flex: 1;
@@ -1495,6 +1512,179 @@ ul#orders-list {
 .popup-btn-confirm:disabled {
   background: #95a5a6;
   cursor: not-allowed;
+}
+
+.popup-btn-clear {
+  flex: 1;
+  padding: 1em;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #e74c3c;
+  color: #fff;
+}
+
+.popup-btn-clear:hover {
+  background: #c0392b;
+}
+
+/* Number Selector Grid */
+.number-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5em;
+  margin-bottom: 1.5em;
+}
+
+.number-selector-btn {
+  padding: 1em;
+  font-size: 1.3em;
+  font-weight: bold;
+  border: 2px solid #d35400;
+  border-radius: 8px;
+  background: #fff;
+  color: #d35400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.number-selector-btn:hover {
+  background: #d35400;
+  color: #fff;
+}
+
+.number-selector-btn.selected {
+  background: #d35400;
+  color: #fff;
+}
+
+/* Eat Type Selector Grid */
+.eat-type-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  margin-bottom: 1.5em;
+}
+
+.eat-type-selector-btn {
+  padding: 1.5em 1em;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: 2px solid #d35400;
+  border-radius: 12px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.eat-type-selector-btn:hover {
+  background: #fef5f0;
+  border-color: #e67e22;
+}
+
+.eat-type-selector-btn.selected {
+  background: #d35400;
+  color: #fff;
+}
+
+.eat-type-icon {
+  font-size: 2em;
+}
+
+/* Order Item Entry Enhancements */
+.order-item-entry {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
+.order-item-entry.item-served .item-name-text {
+  color: #27ae60;
+  text-decoration: line-through;
+}
+
+.order-item-entry.item-served .item-name-text::before {
+  content: "✓ ";
+}
+
+.item-remove-btn {
+  background: transparent;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0.2em;
+  font-size: 0.9em;
+  line-height: 1;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.item-remove-btn:hover {
+  color: #e74c3c;
+}
+
+.item-remove-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Order Item Image with Served Checkmark */
+.order-item-image-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.order-item-image-wrapper.item-served::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5em;
+  color: #fff;
+  background: rgba(39, 174, 96, 0.85);
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.order-item-image-wrapper.item-served img {
+  opacity: 0.6;
+}
+
+/* Clickable order type badge */
+.type-badge-clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.type-badge-clickable:hover {
+  background: #e8e8e8;
+  transform: scale(1.05);
+}
+
+/* Clickable optional details */
+.optional-detail-clickable {
+  cursor: pointer;
+  padding: 0.3em 0.6em;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.optional-detail-clickable:hover {
+  background: #f0f0f0;
 }
 
 /* Custom price card styling */
