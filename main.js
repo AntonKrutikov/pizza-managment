@@ -312,7 +312,11 @@ let currentOrderItems = []
 
 function updateOrders() {
 	const orders = orderService.getOrders()
-	renderOrders(orders, ordersList, orderService)
+	renderOrders(orders, ordersList, orderService, () => {
+		// Callback when order is deleted - update badge count
+		const updatedOrders = orderService.getOrders()
+		updateOrdersBadge(updatedOrders.length)
+	})
 	updateOrdersBadge(orders.length)
 }
 
@@ -333,7 +337,11 @@ function updateOrdersBadge(count) {
 
 function updateHistory() {
 	const servedOrders = orderService.getServedOrders()
-	renderHistoryOrders(servedOrders, historyList, orderService)
+	renderHistoryOrders(servedOrders, historyList, orderService, () => {
+		// Callback when order is restored or deleted - update both lists
+		updateOrders()
+		updateHistory()
+	})
 }
 
 function updateTimers() {

@@ -453,12 +453,25 @@ export function generatePieChart(data, size = 150) {
 	const centerY = size / 2
 	const radius = size / 2 - 10
 
+	const colors = ["#D35400", "#27AE60", "#3498DB", "#9B59B6", "#E74C3C", "#F39C12", "#1ABC9C", "#34495E"]
+
+	// Filter out items with zero value
+	const nonZeroData = data.filter(item => item.value > 0)
+
+	// If only one type of data exists, render a full circle
+	if (nonZeroData.length === 1) {
+		const color = colors[data.indexOf(nonZeroData[0]) % colors.length]
+		return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+			<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="${color}" stroke="#fff" stroke-width="2"/>
+		</svg>`
+	}
+
 	let currentAngle = -Math.PI / 2 // Start from top
 	let paths = ""
 
-	const colors = ["#D35400", "#27AE60", "#3498DB", "#9B59B6", "#E74C3C", "#F39C12", "#1ABC9C", "#34495E"]
-
 	data.forEach((item, index) => {
+		if (item.value === 0) return // Skip zero values
+
 		const sliceAngle = (item.value / total) * 2 * Math.PI
 		const endAngle = currentAngle + sliceAngle
 

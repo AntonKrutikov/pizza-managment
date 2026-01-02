@@ -923,6 +923,34 @@ ul#orders-list {
   border-color: #999;
 }
 
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.restore-order-btn {
+  background: #3498db;
+  color: #fff;
+  border: none;
+  padding: 0.8em 1.2em;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.restore-order-btn:hover {
+  background: #2980b9;
+  transform: scale(1.02);
+}
+
+.restore-order-btn:active {
+  transform: scale(0.98);
+}
+
 .completed-badge {
   background: #27ae60;
   color: #fff;
@@ -953,6 +981,16 @@ ul#orders-list {
   .completed-badge {
     padding: 0.7em 1.2em;
     font-size: 1em;
+  }
+
+  .history-actions {
+    flex-direction: column;
+    gap: 0.3em;
+  }
+
+  .restore-order-btn {
+    padding: 0.6em 1em;
+    font-size: 0.9em;
   }
 }
 

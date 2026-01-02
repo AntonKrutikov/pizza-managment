@@ -12,7 +12,7 @@ function getCustomerIcon(description) {
 	return icon ? `${icon} ${description}` : description
 }
 
-export function renderOrders(orders, container, orderService) {
+export function renderOrders(orders, container, orderService, onOrderChange = null) {
 	container.innerHTML = ""
 	orders.forEach((order) => {
 		// Create wrapper for swipe functionality
@@ -240,6 +240,7 @@ export function renderOrders(orders, container, orderService) {
 			if (confirm(`Delete order #${order.orderNo}?`)) {
 				orderService.removeOrder(order.id)
 				wrapper.remove()
+				if (onOrderChange) onOrderChange()
 			}
 		})
 
@@ -348,7 +349,7 @@ export function renderOrders(orders, container, orderService) {
 	})
 }
 
-export function renderHistoryOrders(orders, container, orderService) {
+export function renderHistoryOrders(orders, container, orderService, onOrderChange = null) {
 	container.innerHTML = ""
 	if (orders.length === 0) {
 		const emptyMsg = document.createElement("li")
@@ -456,13 +457,31 @@ export function renderHistoryOrders(orders, container, orderService) {
 
 			orderInfo.appendChild(details)
 
+			// Actions container for restore button and completed badge
+			const historyActions = document.createElement("div")
+			historyActions.classList.add("history-actions")
+
+			const restoreBtn = document.createElement("button")
+			restoreBtn.classList.add("restore-order-btn")
+			restoreBtn.textContent = "Restore"
+			restoreBtn.addEventListener("click", (e) => {
+				e.stopPropagation()
+				if (confirm(`Restore order #${order.orderNo} to ongoing orders?`)) {
+					orderService.restoreToOngoing(order.id)
+					if (onOrderChange) onOrderChange()
+				}
+			})
+
 			const completedBadge = document.createElement("div")
 			completedBadge.classList.add("completed-badge")
 			completedBadge.textContent = "Completed"
 
+			historyActions.appendChild(restoreBtn)
+			historyActions.appendChild(completedBadge)
+
 			li.appendChild(orderNo)
 			li.appendChild(orderInfo)
-			li.appendChild(completedBadge)
+			li.appendChild(historyActions)
 
 			// Create delete button (hidden by default, shown on swipe)
 			const deleteBtn = document.createElement("button")
@@ -474,6 +493,7 @@ export function renderHistoryOrders(orders, container, orderService) {
 				if (confirm(`Delete order #${order.orderNo} from history?`)) {
 					orderService.removeOrder(order.id)
 					wrapper.remove()
+					if (onOrderChange) onOrderChange()
 				}
 			})
 

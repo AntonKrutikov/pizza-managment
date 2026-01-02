@@ -70,6 +70,15 @@ export class OrderService {
 		}
 	}
 
+	restoreToOngoing(orderId) {
+		const order = this.orders.find((o) => o.id === orderId)
+		if (order) {
+			order.served = false
+			order.paid = false
+			this.saveToStorage()
+		}
+	}
+
 	removeOrder(orderId) {
 		const index = this.orders.findIndex((o) => o.id === orderId)
 		if (index !== -1) {
