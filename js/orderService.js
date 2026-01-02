@@ -25,13 +25,16 @@ export class OrderService {
 
 	addOrder(order) {
 		this.orderCounter++
+		const now = Date.now()
 		const newOrder = {
 			...order,
-			id: Date.now(),
+			id: now,
 			orderNo: this.orderCounter,
-			timestamp: Date.now(),
+			timestamp: now,
 			time: new Date().toLocaleTimeString(),
 			served: false,
+			servedAt: null,
+			paidAt: order.paid ? now : null,
 		}
 		this.orders.push(newOrder)
 		this.saveToStorage()
@@ -42,6 +45,7 @@ export class OrderService {
 		const order = this.orders.find((o) => o.id === orderId)
 		if (order) {
 			order.served = true
+			order.servedAt = Date.now()
 			this.saveToStorage()
 		}
 	}
@@ -50,14 +54,19 @@ export class OrderService {
 		const order = this.orders.find((o) => o.id === orderId)
 		if (order) {
 			order.served = false
+			order.servedAt = null
 			this.saveToStorage()
 		}
 	}
 
-	markAsPaid(orderId) {
+	markAsPaid(orderId, paymentType = null) {
 		const order = this.orders.find((o) => o.id === orderId)
 		if (order) {
 			order.paid = true
+			order.paidAt = Date.now()
+			if (paymentType) {
+				order.paymentType = paymentType
+			}
 			this.saveToStorage()
 		}
 	}
@@ -66,6 +75,8 @@ export class OrderService {
 		const order = this.orders.find((o) => o.id === orderId)
 		if (order) {
 			order.paid = false
+			order.paidAt = null
+			order.paymentType = null
 			this.saveToStorage()
 		}
 	}
@@ -74,7 +85,10 @@ export class OrderService {
 		const order = this.orders.find((o) => o.id === orderId)
 		if (order) {
 			order.served = false
+			order.servedAt = null
 			order.paid = false
+			order.paidAt = null
+			order.paymentType = null
 			this.saveToStorage()
 		}
 	}

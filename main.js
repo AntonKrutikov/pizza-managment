@@ -1,5 +1,5 @@
 import { OrderService } from "./js/orderService.js"
-import { renderOrders, renderHistoryOrders, initOrderPopups } from "./js/orderList.js"
+import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup } from "./js/orderList.js"
 import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
 
 const orderService = new OrderService()
@@ -464,7 +464,9 @@ document.getElementById("customer-grid").addEventListener("click", function (e) 
 
 // Send order to cook
 sendOrderBtn.addEventListener("click", function () {
-	const paid = document.querySelector('input[name="paid"]:checked').value === "true"
+	const paidValue = document.querySelector('input[name="paid"]:checked').value
+	const paid = paidValue === "cash" || paidValue === "card"
+	const paymentType = paid ? paidValue : null
 	const eatType = document.querySelector('input[name="eatType"]:checked').value
 
 	// Get selected table number from button grid
@@ -494,6 +496,7 @@ sendOrderBtn.addEventListener("click", function () {
 		pizzaType: pizzasList,
 		items: currentOrderItems, // Store items with prices
 		paid,
+		paymentType,
 		eatType,
 		price: totalPrice,
 		tableNumber: tableNumber || null,
@@ -647,18 +650,19 @@ ordersList.addEventListener("click", function (e) {
 		}
 	}
 
-	// Handle mark paid button clicks
+	// Handle mark paid button clicks - show payment type popup
 	if (e.target.classList.contains("mark-paid-btn")) {
 		const orderId = parseInt(e.target.dataset.orderId)
 		const order = orderService.orders.find((o) => o.id === orderId)
-		orderService.markAsPaid(orderId)
 
-		// If already served, move to history now with animation
-		if (order && order.served) {
-			completeOrderWithAnimation(orderId, 'paid')
-		} else {
-			updateOrders()
-		}
+		showPaymentTypePopup(orderId, (orderId, paymentType) => {
+			orderService.markAsPaid(orderId, paymentType)
+
+			// If already served, move to history now with animation
+			if (order && order.served) {
+				completeOrderWithAnimation(orderId, 'paid')
+			}
+		})
 	}
 
 	// Handle mark unpaid button clicks (toggle paid back to unpaid)
@@ -1203,6 +1207,30 @@ function updateAnalytics() {
 	document.getElementById("avg-order").textContent = `${stats.averageOrderValue} THB`
 	document.getElementById("items-sold").textContent = stats.itemsSold
 
+	// Update waiting time stats
+	const avgWaitTimeEl = document.getElementById("avg-wait-time")
+	const waitTimeRangeEl = document.getElementById("wait-time-range")
+	if (stats.waitingTime && stats.waitingTime.count > 0) {
+		const avgMs = stats.waitingTime.average
+		const avgMins = Math.floor(avgMs / 60000)
+		const avgSecs = Math.floor((avgMs % 60000) / 1000)
+		avgWaitTimeEl.textContent = avgMins > 0 ? `${avgMins}m ${avgSecs}s` : `${avgSecs}s`
+
+		// Show min-max range
+		const minMs = stats.waitingTime.min
+		const maxMs = stats.waitingTime.max
+		const minMins = Math.floor(minMs / 60000)
+		const minSecs = Math.floor((minMs % 60000) / 1000)
+		const maxMins = Math.floor(maxMs / 60000)
+		const maxSecs = Math.floor((maxMs % 60000) / 1000)
+		const minText = minMins > 0 ? `${minMins}m ${minSecs}s` : `${minSecs}s`
+		const maxText = maxMins > 0 ? `${maxMins}m ${maxSecs}s` : `${maxSecs}s`
+		waitTimeRangeEl.textContent = `${minText} - ${maxText}`
+	} else {
+		avgWaitTimeEl.textContent = "-"
+		waitTimeRangeEl.textContent = ""
+	}
+
 	// Update comparison indicators
 	updateComparisonBadge("revenue-change", comparison.revenueChange)
 	updateComparisonBadge("orders-change", comparison.ordersChange)
@@ -1223,6 +1251,18 @@ function updateAnalytics() {
 	}))
 	document.getElementById("category-chart").innerHTML = generatePieChart(categoryData, 120)
 	document.getElementById("category-legend").innerHTML = generateLegend(categoryData)
+
+	// Update Payment Method pie chart
+	const paymentMethodData = [
+		{ label: "💵 Cash", value: stats.paymentMethodBreakdown.cash || 0 },
+		{ label: "💳 Card", value: stats.paymentMethodBreakdown.card || 0 },
+	]
+	// Only show unknown if there are any (for older orders without payment type)
+	if (stats.paymentMethodBreakdown.unknown > 0) {
+		paymentMethodData.push({ label: "Unknown", value: stats.paymentMethodBreakdown.unknown })
+	}
+	document.getElementById("payment-method-chart").innerHTML = generatePieChart(paymentMethodData, 120)
+	document.getElementById("payment-method-legend").innerHTML = generateLegend(paymentMethodData)
 
 	// Update top items list
 	const topItemsList = document.getElementById("top-items-list")

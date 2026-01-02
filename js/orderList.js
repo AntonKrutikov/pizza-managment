@@ -18,6 +18,7 @@ let currentPopupOrderId = null
 let numberSelectorSelectedValue = null
 let eatTypeSelectorSelectedValue = null
 let itemActionCallback = null
+let paymentTypeSelectorSelectedValue = null
 
 export function showNumberSelectorPopup(title, currentValue, orderId, callback) {
 	const popup = document.getElementById("number-selector-popup")
@@ -91,6 +92,32 @@ export function hideItemActionPopup() {
 	const popup = document.getElementById("item-action-popup")
 	popup.style.display = "none"
 	itemActionCallback = null
+}
+
+export function showPaymentTypePopup(orderId, callback) {
+	const popup = document.getElementById("payment-type-popup")
+	const confirmBtn = document.getElementById("payment-type-confirm")
+	currentPopupCallback = callback
+	currentPopupOrderId = orderId
+	paymentTypeSelectorSelectedValue = null
+
+	// Reset selection
+	popup.querySelectorAll(".payment-type-selector-btn").forEach((btn) => {
+		btn.classList.remove("selected")
+	})
+
+	// Disable confirm initially
+	confirmBtn.disabled = true
+
+	popup.style.display = "flex"
+}
+
+export function hidePaymentTypePopup() {
+	const popup = document.getElementById("payment-type-popup")
+	popup.style.display = "none"
+	currentPopupCallback = null
+	currentPopupOrderId = null
+	paymentTypeSelectorSelectedValue = null
 }
 
 // Initialize popup event listeners (call once on page load)
@@ -187,6 +214,41 @@ export function initOrderPopups(orderService, updateCallback) {
 	document.getElementById("item-action-popup").addEventListener("click", (e) => {
 		if (e.target.id === "item-action-popup") {
 			hideItemActionPopup()
+		}
+	})
+
+	// Payment type selector popup
+	const paymentTypePopup = document.getElementById("payment-type-popup")
+	paymentTypePopup.querySelectorAll(".payment-type-selector-btn").forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const value = btn.dataset.value
+			paymentTypeSelectorSelectedValue = value
+
+			// Update visual selection
+			paymentTypePopup.querySelectorAll(".payment-type-selector-btn").forEach((b) => {
+				b.classList.toggle("selected", b.dataset.value === value)
+			})
+
+			// Enable confirm button
+			document.getElementById("payment-type-confirm").disabled = false
+		})
+	})
+
+	// Payment type selector confirm
+	document.getElementById("payment-type-confirm").addEventListener("click", () => {
+		if (currentPopupCallback && currentPopupOrderId && paymentTypeSelectorSelectedValue) {
+			currentPopupCallback(currentPopupOrderId, paymentTypeSelectorSelectedValue)
+			hidePaymentTypePopup()
+			updateCallback()
+		}
+	})
+
+	document.getElementById("payment-type-cancel").addEventListener("click", hidePaymentTypePopup)
+
+	// Close on overlay click
+	paymentTypePopup.addEventListener("click", (e) => {
+		if (e.target.id === "payment-type-popup") {
+			hidePaymentTypePopup()
 		}
 	})
 }
@@ -720,6 +782,22 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 					.map((c) => getCustomerIcon(c))
 					.join(" ")
 				detailsText += ` | ${customers}`
+			}
+
+			// Add payment type if provided
+			if (order.paymentType) {
+				const paymentIcon = order.paymentType === "cash" ? "💵" : "💳"
+				const paymentText = order.paymentType === "cash" ? "Cash" : "Card"
+				detailsText += ` | ${paymentIcon} ${paymentText}`
+			}
+
+			// Add duration (time from order to served) if servedAt exists
+			if (order.servedAt && order.timestamp) {
+				const durationMs = order.servedAt - order.timestamp
+				const minutes = Math.floor(durationMs / 60000)
+				const seconds = Math.floor((durationMs % 60000) / 1000)
+				const durationText = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`
+				detailsText += ` | ⏱️ ${durationText}`
 			}
 
 			details.textContent = detailsText

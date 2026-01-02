@@ -63,9 +63,13 @@
             <div id="order-options" style="display: none;">
                 <label for="paid-status">Payment Status:</label>
                 <div id="paid-status-grid">
-                    <label class="paid-card paid-yes">
-                        <input type="radio" name="paid" value="true">
-                        <span>Paid</span>
+                    <label class="paid-card paid-cash">
+                        <input type="radio" name="paid" value="cash">
+                        <span>💵 Cash</span>
+                    </label>
+                    <label class="paid-card paid-card-type">
+                        <input type="radio" name="paid" value="card">
+                        <span>💳 Card</span>
                     </label>
                     <label class="paid-card paid-no">
                         <input type="radio" name="paid" value="false">
@@ -329,6 +333,19 @@
                         <span class="summary-value" id="items-sold">0</span>
                     </div>
                 </div>
+                <div class="summary-card">
+                    <div class="summary-icon waiting-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-label">Avg. Wait Time</span>
+                        <span class="summary-value" id="avg-wait-time">-</span>
+                        <span class="summary-sub" id="wait-time-range"></span>
+                    </div>
+                </div>
             </div>
 
             <!-- Charts Row -->
@@ -348,6 +365,15 @@
                     <div class="chart-container">
                         <div id="category-chart" class="pie-chart"></div>
                         <div id="category-legend" class="chart-legend"></div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Breakdown -->
+                <div class="chart-card">
+                    <h3>Payment Method</h3>
+                    <div class="chart-container">
+                        <div id="payment-method-chart" class="pie-chart"></div>
+                        <div id="payment-method-legend" class="chart-legend"></div>
                     </div>
                 </div>
             </div>
@@ -442,6 +468,27 @@
             <div class="popup-buttons-stack">
                 <button type="button" id="item-action-confirm" class="popup-btn-confirm">Confirm</button>
                 <button type="button" id="item-action-cancel" class="popup-btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Type Selector Popup -->
+    <div id="payment-type-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>How did customer pay?</h3>
+            <div class="payment-type-selector-grid">
+                <button type="button" class="payment-type-selector-btn" data-value="cash">
+                    <span class="payment-type-icon">💵</span>
+                    <span>Cash</span>
+                </button>
+                <button type="button" class="payment-type-selector-btn" data-value="card">
+                    <span class="payment-type-icon">💳</span>
+                    <span>Card</span>
+                </button>
+            </div>
+            <div class="popup-buttons-stack">
+                <button type="button" id="payment-type-confirm" class="popup-btn-confirm" disabled>Confirm</button>
+                <button type="button" id="payment-type-cancel" class="popup-btn-cancel">Cancel</button>
             </div>
         </div>
     </div>

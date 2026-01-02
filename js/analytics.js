@@ -51,7 +51,9 @@ export class Analytics {
 			ordersByType: { "eat-in": 0, "take-away": 0 },
 			ordersByHour: {},
 			paymentStats: { paidOnOrder: 0, paidLater: 0 },
+			paymentMethodBreakdown: { cash: 0, card: 0, unknown: 0 },
 			categoryBreakdown: {},
+			waitingTime: { total: 0, count: 0, min: null, max: null },
 		}
 
 		if (orders.length === 0) return stats
@@ -63,6 +65,28 @@ export class Analytics {
 			// Order type breakdown
 			if (order.eatType) {
 				stats.ordersByType[order.eatType] = (stats.ordersByType[order.eatType] || 0) + 1
+			}
+
+			// Payment method breakdown
+			if (order.paymentType === "cash") {
+				stats.paymentMethodBreakdown.cash++
+			} else if (order.paymentType === "card") {
+				stats.paymentMethodBreakdown.card++
+			} else {
+				stats.paymentMethodBreakdown.unknown++
+			}
+
+			// Waiting time calculation (time from order to served)
+			if (order.servedAt && order.timestamp) {
+				const waitTime = order.servedAt - order.timestamp
+				stats.waitingTime.total += waitTime
+				stats.waitingTime.count++
+				if (stats.waitingTime.min === null || waitTime < stats.waitingTime.min) {
+					stats.waitingTime.min = waitTime
+				}
+				if (stats.waitingTime.max === null || waitTime > stats.waitingTime.max) {
+					stats.waitingTime.max = waitTime
+				}
 			}
 
 			// Orders by hour
@@ -112,6 +136,11 @@ export class Analytics {
 
 		// Calculate average order value
 		stats.averageOrderValue = stats.totalOrders > 0 ? Math.round(stats.totalRevenue / stats.totalOrders) : 0
+
+		// Calculate average waiting time
+		stats.waitingTime.average = stats.waitingTime.count > 0
+			? Math.round(stats.waitingTime.total / stats.waitingTime.count)
+			: 0
 
 		// Sort top items (now includes category)
 		stats.topItemsSorted = Object.entries(stats.topItems)
