@@ -576,23 +576,22 @@ ul#orders-list {
 }
 
 .order-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4em;
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 0.3em 0.8em;
   font-weight: 600;
   font-size: 1.1em;
+  align-items: center;
 }
 
 .order-item-entry {
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  gap: 1em;
+  display: contents;
 }
 
 .item-name-text {
   font-weight: 700;
   color: #2c3e50;
+  cursor: pointer;
 }
 
 .item-price-text {
@@ -600,6 +599,7 @@ ul#orders-list {
   font-size: 0.95em;
   font-weight: 600;
   white-space: nowrap;
+  text-align: right;
 }
 
 .order-type {
@@ -1663,18 +1663,17 @@ ul#orders-list {
 }
 
 /* Order Item Entry Enhancements */
-.order-item-entry {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-}
-
-.order-item-entry.item-served .item-name-text {
+.item-name-text.item-served {
   color: #27ae60;
   text-decoration: line-through;
 }
 
-.order-item-entry.item-served .item-name-text::before {
+.item-price-text.item-served {
+  color: #27ae60;
+  text-decoration: line-through;
+}
+
+.item-name-text.item-served::before {
   content: "✓ ";
 }
 

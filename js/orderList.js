@@ -305,12 +305,6 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 			imagesRow.classList.add("order-items-images-row")
 
 			order.items.forEach((item, itemIndex) => {
-				const itemDiv = document.createElement("div")
-				itemDiv.classList.add("order-item-entry")
-				if (item.served) {
-					itemDiv.classList.add("item-served")
-				}
-
 				// Add image if available (handle both simple and composite images)
 				if (item.image) {
 					const imageWrapper = document.createElement("div")
@@ -369,8 +363,10 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 				// Item name span (clickable to mark as served)
 				const nameSpan = document.createElement("span")
 				nameSpan.classList.add("item-name-text")
-				nameSpan.textContent = `${item.name} - ฿${item.price}`
-				nameSpan.style.cursor = "pointer"
+				if (item.served) {
+					nameSpan.classList.add("item-served")
+				}
+				nameSpan.textContent = item.name
 				nameSpan.title = `Click to mark as ${item.served ? "not served" : "served"}`
 				nameSpan.addEventListener("click", (e) => {
 					e.stopPropagation()
@@ -384,7 +380,16 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 						}
 					})
 				})
-				itemDiv.appendChild(nameSpan)
+				itemsList.appendChild(nameSpan)
+
+				// Item price span
+				const priceSpan = document.createElement("span")
+				priceSpan.classList.add("item-price-text")
+				if (item.served) {
+					priceSpan.classList.add("item-served")
+				}
+				priceSpan.textContent = `฿${item.price}`
+				itemsList.appendChild(priceSpan)
 
 				// Remove button (disabled if item is served)
 				if (order.items.length > 1) {
@@ -403,10 +408,12 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 							orderService.removeItemFromOrder(order.id, itemIndex)
 						})
 					})
-					itemDiv.appendChild(removeBtn)
+					itemsList.appendChild(removeBtn)
+				} else {
+					// Empty placeholder to maintain grid alignment
+					const placeholder = document.createElement("span")
+					itemsList.appendChild(placeholder)
 				}
-
-				itemsList.appendChild(itemDiv)
 			})
 
 			// Add images row before items list if there are any images
