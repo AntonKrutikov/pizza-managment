@@ -2640,3 +2640,78 @@ ul#orders-list {
     justify-content: center;
   }
 }
+
+/* Cloud Backup Styles */
+.backup-status {
+  font-size: 0.85em;
+  margin-top: 0.5em;
+  min-height: 1.2em;
+}
+
+.backup-status.loading {
+  color: #3498db;
+}
+
+.backup-status.success {
+  color: #27ae60;
+}
+
+.backup-status.error {
+  color: #e74c3c;
+}
+
+.backup-info {
+  margin-top: 1em;
+  padding: 1em;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.backup-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5em 0;
+}
+
+.backup-info-row:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.backup-info-label {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.backup-info-value {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #333;
+}
+
+.settings-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.settings-btn:disabled:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* Loading spinner animation */
+@keyframes backup-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.backup-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #d35400;
+  border-radius: 50%;
+  animation: backup-spin 1s linear infinite;
+  vertical-align: middle;
+}

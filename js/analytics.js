@@ -48,6 +48,7 @@ export class Analytics {
 			averageOrderValue: 0,
 			itemsSold: 0,
 			topItems: {},
+			topItemsSorted: [],
 			ordersByType: { "eat-in": 0, "take-away": 0 },
 			ordersByHour: {},
 			paymentStats: { paidOnOrder: 0, paidLater: 0 },

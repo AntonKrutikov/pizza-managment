@@ -1,8 +1,11 @@
-import { OrderService } from "./js/orderService.js"
+import { LocalStorageOrderRepository } from "./js/repositories/LocalStorageOrderRepository.js"
+import { OrderService } from "./js/services/OrderService.js"
 import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup } from "./js/orderList.js"
 import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
+import { backupToFirestore, getLastBackupInfo } from "./js/firebase.js"
 
-const orderService = new OrderService()
+const repository = new LocalStorageOrderRepository()
+const orderService = new OrderService(repository)
 
 // Initialize order popups (for table/sound/eat type selectors)
 initOrderPopups(orderService, () => {
@@ -1365,6 +1368,7 @@ document.getElementById("settings-btn").addEventListener("click", function () {
 
 	// Update settings info
 	updateSettingsInfo()
+	updateBackupInfo()
 })
 
 // Back button from settings
@@ -1409,6 +1413,74 @@ function updateSettingsInfo() {
 	}
 	document.getElementById("settings-storage-used").textContent = sizeText
 }
+
+// Update backup info display
+function updateBackupInfo() {
+	const info = getLastBackupInfo()
+	const lastBackupEl = document.getElementById('last-backup-time')
+	const backupUidEl = document.getElementById('backup-uid')
+
+	if (info.hasBackup && info.timestamp) {
+		const date = new Date(info.timestamp)
+		lastBackupEl.textContent = date.toLocaleString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		})
+	} else {
+		lastBackupEl.textContent = 'Never'
+	}
+
+	if (info.uid) {
+		backupUidEl.textContent = info.uid.substring(0, 8) + '...'
+	} else {
+		backupUidEl.textContent = '-'
+	}
+}
+
+// Cloud backup button handler
+document.getElementById('backup-to-cloud-btn').addEventListener('click', async function () {
+	const btn = this
+	const btnText = document.getElementById('backup-btn-text')
+	const statusEl = document.getElementById('backup-status')
+
+	// Disable button and show loading state
+	btn.disabled = true
+	btnText.innerHTML = '<span class="backup-spinner"></span> Backing up...'
+	statusEl.textContent = ''
+	statusEl.className = 'backup-status'
+
+	try {
+		const result = await backupToFirestore()
+
+		// Show success
+		btnText.textContent = 'Backup'
+		statusEl.textContent = `Backup successful! (${result.ordersCount} orders)`
+		statusEl.className = 'backup-status success'
+
+		// Update display
+		updateBackupInfo()
+
+		// Clear success message after 5 seconds
+		setTimeout(() => {
+			statusEl.textContent = ''
+			statusEl.className = 'backup-status'
+		}, 5000)
+
+	} catch (error) {
+		console.error('Backup failed:', error)
+
+		// Show error
+		btnText.textContent = 'Backup'
+		statusEl.textContent = `Backup failed: ${error.message}`
+		statusEl.className = 'backup-status error'
+
+	} finally {
+		btn.disabled = false
+	}
+})
 
 // Export database to JSON file
 document.getElementById("export-data-btn").addEventListener("click", function () {
