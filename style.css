@@ -1334,6 +1334,7 @@ ul#orders-list {
   background: #f9f9f9;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
+  text-align: center;
 }
 
 .paid-card input[type="radio"] {
