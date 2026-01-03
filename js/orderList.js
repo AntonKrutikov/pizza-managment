@@ -237,9 +237,10 @@ export function initOrderPopups(orderService, updateCallback) {
 	// Payment type selector confirm
 	document.getElementById("payment-type-confirm").addEventListener("click", () => {
 		if (currentPopupCallback && currentPopupOrderId && paymentTypeSelectorSelectedValue) {
+			// Callback handles its own update logic (including countdown animation)
 			currentPopupCallback(currentPopupOrderId, paymentTypeSelectorSelectedValue)
 			hidePaymentTypePopup()
-			updateCallback()
+			// Don't call updateCallback() here - the callback in main.js handles it
 		}
 	})
 

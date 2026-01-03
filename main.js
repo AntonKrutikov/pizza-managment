@@ -654,13 +654,16 @@ ordersList.addEventListener("click", function (e) {
 	if (e.target.classList.contains("mark-paid-btn")) {
 		const orderId = parseInt(e.target.dataset.orderId)
 		const order = orderService.orders.find((o) => o.id === orderId)
+		const wasServed = order && order.served
 
 		showPaymentTypePopup(orderId, (orderId, paymentType) => {
 			orderService.markAsPaid(orderId, paymentType)
 
-			// If already served, move to history now with animation
-			if (order && order.served) {
+			// If already served, move to history with countdown animation
+			if (wasServed) {
 				completeOrderWithAnimation(orderId, 'paid')
+			} else {
+				updateOrders()
 			}
 		})
 	}
