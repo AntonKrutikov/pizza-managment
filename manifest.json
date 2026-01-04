@@ -2,7 +2,7 @@
   "name": "Pizza Shop POS",
   "short_name": "PizzaPOS",
   "description": "Point of Sale system for pizza shop management",
-  "start_url": "/index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f8f8f8",
   "theme_color": "#d35400",

@@ -1,67 +1,68 @@
 // Pizza Shop POS - Service Worker
 // Enables offline functionality through caching
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const STATIC_CACHE = `pizza-shop-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `pizza-shop-dynamic-${CACHE_VERSION}`;
 
 // Static assets to pre-cache on install
+// Using relative paths for GitHub Pages compatibility
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/main.js',
-  '/manifest.json',
-  '/data/menu.json',
+  './',
+  './index.html',
+  './style.css',
+  './main.js',
+  './manifest.json',
+  './data/menu.json',
   // JS modules
-  '/js/firebase.js',
-  '/js/analytics.js',
-  '/js/orderList.js',
-  '/js/models/Order.js',
-  '/js/repositories/OrderRepository.js',
-  '/js/repositories/LocalStorageOrderRepository.js',
-  '/js/services/OrderService.js',
-  '/js/core/EventBus.js',
-  '/js/core/EventTypes.js',
+  './js/firebase.js',
+  './js/analytics.js',
+  './js/orderList.js',
+  './js/models/Order.js',
+  './js/repositories/OrderRepository.js',
+  './js/repositories/LocalStorageOrderRepository.js',
+  './js/services/OrderService.js',
+  './js/core/EventBus.js',
+  './js/core/EventTypes.js',
   // Pizza images
-  '/images/pizza/margherita.png',
-  '/images/pizza/prosciutto.png',
-  '/images/pizza/salame.png',
-  '/images/pizza/prosciutto-cotto.png',
-  '/images/pizza/prosciutto-cotto-mushroom.png',
-  '/images/pizza/4-formaggi.png',
-  '/images/pizza/vegetariana.png',
-  '/images/pizza/al-funghi.png',
-  '/images/pizza/capricciosa.png',
-  '/images/pizza/bianca.png',
-  '/images/pizza/chicken.png',
-  '/images/pizza/italian-sausage.png',
-  '/images/pizza/tuna.png',
-  '/images/pizza/salame-ham-mushroom.png',
-  '/images/pizza/hawaiian-ham.png',
-  '/images/pizza/hawaiian-chicken.png',
-  '/images/pizza/custom.png',
+  './images/pizza/margherita.png',
+  './images/pizza/prosciutto.png',
+  './images/pizza/salame.png',
+  './images/pizza/prosciutto-cotto.png',
+  './images/pizza/prosciutto-cotto-mushroom.png',
+  './images/pizza/4-formaggi.png',
+  './images/pizza/vegetariana.png',
+  './images/pizza/al-funghi.png',
+  './images/pizza/capricciosa.png',
+  './images/pizza/bianca.png',
+  './images/pizza/chicken.png',
+  './images/pizza/italian-sausage.png',
+  './images/pizza/tuna.png',
+  './images/pizza/salame-ham-mushroom.png',
+  './images/pizza/hawaiian-ham.png',
+  './images/pizza/hawaiian-chicken.png',
+  './images/pizza/custom.png',
   // Quesadilla images
-  '/images/quesadilla/cheese.png',
-  '/images/quesadilla/chicken.png',
-  '/images/quesadilla/beef.png',
-  '/images/quesadilla/ham.png',
-  '/images/quesadilla/spinach.png',
-  '/images/quesadilla/mushroom.png',
-  '/images/quesadilla/pepperoni.png',
-  '/images/quesadilla/nutella.png',
+  './images/quesadilla/cheese.png',
+  './images/quesadilla/chicken.png',
+  './images/quesadilla/beef.png',
+  './images/quesadilla/ham.png',
+  './images/quesadilla/spinach.png',
+  './images/quesadilla/mushroom.png',
+  './images/quesadilla/pepperoni.png',
+  './images/quesadilla/nutella.png',
   // Icon images
-  '/images/icons/cheese.png',
-  '/images/icons/chicken.png',
-  '/images/icons/beef.png',
-  '/images/icons/spinach.png',
-  '/images/icons/ham.png',
-  '/images/icons/prosciutto.png',
-  '/images/icons/salame.png',
-  '/images/icons/mushroom.png',
-  '/images/icons/nutella.png',
-  '/images/icons/4-cheese.png',
-  '/images/icons/bianca.png'
+  './images/icons/cheese.png',
+  './images/icons/chicken.png',
+  './images/icons/beef.png',
+  './images/icons/spinach.png',
+  './images/icons/ham.png',
+  './images/icons/prosciutto.png',
+  './images/icons/salame.png',
+  './images/icons/mushroom.png',
+  './images/icons/nutella.png',
+  './images/icons/4-cheese.png',
+  './images/icons/bianca.png'
 ];
 
 // Install event - pre-cache static assets
@@ -161,7 +162,7 @@ async function cacheFirstStrategy(request) {
 
     // Return offline fallback for navigation requests
     if (request.mode === 'navigate') {
-      const cached = await caches.match('/index.html');
+      const cached = await caches.match('./index.html');
       if (cached) return cached;
     }
 
