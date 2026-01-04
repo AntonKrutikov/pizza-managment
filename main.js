@@ -3,6 +3,8 @@ import { OrderService } from "./js/services/OrderService.js"
 import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup } from "./js/orderList.js"
 import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
 import { backupToFirestore, getLastBackupInfo } from "./js/firebase.js"
+import EventBus from "./js/core/EventBus.js"
+import { OrderEvents } from "./js/core/EventTypes.js"
 
 const repository = new LocalStorageOrderRepository()
 const orderService = new OrderService(repository)
@@ -359,6 +361,63 @@ function updateTimers() {
 		if (order) {
 			timer.textContent = orderService.getElapsedTime(order.timestamp)
 		}
+	})
+}
+
+// Initialize EventBus subscriptions for reactive UI updates
+function initEventSubscriptions() {
+	// Events that always require updating the ongoing orders list
+	const simpleOngoingEvents = [
+		OrderEvents.ORDER_CREATED,
+		OrderEvents.ORDER_UNSERVED,
+		OrderEvents.ORDER_UNPAID,
+		OrderEvents.ORDER_UPDATED,
+		OrderEvents.ORDER_ITEM_SERVED,
+		OrderEvents.ORDER_ITEM_UNSERVED,
+		OrderEvents.ORDER_ITEM_REMOVED,
+		OrderEvents.ORDER_DELETED,
+		OrderEvents.ORDER_RESTORED,
+		OrderEvents.ORDERS_IMPORTED,
+		OrderEvents.ORDERS_CLEARED
+	]
+
+	simpleOngoingEvents.forEach((eventType) => {
+		EventBus.subscribe(eventType, () => {
+			updateOrders()
+		})
+	})
+
+	// ORDER_SERVED and ORDER_PAID: Only update if order is NOT completed
+	// (completed orders use countdown animation before moving to history)
+	EventBus.subscribe(OrderEvents.ORDER_SERVED, ({ order }) => {
+		if (!order || !order.paid) {
+			updateOrders()
+		}
+		// If completed, the countdown animation handler will call updateOrders/updateHistory
+	})
+
+	EventBus.subscribe(OrderEvents.ORDER_PAID, ({ order }) => {
+		if (!order || !order.served) {
+			updateOrders()
+		}
+		// If completed, the countdown animation handler will call updateOrders/updateHistory
+	})
+
+	// ORDER_COMPLETED: Don't update immediately - countdown animation handles this
+	// The animation shows for 5 seconds before moving to history
+
+	// Events that require updating the history list (except ORDER_COMPLETED)
+	const historyEvents = [
+		OrderEvents.ORDER_RESTORED,
+		OrderEvents.ORDER_DELETED,
+		OrderEvents.ORDERS_IMPORTED,
+		OrderEvents.ORDERS_CLEARED
+	]
+
+	historyEvents.forEach((eventType) => {
+		EventBus.subscribe(eventType, () => {
+			updateHistory()
+		})
 	})
 }
 
@@ -732,6 +791,7 @@ setInterval(updateHeaderClock, 1000)
 
 // Initial setup
 checkSendOrderReady()
+initEventSubscriptions()
 
 updateOrders()
 updateHistory()
@@ -1539,8 +1599,7 @@ document.getElementById("import-data-input").addEventListener("change", function
 			if (confirm(confirmMsg)) {
 				localStorage.setItem('pizzaShopOrders', JSON.stringify(dataToImport))
 				orderService.loadFromStorage()
-				updateOrders()
-				updateHistory()
+				EventBus.emit(OrderEvents.ORDERS_IMPORTED, { count: dataToImport.orders.length })
 				updateSettingsInfo()
 				alert("Data imported successfully!")
 			}
@@ -1564,8 +1623,7 @@ document.getElementById("clear-data-btn").addEventListener("click", function () 
 	if (input === "DELETE") {
 		localStorage.removeItem('pizzaShopOrders')
 		orderService.loadFromStorage()
-		updateOrders()
-		updateHistory()
+		EventBus.emit(OrderEvents.ORDERS_CLEARED, {})
 		updateSettingsInfo()
 		alert("All data has been cleared.")
 	} else if (input !== null) {

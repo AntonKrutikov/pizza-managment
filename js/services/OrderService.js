@@ -1,8 +1,11 @@
 import { Order } from '../models/Order.js'
+import EventBus from '../core/EventBus.js'
+import { OrderEvents } from '../core/EventTypes.js'
 
 /**
  * OrderService - Business logic layer for order management
  * Decoupled from storage - uses injected repository
+ * Emits events via EventBus for cross-component communication
  */
 export class OrderService {
 	constructor(repository) {
@@ -26,6 +29,7 @@ export class OrderService {
 		const orderNo = this.repository.incrementOrderCounter()
 		const order = Order.create(orderData, orderNo)
 		this.repository.save(order)
+		EventBus.emit(OrderEvents.ORDER_CREATED, { order })
 		return order
 	}
 
@@ -37,6 +41,10 @@ export class OrderService {
 			order.served = true
 			order.servedAt = Date.now()
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_SERVED, { order, orderId })
+			if (order.paid) {
+				EventBus.emit(OrderEvents.ORDER_COMPLETED, { order, orderId })
+			}
 		}
 	}
 
@@ -46,6 +54,7 @@ export class OrderService {
 			order.served = false
 			order.servedAt = null
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_UNSERVED, { order, orderId })
 		}
 	}
 
@@ -58,6 +67,10 @@ export class OrderService {
 				order.paymentType = paymentType
 			}
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_PAID, { order, orderId, paymentType })
+			if (order.served) {
+				EventBus.emit(OrderEvents.ORDER_COMPLETED, { order, orderId })
+			}
 		}
 	}
 
@@ -68,6 +81,7 @@ export class OrderService {
 			order.paidAt = null
 			order.paymentType = null
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_UNPAID, { order, orderId })
 		}
 	}
 
@@ -80,11 +94,13 @@ export class OrderService {
 			order.paidAt = null
 			order.paymentType = null
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_RESTORED, { order, orderId })
 		}
 	}
 
 	removeOrder(orderId) {
 		this.repository.delete(orderId)
+		EventBus.emit(OrderEvents.ORDER_DELETED, { orderId })
 	}
 
 	// === Order Updates ===
@@ -92,24 +108,30 @@ export class OrderService {
 	updateEatType(orderId, eatType) {
 		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
+			const oldValue = order.eatType
 			order.eatType = eatType
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_UPDATED, { order, orderId, field: 'eatType', oldValue, newValue: eatType })
 		}
 	}
 
 	updateTableNumber(orderId, tableNumber) {
 		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
+			const oldValue = order.tableNumber
 			order.tableNumber = tableNumber
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_UPDATED, { order, orderId, field: 'tableNumber', oldValue, newValue: tableNumber })
 		}
 	}
 
 	updateSoundIndicator(orderId, soundIndicator) {
 		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
+			const oldValue = order.soundIndicator
 			order.soundIndicator = soundIndicator
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_UPDATED, { order, orderId, field: 'soundIndicator', oldValue, newValue: soundIndicator })
 		}
 	}
 
@@ -120,6 +142,7 @@ export class OrderService {
 			order.price = order.items.reduce((sum, item) => sum + parseInt(item.price), 0)
 			order.pizzaType = order.items.map(item => item.name).join(", ")
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_ITEM_REMOVED, { order, orderId, itemIndex, removedItem })
 			return removedItem
 		}
 		return null
@@ -128,8 +151,10 @@ export class OrderService {
 	markItemAsServed(orderId, itemIndex) {
 		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && order.items && order.items[itemIndex]) {
-			order.items[itemIndex].served = true
+			const item = order.items[itemIndex]
+			item.served = true
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_ITEM_SERVED, { order, orderId, itemIndex, item })
 			return true
 		}
 		return false
@@ -138,8 +163,10 @@ export class OrderService {
 	markItemAsUnserved(orderId, itemIndex) {
 		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && order.items && order.items[itemIndex]) {
-			order.items[itemIndex].served = false
+			const item = order.items[itemIndex]
+			item.served = false
 			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_ITEM_UNSERVED, { order, orderId, itemIndex, item })
 			return true
 		}
 		return false
