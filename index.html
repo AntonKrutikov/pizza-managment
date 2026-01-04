@@ -542,6 +542,54 @@
         </div>
     </div>
 
+    <!-- Add Items to Order Popup -->
+    <div id="add-items-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content popup-content-fullscreen">
+            <div class="add-items-header">
+                <button type="button" id="add-items-cancel" class="popup-back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Cancel
+                </button>
+                <h3>Add Items to Order <span id="add-items-order-no"></span></h3>
+                <div class="add-items-cart-summary">
+                    <span id="add-items-count">0 items</span>
+                    <span id="add-items-total">0 THB</span>
+                </div>
+            </div>
+
+            <div class="add-items-content">
+                <div id="add-items-cart" class="add-items-cart" style="display: none;">
+                    <h4>Selected Items</h4>
+                    <ul id="add-items-cart-list"></ul>
+                </div>
+                <div id="add-items-menu-container" class="add-items-menu"></div>
+            </div>
+
+            <div class="add-items-footer">
+                <button type="button" id="add-items-confirm" class="popup-btn-confirm" disabled>
+                    Add <span id="add-items-btn-count">0</span> Items (<span id="add-items-btn-total">0</span> THB)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Items Custom Price Popup -->
+    <div id="add-items-custom-price-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Custom Price</h3>
+            <div class="popup-input-group">
+                <label for="add-items-custom-price-input">Enter price (THB):</label>
+                <input type="number" id="add-items-custom-price-input" min="1" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="popup-buttons-stack">
+                <button type="button" id="add-items-custom-price-confirm" class="popup-btn-confirm" disabled>Add Item</button>
+                <button type="button" id="add-items-custom-price-cancel" class="popup-btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>

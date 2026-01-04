@@ -22,6 +22,7 @@ export const OrderEvents = {
 	ORDER_ITEM_SERVED: 'order:item:served',
 	ORDER_ITEM_UNSERVED: 'order:item:unserved',
 	ORDER_ITEM_REMOVED: 'order:item:removed',
+	ORDER_ITEMS_ADDED: 'order:items:added',
 
 	// Bulk operations
 	ORDERS_IMPORTED: 'orders:imported',

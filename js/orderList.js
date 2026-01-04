@@ -287,9 +287,21 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		timer.textContent = orderService.getElapsedTime(order.timestamp)
 		timer.dataset.orderId = order.id
 
+		// Add Items button
+		const addItemsBtn = document.createElement("button")
+		addItemsBtn.type = "button"
+		addItemsBtn.classList.add("add-items-btn")
+		addItemsBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path d="M12 5v14M5 12h14"/>
+		</svg> Add`
+		addItemsBtn.title = "Add items to this order"
+		addItemsBtn.dataset.orderId = order.id
+		addItemsBtn.dataset.orderNo = order.orderNo
+
 		orderHeader.appendChild(timestamp)
 		orderHeader.appendChild(orderNo)
 		orderHeader.appendChild(timer)
+		orderHeader.appendChild(addItemsBtn)
 
 		// Middle section: Order details
 		const orderInfo = document.createElement("div")

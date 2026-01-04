@@ -5,6 +5,7 @@ import { Analytics, generatePieChart, generateLegend, generateBarChart } from ".
 import { backupToFirestore, getLastBackupInfo } from "./js/firebase.js"
 import EventBus from "./js/core/EventBus.js"
 import { OrderEvents } from "./js/core/EventTypes.js"
+import { initAddItemsPopup, showAddItemsPopup } from "./js/addItemsPopup.js"
 
 const repository = new LocalStorageOrderRepository()
 const orderService = new OrderService(repository)
@@ -54,6 +55,9 @@ async function loadMenu() {
 
 			menuContainer.appendChild(itemsGrid)
 		})
+
+		// Initialize add items popup with menu data
+		initAddItemsPopup(menuData, orderService, updateOrders)
 	} catch (error) {
 		console.error("Error loading menu:", error)
 	}
@@ -375,6 +379,7 @@ function initEventSubscriptions() {
 		OrderEvents.ORDER_ITEM_SERVED,
 		OrderEvents.ORDER_ITEM_UNSERVED,
 		OrderEvents.ORDER_ITEM_REMOVED,
+		OrderEvents.ORDER_ITEMS_ADDED,
 		OrderEvents.ORDER_DELETED,
 		OrderEvents.ORDER_RESTORED,
 		OrderEvents.ORDERS_IMPORTED,
@@ -742,6 +747,14 @@ ordersList.addEventListener("click", function (e) {
 		const orderId = parseInt(e.target.dataset.orderId)
 		orderService.markAsUnserved(orderId)
 		updateOrders()
+	}
+
+	// Handle add items button clicks
+	if (e.target.classList.contains("add-items-btn") || e.target.closest(".add-items-btn")) {
+		const btn = e.target.classList.contains("add-items-btn") ? e.target : e.target.closest(".add-items-btn")
+		const orderId = parseInt(btn.dataset.orderId)
+		const orderNo = btn.dataset.orderNo
+		showAddItemsPopup(orderId, orderNo)
 	}
 })
 

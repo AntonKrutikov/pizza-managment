@@ -148,6 +148,23 @@ export class OrderService {
 		return null
 	}
 
+	addItemsToOrder(orderId, newItems) {
+		const order = this.repository.orders.find(o => o.id === orderId)
+		if (order && newItems && newItems.length > 0) {
+			const itemsWithDefaults = newItems.map(item => ({
+				...item,
+				served: false
+			}))
+			order.items.push(...itemsWithDefaults)
+			order.price = order.items.reduce((sum, item) => sum + parseInt(item.price), 0)
+			order.pizzaType = order.items.map(item => item.name).join(", ")
+			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_ITEMS_ADDED, { order, orderId, addedItems: itemsWithDefaults })
+			return itemsWithDefaults
+		}
+		return null
+	}
+
 	markItemAsServed(orderId, itemIndex) {
 		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && order.items && order.items[itemIndex]) {
