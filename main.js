@@ -1506,6 +1506,13 @@ document.getElementById('backup-to-cloud-btn').addEventListener('click', async f
 	const btnText = document.getElementById('backup-btn-text')
 	const statusEl = document.getElementById('backup-status')
 
+	// Early exit if offline
+	if (!navigator.onLine) {
+		statusEl.textContent = 'Cannot backup while offline'
+		statusEl.className = 'backup-status error'
+		return
+	}
+
 	// Disable button and show loading state
 	btn.disabled = true
 	btnText.innerHTML = '<span class="backup-spinner"></span> Backing up...'
@@ -1630,3 +1637,44 @@ document.getElementById("clear-data-btn").addEventListener("click", function () 
 		alert("Deletion cancelled. You must type 'DELETE' to confirm.")
 	}
 })
+
+// ============================================
+// Online/Offline Detection
+// ============================================
+
+function initConnectivityMonitoring() {
+	const offlineIndicator = document.getElementById('offline-indicator')
+	const backupBtn = document.getElementById('backup-to-cloud-btn')
+
+	function updateOnlineStatus() {
+		const isOnline = navigator.onLine
+
+		// Update offline indicator visibility
+		if (offlineIndicator) {
+			offlineIndicator.style.display = isOnline ? 'none' : 'flex'
+		}
+
+		// Update backup button state
+		if (backupBtn) {
+			if (isOnline) {
+				backupBtn.disabled = false
+				backupBtn.title = 'Backup to Cloud'
+			} else {
+				backupBtn.disabled = true
+				backupBtn.title = 'Backup unavailable while offline'
+			}
+		}
+
+		console.log(`App is now ${isOnline ? 'online' : 'offline'}`)
+	}
+
+	// Listen for connectivity changes
+	window.addEventListener('online', updateOnlineStatus)
+	window.addEventListener('offline', updateOnlineStatus)
+
+	// Initial check
+	updateOnlineStatus()
+}
+
+// Initialize connectivity monitoring
+initConnectivityMonitoring()
