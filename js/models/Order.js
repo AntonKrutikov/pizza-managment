@@ -13,6 +13,7 @@ export class Order {
 		this.items = data.items || []
 		this.price = data.price
 		this.eatType = data.eatType
+		this.orderSource = data.orderSource || "pizza-shop" // Default to pizza shop
 
 		// Status fields with defaults
 		this.served = data.served ?? false
@@ -76,6 +77,7 @@ export class Order {
 			items: this.items,
 			price: this.price,
 			eatType: this.eatType,
+			orderSource: this.orderSource,
 			tableNumber: this.tableNumber,
 			soundIndicator: this.soundIndicator,
 			customerDescription: this.customerDescription,

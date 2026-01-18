@@ -1470,6 +1470,70 @@ ul#orders-list {
   margin: 0;
 }
 
+/* Order Source Grid */
+#order-source-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1em;
+  margin: 1em 0;
+}
+
+.source-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5em;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.source-card input[type="radio"] {
+  display: none;
+}
+
+.source-card input[type="radio"]:checked + span {
+  font-weight: bold;
+}
+
+.source-card input[type="radio"]:not(:checked) + span {
+  opacity: 0.3;
+}
+
+.source-card:has(input:checked) {
+  background: #fff3e0;
+  border-color: #d35400;
+}
+
+.source-card span {
+  font-size: 1.1em;
+  margin: 0;
+}
+
+/* Order Source Badge (in order cards) */
+.order-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.3em 0.6em;
+  background: #f0f0f0;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 500;
+  margin-right: 0.5em;
+}
+
+.order-source-badge[data-source="steak-shop"] {
+  background: #ffe0e0;
+}
+
+.order-source-badge[data-source="pizza-shop"] {
+  background: #fff3e0;
+}
+
 /* Custom Price Popup */
 .popup-overlay {
   position: fixed;

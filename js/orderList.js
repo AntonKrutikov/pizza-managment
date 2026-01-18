@@ -522,6 +522,19 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 			optionalDetails.appendChild(customerDiv)
 		}
 
+		// Order source badge
+		if (order.orderSource) {
+			const sourceDiv = document.createElement("div")
+			sourceDiv.classList.add("order-source-badge")
+			sourceDiv.dataset.source = order.orderSource
+
+			const sourceIcon = order.orderSource === "pizza-shop" ? "🍕" : "🥩"
+			const sourceText = order.orderSource === "pizza-shop" ? "Pizza Shop" : "Steak Shop"
+
+			sourceDiv.textContent = `${sourceIcon} ${sourceText}`
+			optionalDetails.appendChild(sourceDiv)
+		}
+
 		orderInfo.appendChild(optionalDetails)
 
 		// Right section: Status icons + Buttons
@@ -798,6 +811,13 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 			const typeIcon = order.eatType === "take-away" ? "📦" : "🍽️"
 			const typeText = order.eatType === "take-away" ? "Take Away" : "Eat In"
 			detailsText += ` | ${typeIcon} ${typeText}`
+
+			// Add order source if provided
+			if (order.orderSource) {
+				const sourceIcon = order.orderSource === "pizza-shop" ? "🍕" : "🥩"
+				const sourceText = order.orderSource === "pizza-shop" ? "Pizza" : "Steak"
+				detailsText += ` | ${sourceIcon} ${sourceText}`
+			}
 
 			// Add table number if provided
 			if (order.tableNumber) {

@@ -535,8 +535,9 @@ const sendOrderBtn = document.getElementById("send-order")
 function checkSendOrderReady() {
 	const paidSelected = document.querySelector('input[name="paid"]:checked')
 	const eatTypeSelected = document.querySelector('input[name="eatType"]:checked')
+	const orderSourceSelected = document.querySelector('input[name="orderSource"]:checked')
 
-	sendOrderBtn.disabled = !(currentOrderItems.length > 0 && paidSelected && eatTypeSelected)
+	sendOrderBtn.disabled = !(currentOrderItems.length > 0 && paidSelected && eatTypeSelected && orderSourceSelected)
 }
 
 // Table number and sound indicator are always visible now
@@ -592,6 +593,7 @@ sendOrderBtn.addEventListener("click", function () {
 	const paid = paidValue === "cash" || paidValue === "card"
 	const paymentType = paid ? paidValue : null
 	const eatType = document.querySelector('input[name="eatType"]:checked').value
+	const orderSource = document.querySelector('input[name="orderSource"]:checked').value
 
 	// Get selected table number from button grid
 	const selectedTableBtn = document.querySelector("#table-number-grid .number-btn.selected")
@@ -622,6 +624,7 @@ sendOrderBtn.addEventListener("click", function () {
 		paid,
 		paymentType,
 		eatType,
+		orderSource,
 		price: totalPrice,
 		tableNumber: tableNumber || null,
 		soundIndicator: soundIndicator || null,
@@ -635,6 +638,7 @@ sendOrderBtn.addEventListener("click", function () {
 	updateCurrentOrderDisplay()
 	Array.from(document.querySelectorAll('input[name="paid"]')).forEach((radio) => (radio.checked = false))
 	Array.from(document.querySelectorAll('input[name="eatType"]')).forEach((radio) => (radio.checked = false))
+	Array.from(document.querySelectorAll('input[name="orderSource"]')).forEach((radio) => (radio.checked = false))
 
 	// Reset button selections
 	document.querySelectorAll("#table-number-grid .number-btn").forEach((btn) => {
@@ -672,6 +676,7 @@ sendOrderBtn.addEventListener("click", function () {
 
 document.getElementById("paid-status-grid").addEventListener("change", checkSendOrderReady)
 document.getElementById("eat-type-grid").addEventListener("change", checkSendOrderReady)
+document.getElementById("order-source-grid").addEventListener("change", checkSendOrderReady)
 
 document.getElementById("reset-order").addEventListener("click", function () {
 	// Clear current order
