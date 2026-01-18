@@ -2,6 +2,7 @@ import { LocalStorageOrderRepository } from "./js/repositories/LocalStorageOrder
 import { OrderService } from "./js/services/OrderService.js"
 import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup, resetHistoryPagination } from "./js/orderList.js"
 import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
+import { AchievementsManager } from "./js/achievements.js"
 import { backupToFirestore, getLastBackupInfo } from "./js/firebase.js"
 import EventBus from "./js/core/EventBus.js"
 import { OrderEvents } from "./js/core/EventTypes.js"
@@ -15,6 +16,7 @@ initOrderPopups(orderService, () => {
 	updateOrders()
 })
 const analytics = new Analytics(orderService)
+const achievementsManager = new AchievementsManager(orderService)
 
 const orderForm = document.getElementById("order-form")
 const ordersList = document.getElementById("orders-list")
@@ -1574,6 +1576,211 @@ function updateComparisonBadge(elementId, change) {
 		element.textContent = `${change}% vs prev`
 		element.className = "summary-change negative"
 	}
+}
+
+// ============================================
+// Achievements Page Functionality
+// ============================================
+
+let achievementsPreviousScreen = "take-order"
+
+// Show achievements page
+document.getElementById("achievements-btn").addEventListener("click", function () {
+	// Store current screen to return to
+	const activeTab = document.querySelector(".nav-tab.active")
+	if (activeTab) {
+		achievementsPreviousScreen = activeTab.dataset.screen
+	}
+
+	// Hide nav tabs and show achievements
+	document.querySelector(".screen-nav").style.display = "none"
+	navTabs.forEach((t) => t.classList.remove("active"))
+	screens.forEach((s) => s.classList.remove("active"))
+
+	const achievementsScreen = document.querySelector('.screen[data-screen="achievements"]')
+	if (achievementsScreen) {
+		achievementsScreen.classList.add("active")
+	}
+
+	// Update achievements data
+	updateAchievements()
+})
+
+// Back button from achievements
+document.getElementById("achievements-back-btn").addEventListener("click", function () {
+	// Show nav tabs again
+	document.querySelector(".screen-nav").style.display = "flex"
+
+	// Return to previous screen
+	screens.forEach((s) => s.classList.remove("active"))
+	const previousScreenEl = document.querySelector(`.screen[data-screen="${achievementsPreviousScreen}"]`)
+	if (previousScreenEl) {
+		previousScreenEl.classList.add("active")
+	}
+
+	// Restore nav tab
+	navTabs.forEach((t) => {
+		t.classList.remove("active")
+		if (t.dataset.screen === achievementsPreviousScreen) {
+			t.classList.add("active")
+		}
+	})
+})
+
+// Check for newly unlocked achievements when an order is completed
+EventBus.subscribe(OrderEvents.ORDER_COMPLETED, ({ order }) => {
+	const newUnlocks = achievementsManager.checkNewUnlocks()
+	if (newUnlocks.length > 0) {
+		// Show notification for the first newly unlocked achievement
+		showUnlockNotification(newUnlocks[0])
+	}
+})
+
+// Update achievements page with current data
+function updateAchievements() {
+	achievementsManager.calculateProgress()
+	const stats = achievementsManager.getStats()
+	const byCategory = achievementsManager.getAchievementsByCategory()
+
+	// Update summary stats
+	document.getElementById("achievements-unlocked").textContent = `${stats.unlocked} / ${stats.total}`
+	document.getElementById("achievements-percentage").textContent = `${stats.percentage}%`
+	document.getElementById("achievements-progress-fill").style.width = `${stats.percentage}%`
+
+	// Render categories and achievement cards
+	const container = document.getElementById("achievements-container")
+	container.innerHTML = ""
+
+	Object.entries(byCategory).forEach(([categoryName, achievements]) => {
+		const section = createCategorySection(categoryName, achievements)
+		container.appendChild(section)
+	})
+}
+
+// Create a category section with achievement cards
+function createCategorySection(categoryName, achievements) {
+	const section = document.createElement("div")
+	section.className = "achievement-category"
+
+	const header = document.createElement("div")
+	header.className = "category-header"
+	header.textContent = categoryName
+	section.appendChild(header)
+
+	const grid = document.createElement("div")
+	grid.className = "achievement-grid"
+
+	achievements.forEach(achievement => {
+		const card = createAchievementCard(achievement)
+		grid.appendChild(card)
+	})
+
+	section.appendChild(grid)
+	return section
+}
+
+// Create an individual achievement card
+function createAchievementCard(achievement) {
+	const card = document.createElement("div")
+	card.className = "achievement-card"
+
+	// Determine card state
+	if (achievement.unlocked) {
+		card.classList.add("unlocked")
+	} else if (achievement.currentProgress > 0) {
+		card.classList.add("in-progress")
+	} else {
+		card.classList.add("locked")
+	}
+
+	// Icon
+	const icon = document.createElement("div")
+	icon.className = "achievement-icon"
+	icon.textContent = achievement.icon
+	card.appendChild(icon)
+
+	// Name
+	const name = document.createElement("div")
+	name.className = "achievement-name"
+	name.textContent = achievement.name
+	card.appendChild(name)
+
+	// Description
+	const description = document.createElement("div")
+	description.className = "achievement-description"
+	description.textContent = achievement.description
+	card.appendChild(description)
+
+	// State-specific elements
+	if (achievement.unlocked) {
+		// Checkmark badge
+		const checkmark = document.createElement("div")
+		checkmark.className = "checkmark"
+		checkmark.textContent = "✓"
+		card.appendChild(checkmark)
+
+		// Unlock date
+		if (achievement.unlockedAt) {
+			const date = document.createElement("div")
+			date.className = "achievement-unlocked-date"
+			date.textContent = `Unlocked: ${new Date(achievement.unlockedAt).toLocaleDateString()}`
+			card.appendChild(date)
+		}
+	} else if (achievement.currentProgress > 0) {
+		// Progress bar
+		const progressBarContainer = document.createElement("div")
+		progressBarContainer.className = "progress-bar-small"
+		const progressFill = document.createElement("div")
+		progressFill.className = "fill"
+		const percentage = Math.min((achievement.currentProgress / achievement.target) * 100, 100)
+		progressFill.style.width = `${percentage}%`
+		progressBarContainer.appendChild(progressFill)
+		card.appendChild(progressBarContainer)
+
+		// Progress text
+		const progressText = document.createElement("div")
+		progressText.className = "achievement-progress-text"
+		progressText.textContent = `${achievement.currentProgress} / ${achievement.target} (${Math.round(percentage)}%)`
+		card.appendChild(progressText)
+	} else {
+		// Lock icon for locked achievements
+		const lockIcon = document.createElement("div")
+		lockIcon.className = "lock-icon"
+		lockIcon.textContent = "🔒"
+		card.appendChild(lockIcon)
+	}
+
+	return card
+}
+
+// Show unlock notification popup
+function showUnlockNotification(achievement) {
+	const notification = document.getElementById("achievement-unlock-notification")
+	const icon = document.getElementById("unlock-icon")
+	const name = document.getElementById("unlock-name")
+	const description = document.getElementById("unlock-description")
+
+	icon.textContent = achievement.icon
+	name.textContent = achievement.name
+	description.textContent = achievement.description
+
+	notification.style.display = "flex"
+
+	// Dismiss handler
+	const dismissBtn = document.getElementById("unlock-dismiss")
+	const dismissHandler = function () {
+		notification.style.display = "none"
+		dismissBtn.removeEventListener("click", dismissHandler)
+	}
+	dismissBtn.addEventListener("click", dismissHandler)
+
+	// Auto-dismiss after 5 seconds
+	setTimeout(() => {
+		if (notification.style.display === "flex") {
+			notification.style.display = "none"
+			dismissBtn.removeEventListener("click", dismissHandler)
+		}
+	}, 5000)
 }
 
 // ============================================

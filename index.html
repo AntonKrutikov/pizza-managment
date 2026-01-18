@@ -42,6 +42,12 @@
                     <path d="M18 20V10M12 20V4M6 20v-6" />
                 </svg>
             </button>
+            <button type="button" id="achievements-btn" class="header-action-btn" title="Achievements">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="7" />
+                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                </svg>
+            </button>
             <button type="button" id="settings-btn" class="header-action-btn" title="Settings">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="3" />
@@ -490,6 +496,37 @@
                 <div id="peak-hours" class="peak-hours"></div>
             </div>
         </section>
+
+        <!-- Achievements Screen -->
+        <section id="achievements-section" class="screen" data-screen="achievements">
+            <div class="achievements-header">
+                <button type="button" id="achievements-back-btn" class="achievements-back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back
+                </button>
+                <h2>Achievements</h2>
+            </div>
+
+            <!-- Progress Summary -->
+            <div class="achievements-summary">
+                <div class="summary-card">
+                    <span class="summary-icon">🏆</span>
+                    <div class="summary-content">
+                        <span class="summary-label">Unlocked</span>
+                        <span class="summary-value" id="achievements-unlocked">0 / 20</span>
+                    </div>
+                </div>
+                <div class="achievements-progress-bar">
+                    <div class="progress-fill" id="achievements-progress-fill" style="width: 0%"></div>
+                </div>
+                <span class="progress-percentage" id="achievements-percentage">0%</span>
+            </div>
+
+            <!-- Achievement Categories Container (rendered by JS) -->
+            <div id="achievements-container"></div>
+        </section>
     </div>
 
     <!-- Custom Price Popup -->
@@ -633,6 +670,17 @@
                     Item</button>
                 <button type="button" id="add-items-custom-price-cancel" class="popup-btn-cancel">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Achievement Unlock Notification Popup -->
+    <div id="achievement-unlock-notification" class="unlock-notification" style="display: none;">
+        <div class="unlock-content">
+            <h3>🎉 Achievement Unlocked!</h3>
+            <div class="unlock-icon" id="unlock-icon"></div>
+            <div class="unlock-name" id="unlock-name"></div>
+            <div class="unlock-description" id="unlock-description"></div>
+            <button type="button" id="unlock-dismiss" class="unlock-dismiss-btn">Awesome!</button>
         </div>
     </div>
 

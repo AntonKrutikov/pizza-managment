@@ -150,8 +150,8 @@ async function cacheFirstStrategy(request) {
   try {
     const response = await fetch(request);
 
-    // Cache successful responses
-    if (response.ok) {
+    // Cache successful responses (but skip non-http(s) URLs like chrome-extension://)
+    if (response.ok && request.url.startsWith('http')) {
       const cache = await caches.open(STATIC_CACHE);
       cache.put(request, response.clone());
     }
