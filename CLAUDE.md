@@ -5,37 +5,44 @@ Browser-based Point of Sale (POS) system for a pizza shop. Built with vanilla Ja
 ## Project Structure
 
 ```
-pizza-shop/
-  ├── index.html              → Main UI shell (screens, navigation, popups)
-  ├── main.js                 → App orchestrator (menu loading, routing, events, order form)
-  ├── style.css               → All CSS styles (mobile-first, responsive, CSS variables)
-  ├── CLAUDE.md               → Project instructions for AI assistants
-  │
-  ├── js/
-  │   ├── firebase.js         → Firebase config, anonymous auth, Firestore backup
-  │   ├── analytics.js        → Metrics calculation, chart generation (pie/bar)
-  │   ├── orderList.js        → Order rendering, popup/modal management
-  │   │
-  │   ├── models/
-  │   │   └── Order.js        → Order data model (create, serialize, status helpers)
-  │   │
-  │   ├── repositories/
-  │   │   ├── OrderRepository.js           → Abstract storage interface
-  │   │   └── LocalStorageOrderRepository.js → LocalStorage implementation
-  │   │
-  │   └── services/
-  │       └── OrderService.js  → Business logic (CRUD, status updates, queries)
-  │
-  ├── data/
-  │   └── menu.json           → Menu catalog (categories, items, prices, variants)
-  │
-  └── images/
-      ├── icons/              → Ingredient/type icons (cheese, ham, etc.)
-      ├── pizza/              → Pizza product images
-      ├── quesadilla/         → Quesadilla product images
+  pizza-shop/
+    ├── index.html              → Main UI shell (screens, navigation, popups)
+    ├── main.js                 → App orchestrator (menu loading, routing, events, order form)
+    ├── style.css               → All CSS styles (mobile-first, responsive, CSS variables)
+    ├── service-worker.js       → PWA service worker (offline caching, connectivity monitoring)
+    ├── manifest.json           → PWA manifest (app metadata, icons, display settings)
+    ├── CLAUDE.md               → Project instructions for AI assistants
+    │
+    ├── js/
+    │   ├── firebase.js         → Firebase config, anonymous auth, Firestore backup
+    │   ├── analytics.js        → Metrics calculation, chart generation (pie/bar)
+    │   ├── orderList.js        → Order rendering, popup/modal management
+    │   ├── addItemsPopup.js    → Add items popup for existing orders
+    │   │
+    │   ├── core/
+    │   │   ├── EventBus.js     → Event bus for event-driven communication
+    │   │   └── EventTypes.js   → Event type definitions (order events)
+    │   │
+    │   ├── models/
+    │   │   └── Order.js        → Order data model (create, serialize, status helpers)
+    │   │
+    │   ├── repositories/
+    │   │   ├── OrderRepository.js           → Abstract storage interface
+    │   │   └── LocalStorageOrderRepository.js → LocalStorage implementation
+    │   │
+    │   └── services/
+    │       └── OrderService.js  → Business logic (CRUD, status updates, queries)
+    │
+    ├── data/
+    │   └── menu.json           → Menu catalog (categories, items, prices, variants)
+    │
+    └── images/
+        ├── icons/              → App icons (favicon, PWA icons, app specific icons)
+        ├── pizza/              → Pizza product images
+        └── quesadilla/         → Quesadilla product images
 ```
 
-**Data Flow:** User Action → main.js → OrderService → Repository → LocalStorage → Re-render UI
+**Data Flow:** User Action → main.js → OrderService → EventBus → Repository → LocalStorage → Event Listeners → Re-render UI
 
 ## Key Conventions
 
@@ -45,6 +52,8 @@ pizza-shop/
 - Repository pattern for swappable storage backends
 - Service layer decouples business logic from persistence
 - Model objects with factory methods and serialization
+- PWA best practices (offline first, caching, manifest)
+- Event-driven architecture with EventBus for loose coupling
 
 ## UI Conventions
 

@@ -343,7 +343,53 @@ button {
   }
 }
 
+/* Orders Header & Layout Controls */
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.orders-header h2 {
+  margin: 0;
+  flex: 1;
+}
+
+.layout-controls {
+  display: flex;
+  gap: 0.5em;
+}
+
+.layout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 2px solid #d35400;
+  background: #fff;
+  color: #d35400;
+  font-weight: 600;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.layout-btn:hover {
+  background: #fff3e0;
+}
+
+.layout-btn.active {
+  background: #d35400;
+  color: #fff;
+}
+
 ul#orders-list {
+  display: grid;
+  grid-template-columns: repeat(var(--layout-columns, 3), 1fr);
+  gap: 1em;
   list-style: none;
   padding: 0;
 }
@@ -2968,4 +3014,49 @@ ul#orders-list {
   width: 14px;
   height: 14px;
   pointer-events: none;
+}
+
+/* ============================================ */
+/* Layout Controls Responsive */
+/* ============================================ */
+
+/* Tablet: cap at 2 columns max */
+@media (max-width: 1200px) {
+  ul#orders-list {
+    grid-template-columns: repeat(min(var(--layout-columns, 3), 2), 1fr);
+  }
+}
+
+/* Mobile: force 1 column, hide controls */
+@media (max-width: 768px) {
+  .layout-controls {
+    display: none;
+  }
+
+  ul#orders-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================ */
+/* History "Show More" Button */
+/* ============================================ */
+
+.show-more-history-btn {
+  display: block;
+  width: 100%;
+  padding: 1em;
+  margin-top: 1em;
+  background: #d35400;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.show-more-history-btn:hover {
+  background: #e67e22;
 }

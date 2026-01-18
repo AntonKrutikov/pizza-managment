@@ -1,6 +1,6 @@
 import { LocalStorageOrderRepository } from "./js/repositories/LocalStorageOrderRepository.js"
 import { OrderService } from "./js/services/OrderService.js"
-import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup } from "./js/orderList.js"
+import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup, resetHistoryPagination } from "./js/orderList.js"
 import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
 import { backupToFirestore, getLastBackupInfo } from "./js/firebase.js"
 import EventBus from "./js/core/EventBus.js"
@@ -27,7 +27,57 @@ let menuData = null
 let currentCategory = null
 let selectedItem = null
 
+// Layout state
+let ordersLayoutColumns = 3
+
+// ============================================
+// Layout Controls
+// ============================================
+
+function initLayoutControls() {
+	// Get saved preference or default to 3 columns
+	const saved = localStorage.getItem("pizzaShopLayoutColumns")
+	ordersLayoutColumns = saved ? parseInt(saved) : 3
+
+	// Apply initial layout
+	applyLayoutColumns()
+
+	// Set up button listeners
+	const layoutBtns = document.querySelectorAll(".layout-btn")
+	layoutBtns.forEach((btn) => {
+		if (parseInt(btn.dataset.columns) === ordersLayoutColumns) {
+			btn.classList.add("active")
+		}
+
+		btn.addEventListener("click", () => {
+			const newColumns = parseInt(btn.dataset.columns)
+			setLayoutColumns(newColumns)
+
+			// Update UI
+			layoutBtns.forEach((b) => b.classList.remove("active"))
+			btn.classList.add("active")
+		})
+	})
+}
+
+function setLayoutColumns(columns) {
+	ordersLayoutColumns = columns
+	localStorage.setItem("pizzaShopLayoutColumns", columns)
+	applyLayoutColumns()
+
+	// Reset any swiped states when layout changes
+	document.querySelectorAll(".order-item").forEach((item) => {
+		item.style.transform = "translateX(0)"
+	})
+}
+
+function applyLayoutColumns() {
+	document.documentElement.style.setProperty("--layout-columns", ordersLayoutColumns)
+}
+
+// ============================================
 // Load menu data and display all categories
+// ============================================
 async function loadMenu() {
 	try {
 		const response = await fetch("data/menu.json")
@@ -348,13 +398,20 @@ function updateOrdersBadge(count) {
 	}
 }
 
+// Flag to prevent cascading re-renders of history
+let isUpdatingHistory = false
+
 function updateHistory() {
+	if (isUpdatingHistory) return // Prevent cascading re-renders
+
+	isUpdatingHistory = true
 	const servedOrders = orderService.getServedOrders()
 	renderHistoryOrders(servedOrders, historyList, orderService, () => {
-		// Callback when order is restored or deleted - update both lists
+		// Callback when order is restored or deleted - update ongoing orders list
 		updateOrders()
-		updateHistory()
+		// Don't call updateHistory() again to prevent cascading re-renders
 	})
+	isUpdatingHistory = false
 }
 
 function updateTimers() {
@@ -767,8 +824,15 @@ navTabs.forEach((tab) => {
 		navTabs.forEach((t) => t.classList.remove("active"))
 		tab.classList.add("active")
 
-		// Update active screen
-		screens.forEach((s) => s.classList.remove("active"))
+		// Update active screen and reset pagination when leaving history
+		screens.forEach((s) => {
+			const wasHistoryActive = s.classList.contains("active") && s.dataset.screen === "orders-history"
+			s.classList.remove("active")
+			// Reset pagination when leaving history tab
+			if (wasHistoryActive) {
+				resetHistoryPagination()
+			}
+		})
 		const screenToShow = document.querySelector(`.screen[data-screen="${targetScreen}"]`)
 		if (screenToShow) {
 			screenToShow.classList.add("active")
@@ -805,9 +869,10 @@ setInterval(updateHeaderClock, 1000)
 // Initial setup
 checkSendOrderReady()
 initEventSubscriptions()
+initLayoutControls()
 
 updateOrders()
-updateHistory()
+// History is lazy-loaded when user switches to history tab
 
 // ============================================
 // Fullscreen Toggle

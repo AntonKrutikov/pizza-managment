@@ -697,6 +697,16 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 	})
 }
 
+// ============================================
+// History Pagination State (by date groups)
+// ============================================
+let historyDaysToShow = 7 // Show last 7 days by default
+let historyVisibleDays = 7
+
+export function resetHistoryPagination() {
+	historyVisibleDays = historyDaysToShow
+}
+
 export function renderHistoryOrders(orders, container, orderService, onOrderChange = null) {
 	container.innerHTML = ""
 	if (orders.length === 0) {
@@ -707,7 +717,7 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 		return
 	}
 
-	// Group orders by date
+	// Group ALL orders by date first
 	const ordersByDate = {}
 	orders.forEach((order) => {
 		const date = new Date(order.timestamp)
@@ -730,8 +740,12 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 		return ordersByDate[b].timestamp - ordersByDate[a].timestamp
 	})
 
-	// Render each date section
-	sortedDates.forEach((dateKey) => {
+	// Apply date-based pagination - only show first N days
+	const visibleDates = sortedDates.slice(0, historyVisibleDays)
+	const remainingDates = sortedDates.slice(historyVisibleDays)
+
+	// Render each visible date section
+	visibleDates.forEach((dateKey) => {
 		const dateData = ordersByDate[dateKey]
 
 		// Create date header with total income
@@ -964,4 +978,20 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 
 		container.appendChild(dateOrdersList)
 	})
+
+	// Add "Show More" button if there are more date groups to load
+	if (remainingDates.length > 0) {
+		const showMoreBtn = document.createElement("button")
+		const nextDatesCount = Math.min(historyDaysToShow, remainingDates.length)
+		const orderCountInRemainingDates = remainingDates.reduce((sum, dateKey) => {
+			return sum + ordersByDate[dateKey].orders.length
+		}, 0)
+		showMoreBtn.textContent = `Show More (${remainingDates.length} more days, ${orderCountInRemainingDates} orders)`
+		showMoreBtn.classList.add("show-more-history-btn")
+		showMoreBtn.addEventListener("click", () => {
+			historyVisibleDays += historyDaysToShow
+			renderHistoryOrders(orders, container, orderService, onOrderChange)
+		})
+		container.appendChild(showMoreBtn)
+	}
 }
