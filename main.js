@@ -30,6 +30,9 @@ let selectedItem = null
 // Layout state
 let ordersLayoutColumns = 3
 
+// Filter state
+let ordersFilterMode = "all" // Options: "all", "hide-steak-served", "hide-all-served"
+
 // ============================================
 // Layout Controls
 // ============================================
@@ -73,6 +76,39 @@ function setLayoutColumns(columns) {
 
 function applyLayoutColumns() {
 	document.documentElement.style.setProperty("--layout-columns", ordersLayoutColumns)
+}
+
+// ============================================
+// Filter Controls
+// ============================================
+
+function initFilterControls() {
+	// Get saved preference or default to "all"
+	const saved = localStorage.getItem("pizzaShopOrdersFilter")
+	ordersFilterMode = saved || "all"
+
+	// Set initial active state
+	const filterBtns = document.querySelectorAll(".filter-btn")
+	filterBtns.forEach((btn) => {
+		if (btn.dataset.filter === ordersFilterMode) {
+			btn.classList.add("active")
+		}
+
+		btn.addEventListener("click", () => {
+			const newFilter = btn.dataset.filter
+			setFilterMode(newFilter)
+
+			// Update UI
+			filterBtns.forEach((b) => b.classList.remove("active"))
+			btn.classList.add("active")
+		})
+	})
+}
+
+function setFilterMode(mode) {
+	ordersFilterMode = mode
+	localStorage.setItem("pizzaShopOrdersFilter", mode)
+	updateOrders() // Re-render with new filter
 }
 
 // ============================================
@@ -375,7 +411,21 @@ loadMenu()
 let currentOrderItems = []
 
 function updateOrders() {
-	const orders = orderService.getOrders()
+	let orders = orderService.getOrders()
+
+	// Apply filter based on current mode
+	if (ordersFilterMode === "hide-steak-served") {
+		// Hide served orders from steak shop only
+		orders = orders.filter((o) => {
+			// Show if NOT (served AND from steak shop)
+			return !(o.served && o.orderSource === "steak-shop")
+		})
+	} else if (ordersFilterMode === "hide-all-served") {
+		// Hide all served orders (show only cooking)
+		orders = orders.filter((o) => !o.served)
+	}
+	// "all" mode shows everything (no additional filtering)
+
 	renderOrders(orders, ordersList, orderService, () => {
 		// Callback when order changes - update everything
 		updateOrders()
@@ -875,6 +925,7 @@ setInterval(updateHeaderClock, 1000)
 checkSendOrderReady()
 initEventSubscriptions()
 initLayoutControls()
+initFilterControls()
 
 updateOrders()
 // History is lazy-loaded when user switches to history tab

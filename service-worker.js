@@ -1,7 +1,7 @@
 // Pizza Shop POS - Service Worker
 // Enables offline functionality through caching
 
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v10';
 const STATIC_CACHE = `pizza-shop-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `pizza-shop-dynamic-${CACHE_VERSION}`;
 

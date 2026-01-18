@@ -386,6 +386,54 @@ button {
   color: #fff;
 }
 
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  gap: 0.5em;
+  margin-left: 1em;
+}
+
+.filter-btn {
+  padding: 0.5em 1em;
+  border: 2px solid #ddd;
+  background: #fff;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  border-color: #d35400;
+  background: #fff3e0;
+}
+
+.filter-btn.active {
+  background: #d35400;
+  color: #fff;
+  border-color: #d35400;
+}
+
+/* Responsive: Stack controls on smaller screens */
+@media (max-width: 1024px) {
+  .orders-header {
+    flex-wrap: wrap;
+  }
+
+  .filter-controls {
+    margin-left: 0;
+    margin-top: 0.5em;
+    width: 100%;
+  }
+
+  .filter-btn {
+    flex: 1;
+  }
+}
+
 ul#orders-list {
   display: grid;
   grid-template-columns: repeat(var(--layout-columns, 3), 1fr);
