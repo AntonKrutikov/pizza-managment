@@ -28,3 +28,20 @@ export const OrderEvents = {
 	ORDERS_IMPORTED: 'orders:imported',
 	ORDERS_CLEARED: 'orders:cleared'
 }
+
+export const InventoryEvents = {
+	// Dough tracking
+	DOUGH_COUNT_SET: 'inventory:dough:set',
+	DOUGH_DEDUCTED: 'inventory:dough:deducted',
+	DOUGH_ADJUSTED: 'inventory:dough:adjusted',
+
+	// Tracking control
+	TRACKING_ENABLED: 'inventory:tracking:enabled',
+	TRACKING_DISABLED: 'inventory:tracking:disabled',
+
+	// Stock alerts
+	STOCK_LOW: 'inventory:stock:low',
+	STOCK_CRITICAL: 'inventory:stock:critical',
+	STOCK_OUT: 'inventory:stock:out',
+	STOCK_NORMAL: 'inventory:stock:normal'
+}

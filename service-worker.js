@@ -1,7 +1,7 @@
 // Pizza Shop POS - Service Worker
 // Enables offline functionality through caching
 
-const CACHE_VERSION = 'v10';
+const CACHE_VERSION = 'v14';
 const STATIC_CACHE = `pizza-shop-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `pizza-shop-dynamic-${CACHE_VERSION}`;
 
@@ -24,6 +24,11 @@ const STATIC_ASSETS = [
   './js/services/OrderService.js',
   './js/core/EventBus.js',
   './js/core/EventTypes.js',
+  './js/inventoryUI.js',
+  './js/models/Inventory.js',
+  './js/repositories/InventoryRepository.js',
+  './js/repositories/LocalStorageInventoryRepository.js',
+  './js/services/InventoryService.js',
   // Pizza images
   './images/pizza/margherita.png',
   './images/pizza/prosciutto.png',

@@ -99,8 +99,9 @@ export class OrderService {
 	}
 
 	removeOrder(orderId) {
+		const order = this.repository.orders.find(o => o.id === orderId)
 		this.repository.delete(orderId)
-		EventBus.emit(OrderEvents.ORDER_DELETED, { orderId })
+		EventBus.emit(OrderEvents.ORDER_DELETED, { orderId, order })
 	}
 
 	// === Order Updates ===
