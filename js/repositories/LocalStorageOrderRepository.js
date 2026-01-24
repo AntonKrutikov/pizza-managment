@@ -11,6 +11,9 @@ export class LocalStorageOrderRepository extends OrderRepository {
 	constructor() {
 		super()
 		this._orders = []
+		this._orderMap = new Map() // O(1) lookup index for orders by ID
+		this._cachedOngoing = null // Cached filter results
+		this._cachedCompleted = null // Cached filter results
 		this._orderCounter = 0
 		this._loadFromStorage()
 	}
@@ -21,9 +24,13 @@ export class LocalStorageOrderRepository extends OrderRepository {
 			const data = JSON.parse(saved)
 			this._orders = (data.orders || []).map(o => Order.fromJSON(o))
 			this._orderCounter = data.orderCounter || 0
+			// Populate index map for O(1) lookups
+			this._orderMap.clear()
+			this._orders.forEach(order => this._orderMap.set(order.id, order))
 		} else {
 			this._orders = []
 			this._orderCounter = 0
+			this._orderMap.clear()
 		}
 	}
 
@@ -46,6 +53,11 @@ export class LocalStorageOrderRepository extends OrderRepository {
 		} else {
 			this._orders.push(orderInstance)
 		}
+		// Update index map for O(1) lookups
+		this._orderMap.set(orderInstance.id, orderInstance)
+		// Invalidate filter caches
+		this._cachedOngoing = null
+		this._cachedCompleted = null
 		this._saveToStorage()
 		return orderInstance
 	}
@@ -54,6 +66,11 @@ export class LocalStorageOrderRepository extends OrderRepository {
 		const index = this._orders.findIndex(o => o.id === orderId)
 		if (index !== -1) {
 			this._orders.splice(index, 1)
+			// Remove from index map
+			this._orderMap.delete(orderId)
+			// Invalidate filter caches
+			this._cachedOngoing = null
+			this._cachedCompleted = null
 			this._saveToStorage()
 			return true
 		}
@@ -61,7 +78,8 @@ export class LocalStorageOrderRepository extends OrderRepository {
 	}
 
 	findById(orderId) {
-		return this._orders.find(o => o.id === orderId) || null
+		// O(1) lookup using Map instead of O(n) array scan
+		return this._orderMap.get(orderId) || null
 	}
 
 	// === Query Operations ===
@@ -71,11 +89,23 @@ export class LocalStorageOrderRepository extends OrderRepository {
 	}
 
 	findOngoing() {
-		return this._orders.filter(o => o.isOngoing())
+		// Return cached result if available
+		if (this._cachedOngoing !== null) {
+			return this._cachedOngoing
+		}
+		// Filter and cache the result
+		this._cachedOngoing = this._orders.filter(o => o.isOngoing())
+		return this._cachedOngoing
 	}
 
 	findCompleted() {
-		return this._orders.filter(o => o.isCompleted()).reverse()
+		// Return cached result if available
+		if (this._cachedCompleted !== null) {
+			return this._cachedCompleted
+		}
+		// Filter and cache the result
+		this._cachedCompleted = this._orders.filter(o => o.isCompleted()).reverse()
+		return this._cachedCompleted
 	}
 
 	findByDateRange(startTimestamp, endTimestamp) {
@@ -101,11 +131,15 @@ export class LocalStorageOrderRepository extends OrderRepository {
 	importOrders(orders, orderCounter) {
 		this._orders = orders.map(o => Order.fromJSON(o))
 		this._orderCounter = orderCounter
+		// Rebuild index map
+		this._orderMap.clear()
+		this._orders.forEach(order => this._orderMap.set(order.id, order))
 		this._saveToStorage()
 	}
 
 	clearAll() {
 		this._orders = []
+		this._orderMap.clear()
 		this._orderCounter = 0
 		localStorage.removeItem(STORAGE_KEY)
 	}

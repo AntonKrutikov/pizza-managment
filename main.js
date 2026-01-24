@@ -477,7 +477,8 @@ function updateTimers() {
 	const timers = document.querySelectorAll(".order-timer")
 	timers.forEach((timer) => {
 		const orderId = parseInt(timer.dataset.orderId)
-		const order = orderService.orders.find((o) => o.id === orderId)
+		// Use O(1) indexed lookup instead of O(n) array scan
+		const order = orderService.repository.findById(orderId)
 		if (order) {
 			timer.textContent = orderService.getElapsedTime(order.timestamp)
 		}
@@ -959,8 +960,8 @@ navTabs.forEach((tab) => {
 	})
 })
 
-// Update timers every second
-setInterval(updateTimers, 1000)
+// Update timers every 2 seconds (reduced frequency for better performance with large order counts)
+setInterval(updateTimers, 2000)
 
 // Header clock (visible on desktop only via CSS)
 function updateHeaderClock() {
