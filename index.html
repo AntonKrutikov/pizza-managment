@@ -17,7 +17,7 @@
 
 <body>
     <header class="app-header">
-        <h1>Pizza Shop Management <span id="dough-count-header" class="dough-count-header"></span></h1>
+        <h1>Pizza Shop Management</h1>
         <div class="header-actions">
             <span id="offline-indicator" class="offline-indicator" style="display: none;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -46,12 +46,6 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="8" r="7" />
                     <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
-                </svg>
-            </button>
-            <button type="button" id="inventory-btn" class="header-action-btn" title="Stock Management">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
                 </svg>
             </button>
             <button type="button" id="settings-btn" class="header-action-btn" title="Settings">
@@ -532,65 +526,6 @@
 
             <!-- Achievement Categories Container (rendered by JS) -->
             <div id="achievements-container"></div>
-        </section>
-
-        <!-- Stock Management Screen -->
-        <section id="inventory-section" class="screen" data-screen="inventory">
-            <div class="inventory-header">
-                <button type="button" id="inventory-back-btn" class="inventory-back-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
-                    Back
-                </button>
-                <h2>Stock Management</h2>
-            </div>
-
-            <!-- Dough Tracking Section -->
-            <div class="inventory-section-card">
-                <h3>🍕 Dough Tracking</h3>
-
-                <!-- Tracking Toggle -->
-                <div class="tracking-toggle-container">
-                    <label class="toggle-label">
-                        <span>Enable Dough Tracking</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="dough-tracking-toggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </label>
-                </div>
-
-                <!-- Current Stock Display -->
-                <div id="dough-stock-display" class="stock-display-card">
-                    <div class="stock-icon">🥖</div>
-                    <div class="stock-content">
-                        <h4>Current Dough Stock</h4>
-                        <div class="stock-count" id="dough-count-display">0</div>
-                        <div class="stock-status" id="dough-status-display">Tracking disabled</div>
-                    </div>
-                </div>
-
-                <div class="stock-last-set" id="dough-last-set">Last Set: Never</div>
-
-                <!-- Set Dough Count -->
-                <div class="inventory-control-section">
-                    <h4>Set Dough Count</h4>
-                    <div class="set-count-controls">
-                        <input type="number" id="dough-count-input" min="0" value="50" placeholder="Enter count">
-                        <button type="button" id="set-dough-count-btn" class="inventory-btn primary">Set Count</button>
-                    </div>
-                </div>
-
-                <!-- Manual Adjustments -->
-                <div class="inventory-control-section">
-                    <h4>Manual Adjustments</h4>
-                    <div class="adjustment-controls">
-                        <button type="button" class="adjustment-btn" data-amount="-1">-1</button>
-                        <button type="button" class="adjustment-btn" data-amount="+1">+1</button>
-                    </div>
-                </div>
-            </div>
         </section>
     </div>
 

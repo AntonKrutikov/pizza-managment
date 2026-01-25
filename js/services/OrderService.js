@@ -36,7 +36,7 @@ export class OrderService {
 	// === Status Updates ===
 
 	markAsServed(orderId) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			order.served = true
 			order.servedAt = Date.now()
@@ -49,7 +49,7 @@ export class OrderService {
 	}
 
 	markAsUnserved(orderId) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			order.served = false
 			order.servedAt = null
@@ -59,7 +59,7 @@ export class OrderService {
 	}
 
 	markAsPaid(orderId, paymentType = null) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			order.paid = true
 			order.paidAt = Date.now()
@@ -75,7 +75,7 @@ export class OrderService {
 	}
 
 	markAsUnpaid(orderId) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			order.paid = false
 			order.paidAt = null
@@ -86,7 +86,7 @@ export class OrderService {
 	}
 
 	restoreToOngoing(orderId) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			order.served = false
 			order.servedAt = null
@@ -99,15 +99,14 @@ export class OrderService {
 	}
 
 	removeOrder(orderId) {
-		const order = this.repository.findById(orderId)
 		this.repository.delete(orderId)
-		EventBus.emit(OrderEvents.ORDER_DELETED, { orderId, order })
+		EventBus.emit(OrderEvents.ORDER_DELETED, { orderId })
 	}
 
 	// === Order Updates ===
 
 	updateEatType(orderId, eatType) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			const oldValue = order.eatType
 			order.eatType = eatType
@@ -117,7 +116,7 @@ export class OrderService {
 	}
 
 	updateTableNumber(orderId, tableNumber) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			const oldValue = order.tableNumber
 			order.tableNumber = tableNumber
@@ -127,7 +126,7 @@ export class OrderService {
 	}
 
 	updateSoundIndicator(orderId, soundIndicator) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order) {
 			const oldValue = order.soundIndicator
 			order.soundIndicator = soundIndicator
@@ -137,7 +136,7 @@ export class OrderService {
 	}
 
 	removeItemFromOrder(orderId, itemIndex) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && order.items && order.items[itemIndex]) {
 			const removedItem = order.items.splice(itemIndex, 1)[0]
 			order.price = order.items.reduce((sum, item) => sum + parseInt(item.price), 0)
@@ -150,7 +149,7 @@ export class OrderService {
 	}
 
 	addItemsToOrder(orderId, newItems) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && newItems && newItems.length > 0) {
 			const itemsWithDefaults = newItems.map(item => ({
 				...item,
@@ -167,7 +166,7 @@ export class OrderService {
 	}
 
 	markItemAsServed(orderId, itemIndex) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && order.items && order.items[itemIndex]) {
 			const item = order.items[itemIndex]
 			item.served = true
@@ -179,7 +178,7 @@ export class OrderService {
 	}
 
 	markItemAsUnserved(orderId, itemIndex) {
-		const order = this.repository.findById(orderId)
+		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && order.items && order.items[itemIndex]) {
 			const item = order.items[itemIndex]
 			item.served = false
@@ -195,14 +194,12 @@ export class OrderService {
 	getOrders() {
 		// Return orders that are not completed (completed = served AND paid)
 		// This includes: unserved orders AND served-but-unpaid orders
-		// Use repository's cached filter method for better performance
-		return this.repository.findOngoing().slice()
+		return this.repository.orders.filter(o => !o.served || (o.served && !o.paid)).slice()
 	}
 
 	getServedOrders() {
 		// Return only completed orders (served AND paid), sorted by most recent first
-		// Use repository's cached filter method for better performance
-		return this.repository.findCompleted().slice()
+		return this.repository.orders.filter(o => o.served && o.paid).slice().reverse()
 	}
 
 	// === Utility Methods ===

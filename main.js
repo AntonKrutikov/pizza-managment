@@ -7,16 +7,9 @@ import { backupToFirestore, getLastBackupInfo } from "./js/firebase.js"
 import EventBus from "./js/core/EventBus.js"
 import { OrderEvents } from "./js/core/EventTypes.js"
 import { initAddItemsPopup, showAddItemsPopup } from "./js/addItemsPopup.js"
-import { LocalStorageInventoryRepository } from "./js/repositories/LocalStorageInventoryRepository.js"
-import { InventoryService } from "./js/services/InventoryService.js"
-import { initInventoryUI } from "./js/inventoryUI.js"
 
 const repository = new LocalStorageOrderRepository()
 const orderService = new OrderService(repository)
-
-// Initialize inventory service
-const inventoryRepository = new LocalStorageInventoryRepository()
-const inventoryService = new InventoryService(inventoryRepository)
 
 // Initialize order popups (for table/sound/eat type selectors)
 initOrderPopups(orderService, () => {
@@ -152,7 +145,7 @@ async function loadMenu() {
 		})
 
 		// Initialize add items popup with menu data
-		initAddItemsPopup(menuData, orderService, inventoryService, updateOrders)
+		initAddItemsPopup(menuData, orderService, updateOrders)
 	} catch (error) {
 		console.error("Error loading menu:", error)
 	}
@@ -477,8 +470,7 @@ function updateTimers() {
 	const timers = document.querySelectorAll(".order-timer")
 	timers.forEach((timer) => {
 		const orderId = parseInt(timer.dataset.orderId)
-		// Use O(1) indexed lookup instead of O(n) array scan
-		const order = orderService.repository.findById(orderId)
+		const order = orderService.orders.find((o) => o.id === orderId)
 		if (order) {
 			timer.textContent = orderService.getElapsedTime(order.timestamp)
 		}
@@ -540,35 +532,6 @@ function initEventSubscriptions() {
 		EventBus.subscribe(eventType, () => {
 			updateHistory()
 		})
-	})
-
-	// Inventory: Deduct dough when orders are created or items added
-	EventBus.subscribe(OrderEvents.ORDER_CREATED, ({ order }) => {
-		if (order && order.items) {
-			const pizzaCount = inventoryService.countPizzasInItems(order.items)
-			if (pizzaCount > 0) {
-				inventoryService.deductDoughForPizzas(pizzaCount)
-			}
-		}
-	})
-
-	EventBus.subscribe(OrderEvents.ORDER_ITEMS_ADDED, ({ addedItems }) => {
-		if (addedItems) {
-			const pizzaCount = inventoryService.countPizzasInItems(addedItems)
-			if (pizzaCount > 0) {
-				inventoryService.deductDoughForPizzas(pizzaCount)
-			}
-		}
-	})
-
-	// Inventory: Add dough back when orders are deleted
-	EventBus.subscribe(OrderEvents.ORDER_DELETED, ({ order }) => {
-		if (order && order.items) {
-			const pizzaCount = inventoryService.countPizzasInItems(order.items)
-			if (pizzaCount > 0) {
-				inventoryService.adjustDoughCount(pizzaCount)
-			}
-		}
 	})
 }
 
@@ -706,25 +669,6 @@ sendOrderBtn.addEventListener("click", function () {
 
 	// Create pizzas list (for display text)
 	const pizzasList = currentOrderItems.map((item) => item.name).join(", ")
-
-	// Check dough stock before creating order
-	const pizzaCount = inventoryService.countPizzasInItems(currentOrderItems)
-	if (pizzaCount > 0) {
-		const inventory = inventoryService.getInventory()
-		const currentDough = inventory.getDoughCount()
-
-		// Check if tracking is enabled and dough is at or below zero
-		if (inventory.isDoughTrackingEnabled() && currentDough <= 0) {
-			const confirmed = confirm(
-				`⚠️ Dough stock is at ${currentDough}!\n\n` +
-				`You are about to create an order with ${pizzaCount} pizza(s).\n\n` +
-				`Do you want to proceed?`
-			)
-			if (!confirmed) {
-				return // Don't create order if user cancels
-			}
-		}
-	}
 
 	const newOrder = orderService.addOrder({
 		pizzaType: pizzasList,
@@ -960,8 +904,8 @@ navTabs.forEach((tab) => {
 	})
 })
 
-// Update timers every 2 seconds (reduced frequency for better performance with large order counts)
-setInterval(updateTimers, 2000)
+// Update timers every second
+setInterval(updateTimers, 1000)
 
 // Header clock (visible on desktop only via CSS)
 function updateHeaderClock() {
@@ -984,7 +928,6 @@ checkSendOrderReady()
 initEventSubscriptions()
 initLayoutControls()
 initFilterControls()
-initInventoryUI(inventoryService)
 
 updateOrders()
 // History is lazy-loaded when user switches to history tab
