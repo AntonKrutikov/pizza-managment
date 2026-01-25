@@ -9,7 +9,6 @@ let addItemsPopupState = {
 	selectedItems: [],
 	menuData: null,
 	orderService: null,
-	inventoryService: null,
 	updateCallback: null,
 	customPriceItem: null
 }
@@ -17,10 +16,9 @@ let addItemsPopupState = {
 /**
  * Initialize the add items popup with menu data and service references
  */
-export function initAddItemsPopup(menuData, orderService, inventoryService, updateCallback) {
+export function initAddItemsPopup(menuData, orderService, updateCallback) {
 	addItemsPopupState.menuData = menuData
 	addItemsPopupState.orderService = orderService
-	addItemsPopupState.inventoryService = inventoryService
 	addItemsPopupState.updateCallback = updateCallback
 
 	// Cancel button
@@ -29,25 +27,6 @@ export function initAddItemsPopup(menuData, orderService, inventoryService, upda
 	// Confirm button
 	document.getElementById('add-items-confirm').addEventListener('click', () => {
 		if (addItemsPopupState.selectedItems.length > 0 && addItemsPopupState.orderId) {
-			// Check dough stock before adding items
-			const pizzaCount = addItemsPopupState.inventoryService.countPizzasInItems(addItemsPopupState.selectedItems)
-			if (pizzaCount > 0) {
-				const inventory = addItemsPopupState.inventoryService.getInventory()
-				const currentDough = inventory.getDoughCount()
-
-				// Check if tracking is enabled and dough is at or below zero
-				if (inventory.isDoughTrackingEnabled() && currentDough <= 0) {
-					const confirmed = confirm(
-						`⚠️ Dough stock is at ${currentDough}!\n\n` +
-						`You are about to add ${pizzaCount} pizza(s) to an order.\n\n` +
-						`Do you want to proceed?`
-					)
-					if (!confirmed) {
-						return // Don't add items if user cancels
-					}
-				}
-			}
-
 			addItemsPopupState.orderService.addItemsToOrder(
 				addItemsPopupState.orderId,
 				addItemsPopupState.selectedItems
