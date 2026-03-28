@@ -1856,6 +1856,15 @@ function updateSettingsInfo() {
 		sizeText = `${(storageSize / (1024 * 1024)).toFixed(2)} MB`
 	}
 	document.getElementById("settings-storage-used").textContent = sizeText
+
+	// Read cache version from active service worker cache name
+	if ('caches' in window) {
+		caches.keys().then((cacheNames) => {
+			const appCache = cacheNames.find(name => name.startsWith('pizza-shop-static-'))
+			const version = appCache ? appCache.replace('pizza-shop-static-', '') : 'unknown'
+			document.getElementById("settings-app-version").textContent = version
+		})
+	}
 }
 
 // Update backup info display
