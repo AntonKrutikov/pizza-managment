@@ -2031,6 +2031,19 @@ document.getElementById("clear-data-btn").addEventListener("click", function () 
 	}
 })
 
+	// Reset app cache
+	document.getElementById("reset-cache-btn").addEventListener("click", async function () {
+		if (!confirm("This will clear the app cache and reload the page. Continue?")) return
+
+		if ('caches' in window) {
+			const keys = await caches.keys()
+			await Promise.all(keys.filter(k => k.startsWith('pizza-shop-')).map(k => caches.delete(k)))
+			location.reload()
+		} else {
+			alert("Cache API is not supported in this browser.")
+		}
+	})
+
 // ============================================
 // Online/Offline Detection
 // ============================================
