@@ -457,13 +457,16 @@ function updateHistory() {
 	if (isUpdatingHistory) return // Prevent cascading re-renders
 
 	isUpdatingHistory = true
-	const servedOrders = orderService.getServedOrders()
-	renderHistoryOrders(servedOrders, historyList, orderService, () => {
-		// Callback when order is restored or deleted - update ongoing orders list
-		updateOrders()
-		// Don't call updateHistory() again to prevent cascading re-renders
-	})
-	isUpdatingHistory = false
+	try {
+		const servedOrders = orderService.getServedOrders()
+		renderHistoryOrders(servedOrders, historyList, orderService, () => {
+			// Callback when order is restored or deleted - update ongoing orders list
+			updateOrders()
+			// Don't call updateHistory() again to prevent cascading re-renders
+		})
+	} finally {
+		isUpdatingHistory = false
+	}
 }
 
 function updateTimers() {

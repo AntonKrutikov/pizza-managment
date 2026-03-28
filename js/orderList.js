@@ -730,32 +730,37 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 		return
 	}
 
-	// Group ALL orders by date first
+	// Build date groups, stopping early once we have enough days to display.
+	// Orders are newest-first so we only scan as many as needed instead of all 1000+.
 	const ordersByDate = {}
-	orders.forEach((order) => {
+	let hasMoreDays = false
+	for (const order of orders) {
 		const date = new Date(order.timestamp)
 		const dateKey = date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
 
 		if (!ordersByDate[dateKey]) {
+			if (Object.keys(ordersByDate).length >= historyVisibleDays) {
+				hasMoreDays = true
+				break
+			}
 			ordersByDate[dateKey] = {
 				orders: [],
 				total: 0,
-				timestamp: order.timestamp,
+				timestamp: new Date(order.timestamp).setHours(0, 0, 0, 0),
 			}
 		}
 
 		ordersByDate[dateKey].orders.push(order)
-		ordersByDate[dateKey].total += parseInt(order.price)
-	})
+		ordersByDate[dateKey].total += parseInt(order.price) || 0
+	}
 
-	// Sort dates (most recent first)
+	// Sort the (at most historyVisibleDays) date groups — most recent first
 	const sortedDates = Object.keys(ordersByDate).sort((a, b) => {
 		return ordersByDate[b].timestamp - ordersByDate[a].timestamp
 	})
 
-	// Apply date-based pagination - only show first N days
-	const visibleDates = sortedDates.slice(0, historyVisibleDays)
-	const remainingDates = sortedDates.slice(historyVisibleDays)
+	// All collected dates are visible (we stopped collecting at the limit)
+	const visibleDates = sortedDates
 
 	// Render each visible date section
 	visibleDates.forEach((dateKey) => {
@@ -999,14 +1004,10 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 		container.appendChild(dateOrdersList)
 	})
 
-	// Add "Show More" button if there are more date groups to load
-	if (remainingDates.length > 0) {
+	// Add "Show More" button if there are more date groups beyond the current limit
+	if (hasMoreDays) {
 		const showMoreBtn = document.createElement("button")
-		const nextDatesCount = Math.min(historyDaysToShow, remainingDates.length)
-		const orderCountInRemainingDates = remainingDates.reduce((sum, dateKey) => {
-			return sum + ordersByDate[dateKey].orders.length
-		}, 0)
-		showMoreBtn.textContent = `Show More (${remainingDates.length} more days, ${orderCountInRemainingDates} orders)`
+		showMoreBtn.textContent = `Show More (older orders)`
 		showMoreBtn.classList.add("show-more-history-btn")
 		showMoreBtn.addEventListener("click", () => {
 			historyVisibleDays += historyDaysToShow
