@@ -33,7 +33,7 @@ let selectedItem = null
 let ordersLayoutColumns = 3
 
 // Filter state
-let ordersFilterMode = "all" // Options: "all", "hide-steak-served", "hide-all-served"
+let ordersFilterMode = "all" // Options: "all", "pizza-shop", "steak-shop", "grab"
 
 // ============================================
 // Layout Controls
@@ -416,15 +416,8 @@ function updateOrders() {
 	let orders = orderService.getOrders()
 
 	// Apply filter based on current mode
-	if (ordersFilterMode === "hide-steak-served") {
-		// Hide served orders from steak shop only
-		orders = orders.filter((o) => {
-			// Show if NOT (served AND from steak shop)
-			return !(o.served && o.orderSource === "steak-shop")
-		})
-	} else if (ordersFilterMode === "hide-all-served") {
-		// Hide all served orders (show only cooking)
-		orders = orders.filter((o) => !o.served)
+	if (ordersFilterMode === "pizza-shop" || ordersFilterMode === "steak-shop" || ordersFilterMode === "grab") {
+		orders = orders.filter((o) => o.orderSource === ordersFilterMode)
 	}
 	// "all" mode shows everything (no additional filtering)
 

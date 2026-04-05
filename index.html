@@ -131,6 +131,10 @@
                         <input type="radio" name="orderSource" value="steak-shop">
                         <span>🥩 Steak Shop</span>
                     </label>
+                    <label class="source-card">
+                        <input type="radio" name="orderSource" value="grab">
+                        <span>🚚 Grab</span>
+                    </label>
                 </div>
 
                 <!-- Table number -->
@@ -194,8 +198,9 @@
                 </div>
                 <div class="filter-controls">
                     <button class="filter-btn active" data-filter="all" title="Show all orders">All</button>
-                    <button class="filter-btn" data-filter="hide-steak-served" title="Hide served steak shop orders">🥩 Hide Steak Served</button>
-                    <button class="filter-btn" data-filter="hide-all-served" title="Hide all served orders">Hide All Served</button>
+                    <button class="filter-btn" data-filter="pizza-shop" title="Show only Pizza Shop orders">🍕 Pizza Shop</button>
+                    <button class="filter-btn" data-filter="steak-shop" title="Show only Steak Shop orders">🥩 Steak Shop</button>
+                    <button class="filter-btn" data-filter="grab" title="Show only Grab orders">🚚 Grab</button>
                 </div>
             </div>
             <ul id="orders-list"></ul>

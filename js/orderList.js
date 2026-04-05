@@ -256,6 +256,22 @@ export function initOrderPopups(orderService, updateCallback) {
 
 export function renderOrders(orders, container, orderService, onOrderChange = null) {
 	container.innerHTML = ""
+
+	if (orders.length > 0) {
+		const total = orders.reduce((sum, o) => sum + parseInt(o.price || 0), 0)
+		const summaryBar = document.createElement("div")
+		summaryBar.classList.add("history-date-header", "ongoing-summary-bar")
+		const label = document.createElement("div")
+		label.classList.add("history-date-title")
+		label.textContent = "Ongoing Orders"
+		const badge = document.createElement("div")
+		badge.classList.add("history-date-total")
+		badge.textContent = `Total: ฿${total}`
+		summaryBar.appendChild(label)
+		summaryBar.appendChild(badge)
+		container.appendChild(summaryBar)
+	}
+
 	orders.forEach((order) => {
 		// Create wrapper for swipe functionality
 		const wrapper = document.createElement("div")
@@ -528,8 +544,8 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 			sourceDiv.classList.add("order-source-badge")
 			sourceDiv.dataset.source = order.orderSource
 
-			const sourceIcon = order.orderSource === "pizza-shop" ? "🍕" : "🥩"
-			const sourceText = order.orderSource === "pizza-shop" ? "Pizza Shop" : "Steak Shop"
+			const sourceIcon = order.orderSource === "pizza-shop" ? "🍕" : order.orderSource === "grab" ? "🚚" : "🥩"
+			const sourceText = order.orderSource === "pizza-shop" ? "Pizza Shop" : order.orderSource === "grab" ? "Grab" : "Steak Shop"
 
 			sourceDiv.textContent = `${sourceIcon} ${sourceText}`
 			optionalDetails.appendChild(sourceDiv)
@@ -819,8 +835,8 @@ export function renderHistoryOrders(orders, container, orderService, onOrderChan
 
 			// Add order source if provided
 			if (order.orderSource) {
-				const sourceIcon = order.orderSource === "pizza-shop" ? "🍕" : "🥩"
-				const sourceText = order.orderSource === "pizza-shop" ? "Pizza" : "Steak"
+				const sourceIcon = order.orderSource === "pizza-shop" ? "🍕" : order.orderSource === "grab" ? "🚚" : "🥩"
+				const sourceText = order.orderSource === "pizza-shop" ? "Pizza" : order.orderSource === "grab" ? "Grab" : "Steak"
 				detailsText += ` | ${sourceIcon} ${sourceText}`
 			}
 

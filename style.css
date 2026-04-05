@@ -92,6 +92,7 @@ h1 {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -285,6 +286,7 @@ button {
 }
 
 @media (max-width: 768px) {
+
   #table-number-grid,
   #sound-indicator-grid {
     grid-template-columns: repeat(5, 1fr);
@@ -515,10 +517,12 @@ ul#orders-list {
     transform: translateX(0);
     max-height: 300px;
   }
+
   50% {
     opacity: 0.5;
     transform: translateX(20px);
   }
+
   100% {
     opacity: 0;
     transform: translateX(50px);
@@ -623,32 +627,102 @@ ul#orders-list {
 }
 
 /* Type-specific circle colors for order list - Quesadillas */
-.order-item-image-right.type-cheese { background: #fde047; }
-.order-item-image-right.type-chicken { background: #fed7aa; }
-.order-item-image-right.type-beef { background: #fca5a5; }
-.order-item-image-right.type-ham { background: #fda4af; }
-.order-item-image-right.type-spinach { background: #bbf7d0; }
-.order-item-image-right.type-mushroom { background: #e9d5ff; }
-.order-item-image-right.type-pepperoni { background: #fecaca; }
-.order-item-image-right.type-nutella { background: #d4a574; }
+.order-item-image-right.type-cheese {
+  background: #fde047;
+}
+
+.order-item-image-right.type-chicken {
+  background: #fed7aa;
+}
+
+.order-item-image-right.type-beef {
+  background: #fca5a5;
+}
+
+.order-item-image-right.type-ham {
+  background: #fda4af;
+}
+
+.order-item-image-right.type-spinach {
+  background: #bbf7d0;
+}
+
+.order-item-image-right.type-mushroom {
+  background: #e9d5ff;
+}
+
+.order-item-image-right.type-pepperoni {
+  background: #fecaca;
+}
+
+.order-item-image-right.type-nutella {
+  background: #d4a574;
+}
 
 /* Type-specific circle colors for order list - Pizzas */
-.order-item-image-right.type-margherita { background: #fecaca; }
-.order-item-image-right.type-prosciutto { background: #fda4af; }
-.order-item-image-right.type-salame { background: #f87171; }
-.order-item-image-right.type-prosciutto-cotto { background: #fda4af; }
-.order-item-image-right.type-4-formaggi { background: #fde047; }
-.order-item-image-right.type-vegetariana { background: #bbf7d0; }
-.order-item-image-right.type-al-funghi { background: #e9d5ff; }
-.order-item-image-right.type-capricciosa { background: #fcd6bb; }
-.order-item-image-right.type-bianca { background: #f5f5f5; }
-.order-item-image-right.type-italian-sausage { background: #d4a574; }
-.order-item-image-right.type-tuna { background: #a5d8ff; }
-.order-item-image-right.type-salame-ham-mushroom { background: #fcd6bb; }
-.order-item-image-right.type-prosciutto-cotto-mushroom { background: #fcd6bb; }
-.order-item-image-right.type-hawaiian-ham { background: #fef08a; }
-.order-item-image-right.type-hawaiian-chicken { background: #fef08a; }
-.order-item-image-right.type-custom { background: #fed7aa; }
+.order-item-image-right.type-margherita {
+  background: #fecaca;
+}
+
+.order-item-image-right.type-prosciutto {
+  background: #fda4af;
+}
+
+.order-item-image-right.type-salame {
+  background: #f87171;
+}
+
+.order-item-image-right.type-prosciutto-cotto {
+  background: #fda4af;
+}
+
+.order-item-image-right.type-4-formaggi {
+  background: #fde047;
+}
+
+.order-item-image-right.type-vegetariana {
+  background: #bbf7d0;
+}
+
+.order-item-image-right.type-al-funghi {
+  background: #e9d5ff;
+}
+
+.order-item-image-right.type-capricciosa {
+  background: #fcd6bb;
+}
+
+.order-item-image-right.type-bianca {
+  background: #f5f5f5;
+}
+
+.order-item-image-right.type-italian-sausage {
+  background: #d4a574;
+}
+
+.order-item-image-right.type-tuna {
+  background: #a5d8ff;
+}
+
+.order-item-image-right.type-salame-ham-mushroom {
+  background: #fcd6bb;
+}
+
+.order-item-image-right.type-prosciutto-cotto-mushroom {
+  background: #fcd6bb;
+}
+
+.order-item-image-right.type-hawaiian-ham {
+  background: #fef08a;
+}
+
+.order-item-image-right.type-hawaiian-chicken {
+  background: #fef08a;
+}
+
+.order-item-image-right.type-custom {
+  background: #fed7aa;
+}
 
 @media (max-width: 768px) {
   .order-item-image {
@@ -724,7 +798,7 @@ ul#orders-list {
   background: #fff;
   padding: 0.2em 0.35em;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Countdown overlay for completed orders */
@@ -757,7 +831,7 @@ ul#orders-list {
 .countdown-number {
   font-size: 2.5em;
   font-weight: bold;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -769,7 +843,7 @@ ul#orders-list {
 
 .countdown-cancel-btn {
   margin-top: 1em;
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   color: #fff;
   border: 2px solid #fff;
   padding: 0.6em 1.5em;
@@ -781,7 +855,7 @@ ul#orders-list {
 }
 
 .countdown-cancel-btn:hover {
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
   transform: scale(1.05);
 }
 
@@ -793,7 +867,7 @@ ul#orders-list {
   flex-wrap: wrap;
 }
 
-.optional-details > div {
+.optional-details>div {
   background: #fff;
   padding: 0.3em 0.7em;
   border-radius: 4px;
@@ -957,6 +1031,7 @@ ul#orders-list {
 }
 
 @media (max-width: 768px) {
+
   .serve-btn,
   .mark-paid-btn,
   .mark-unpaid-btn,
@@ -1255,37 +1330,108 @@ ul#orders-list {
 }
 
 /* Type-specific circle colors - Quesadillas */
-.item-image-right.type-cheese { background: #fde047; }
-.item-image-right.type-chicken { background: #fed7aa; }
-.item-image-right.type-beef { background: #fca5a5; }
-.item-image-right.type-ham { background: #fda4af; }
-.item-image-right.type-spinach { background: #bbf7d0; }
-.item-image-right.type-mushroom { background: #e9d5ff; }
-.item-image-right.type-pepperoni { background: #fecaca; }
-.item-image-right.type-nutella { background: #d4a574; }
+.item-image-right.type-cheese {
+  background: #fde047;
+}
+
+.item-image-right.type-chicken {
+  background: #fed7aa;
+}
+
+.item-image-right.type-beef {
+  background: #fca5a5;
+}
+
+.item-image-right.type-ham {
+  background: #fda4af;
+}
+
+.item-image-right.type-spinach {
+  background: #bbf7d0;
+}
+
+.item-image-right.type-mushroom {
+  background: #e9d5ff;
+}
+
+.item-image-right.type-pepperoni {
+  background: #fecaca;
+}
+
+.item-image-right.type-nutella {
+  background: #d4a574;
+}
 
 /* Type-specific circle colors - Pizzas */
-.item-image-right.type-margherita { background: #fecaca; }
-.item-image-right.type-prosciutto { background: #fda4af; }
-.item-image-right.type-salame { background: #f87171; }
-.item-image-right.type-prosciutto-cotto { background: #fda4af; }
-.item-image-right.type-4-formaggi { background: #fde047; }
-.item-image-right.type-vegetariana { background: #bbf7d0; }
-.item-image-right.type-al-funghi { background: #e9d5ff; }
-.item-image-right.type-capricciosa { background: #fcd6bb; }
-.item-image-right.type-bianca { background: #f5f5f5; }
-.item-image-right.type-italian-sausage { background: #d4a574; }
-.item-image-right.type-tuna { background: #a5d8ff; }
-.item-image-right.type-salame-ham-mushroom { background: #fcd6bb; }
-.item-image-right.type-prosciutto-cotto-mushroom { background: #fcd6bb; }
-.item-image-right.type-hawaiian-ham { background: #fef08a; }
-.item-image-right.type-hawaiian-chicken { background: #fef08a; }
-.item-image-right.type-custom { background: #fed7aa; }
+.item-image-right.type-margherita {
+  background: #fecaca;
+}
+
+.item-image-right.type-prosciutto {
+  background: #fda4af;
+}
+
+.item-image-right.type-salame {
+  background: #f87171;
+}
+
+.item-image-right.type-prosciutto-cotto {
+  background: #fda4af;
+}
+
+.item-image-right.type-4-formaggi {
+  background: #fde047;
+}
+
+.item-image-right.type-vegetariana {
+  background: #bbf7d0;
+}
+
+.item-image-right.type-al-funghi {
+  background: #e9d5ff;
+}
+
+.item-image-right.type-capricciosa {
+  background: #fcd6bb;
+}
+
+.item-image-right.type-bianca {
+  background: #f5f5f5;
+}
+
+.item-image-right.type-italian-sausage {
+  background: #d4a574;
+}
+
+.item-image-right.type-tuna {
+  background: #a5d8ff;
+}
+
+.item-image-right.type-salame-ham-mushroom {
+  background: #fcd6bb;
+}
+
+.item-image-right.type-prosciutto-cotto-mushroom {
+  background: #fcd6bb;
+}
+
+.item-image-right.type-hawaiian-ham {
+  background: #fef08a;
+}
+
+.item-image-right.type-hawaiian-chicken {
+  background: #fef08a;
+}
+
+.item-image-right.type-custom {
+  background: #fed7aa;
+}
 
 @media (max-width: 768px) {
   .menu-item-card {
     min-height: 120px;
   }
+
   .item-image {
     width: 50px;
     height: 50px;
@@ -1395,12 +1541,12 @@ ul#orders-list {
   display: none;
 }
 
-.size-card input[type="radio"]:checked + span {
+.size-card input[type="radio"]:checked+span {
   font-weight: bold;
   color: #d35400;
 }
 
-.size-card input[type="radio"]:not(:checked) + span {
+.size-card input[type="radio"]:not(:checked)+span {
   opacity: 0.3;
 }
 
@@ -1447,7 +1593,7 @@ ul#orders-list {
   border-color: #d35400;
 }
 
-.paid-card input[type="radio"]:checked ~ span {
+.paid-card input[type="radio"]:checked~span {
   color: #d35400;
 }
 
@@ -1457,7 +1603,7 @@ ul#orders-list {
 }
 
 /* Payment type specific colors */
-.paid-cash input[type="radio"]:checked ~ span {
+.paid-cash input[type="radio"]:checked~span {
   color: #27ae60;
 }
 
@@ -1465,7 +1611,7 @@ ul#orders-list {
   border-color: #27ae60;
 }
 
-.paid-card-type input[type="radio"]:checked ~ span {
+.paid-card-type input[type="radio"]:checked~span {
   color: #3498db;
 }
 
@@ -1473,7 +1619,7 @@ ul#orders-list {
   border-color: #3498db;
 }
 
-.paid-no input[type="radio"]:checked ~ span {
+.paid-no input[type="radio"]:checked~span {
   color: #e67e22;
 }
 
@@ -1521,7 +1667,7 @@ ul#orders-list {
 /* Order Source Grid */
 #order-source-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1em;
   margin: 1em 0;
 }
@@ -1543,11 +1689,11 @@ ul#orders-list {
   display: none;
 }
 
-.source-card input[type="radio"]:checked + span {
+.source-card input[type="radio"]:checked+span {
   font-weight: bold;
 }
 
-.source-card input[type="radio"]:not(:checked) + span {
+.source-card input[type="radio"]:not(:checked)+span {
   opacity: 0.3;
 }
 
@@ -1976,8 +2122,15 @@ ul#orders-list {
 }
 
 @keyframes pulse-offline {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @media (max-width: 768px) {
@@ -2897,8 +3050,13 @@ ul#orders-list {
 
 /* Loading spinner animation */
 @keyframes backup-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .backup-spinner {
@@ -3454,6 +3612,7 @@ ul#orders-list {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -3476,6 +3635,7 @@ ul#orders-list {
     transform: scale(0.8);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -3494,9 +3654,12 @@ ul#orders-list {
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-20px);
   }
