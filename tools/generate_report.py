@@ -60,26 +60,6 @@ def order_dt(o: dict) -> datetime:
     return datetime.fromtimestamp(o["timestamp"] / 1000)
 
 
-def normalize_legacy_dates(orders: list[dict], cutoff: date = date(2025, 12, 1)) -> int:
-    """Re-stamp orders dated before `cutoff` to the cutoff day, preserving time-of-day.
-
-    The early test-period entries (e.g. 2023) are treated as inaccurate and folded
-    into December 2025 so the statement reflects only the genuine trading history.
-    Returns the count of orders that were shifted.
-    """
-    shifted = 0
-    for o in orders:
-        ts = o.get("timestamp")
-        if not ts:
-            continue
-        d = datetime.fromtimestamp(ts / 1000)
-        if d.date() < cutoff:
-            new_dt = datetime(cutoff.year, cutoff.month, cutoff.day,
-                              d.hour, d.minute, d.second, d.microsecond)
-            o["timestamp"] = int(new_dt.timestamp() * 1000)
-            shifted += 1
-    return shifted
-
 
 def filter_period(orders: list[dict], date_from: str | None, date_to: str | None) -> list[dict]:
     if not orders:
@@ -740,9 +720,6 @@ def main() -> int:
         sys.exit(f"Input not found: {args.input}")
 
     orders = load_orders(args.input)
-    shifted = normalize_legacy_dates(orders)
-    if shifted:
-        print(f"Folded {shifted} pre-Dec-2025 order(s) into 2025-12-01")
     orders = filter_period(orders, args.date_from, args.date_to)
     if not orders:
         sys.exit("No orders in selected period.")
