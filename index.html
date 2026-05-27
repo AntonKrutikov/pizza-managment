@@ -594,6 +594,25 @@
         </div>
     </div>
 
+    <!-- Order Time Adjust Popup (nudge an order's date/time in 5-min steps) -->
+    <div id="time-adjust-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Adjust Order Time</h3>
+            <div class="time-adjust-preview">
+                <span id="time-adjust-value">—</span>
+                <span id="time-adjust-hint" class="time-adjust-hint"></span>
+            </div>
+            <div class="time-adjust-controls">
+                <button type="button" class="time-adjust-btn" id="time-adjust-minus">− 5 min</button>
+                <button type="button" class="time-adjust-btn" id="time-adjust-plus">+ 5 min</button>
+            </div>
+            <div class="popup-buttons">
+                <button type="button" id="time-adjust-cancel" class="popup-btn-cancel">Cancel</button>
+                <button type="button" id="time-adjust-confirm" class="popup-btn-confirm" disabled>Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Number Selector Popup (for table and sound indicator) -->
     <div id="number-selector-popup" class="popup-overlay" style="display: none;">
         <div class="popup-content">

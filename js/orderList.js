@@ -150,6 +150,53 @@ export function hidePriceKeypadPopup() {
 	priceKeypadCallback = null
 }
 
+// Order time-adjust popup state. Nudges a working timestamp in 5-min steps;
+// the callback (closing over the order id) applies it on Save.
+const TIME_ADJUST_STEP_MS = 5 * 60 * 1000
+let timeAdjustTimestamp = null
+let timeAdjustOriginal = null
+let timeAdjustCallback = null
+
+function updateTimeAdjustPreview() {
+	const d = new Date(timeAdjustTimestamp)
+	document.getElementById("time-adjust-value").textContent =
+		d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) +
+		" · " +
+		d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+
+	// Show a hint when the adjustment has crossed into another calendar day
+	const newDay = new Date(timeAdjustTimestamp).setHours(0, 0, 0, 0)
+	const origDay = new Date(timeAdjustOriginal).setHours(0, 0, 0, 0)
+	const dayDiff = Math.round((newDay - origDay) / 86400000)
+	const hintEl = document.getElementById("time-adjust-hint")
+	if (dayDiff === 0) {
+		hintEl.textContent = ""
+	} else if (dayDiff === -1) {
+		hintEl.textContent = "◀ previous day"
+	} else if (dayDiff === 1) {
+		hintEl.textContent = "next day ▶"
+	} else {
+		hintEl.textContent = `${dayDiff > 0 ? "+" : ""}${dayDiff} days`
+	}
+
+	document.getElementById("time-adjust-confirm").disabled = timeAdjustTimestamp === timeAdjustOriginal
+}
+
+export function showTimeAdjustPopup(currentTimestamp, callback) {
+	timeAdjustTimestamp = currentTimestamp
+	timeAdjustOriginal = currentTimestamp
+	timeAdjustCallback = callback
+	updateTimeAdjustPreview()
+	document.getElementById("time-adjust-popup").style.display = "flex"
+}
+
+export function hideTimeAdjustPopup() {
+	document.getElementById("time-adjust-popup").style.display = "none"
+	timeAdjustTimestamp = null
+	timeAdjustOriginal = null
+	timeAdjustCallback = null
+}
+
 // Initialize popup event listeners (call once on page load)
 export function initOrderPopups(orderService, updateCallback) {
 	// Number selector popup - selection
@@ -321,6 +368,35 @@ export function initOrderPopups(orderService, updateCallback) {
 			hidePriceKeypadPopup()
 		}
 	})
+
+	// Order time-adjust popup - 5-min steppers
+	const timeAdjustPopup = document.getElementById("time-adjust-popup")
+	document.getElementById("time-adjust-minus").addEventListener("click", () => {
+		timeAdjustTimestamp -= TIME_ADJUST_STEP_MS
+		updateTimeAdjustPreview()
+	})
+	document.getElementById("time-adjust-plus").addEventListener("click", () => {
+		timeAdjustTimestamp += TIME_ADJUST_STEP_MS
+		updateTimeAdjustPreview()
+	})
+
+	// Time-adjust confirm
+	document.getElementById("time-adjust-confirm").addEventListener("click", () => {
+		if (timeAdjustCallback && timeAdjustTimestamp !== timeAdjustOriginal) {
+			timeAdjustCallback(timeAdjustTimestamp)
+			hideTimeAdjustPopup()
+			updateCallback()
+		}
+	})
+
+	document.getElementById("time-adjust-cancel").addEventListener("click", hideTimeAdjustPopup)
+
+	// Close on overlay click
+	timeAdjustPopup.addEventListener("click", (e) => {
+		if (e.target.id === "time-adjust-popup") {
+			hideTimeAdjustPopup()
+		}
+	})
 }
 
 export function renderOrders(orders, container, orderService, onOrderChange = null) {
@@ -360,8 +436,15 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 		orderHeader.classList.add("order-header")
 
 		const timestamp = document.createElement("div")
-		timestamp.classList.add("order-timestamp")
+		timestamp.classList.add("order-timestamp", "order-timestamp-clickable")
 		timestamp.textContent = order.time
+		timestamp.title = "Click to adjust order time/date"
+		timestamp.addEventListener("click", (e) => {
+			e.stopPropagation()
+			showTimeAdjustPopup(order.timestamp, (newTimestamp) => {
+				orderService.updateOrderTimestamp(order.id, newTimestamp)
+			})
+		})
 
 		const orderNo = document.createElement("div")
 		orderNo.classList.add("order-no")

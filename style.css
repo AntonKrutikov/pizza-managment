@@ -1947,6 +1947,57 @@ ul#orders-list {
   text-underline-offset: 2px;
 }
 
+/* Order Time Adjust */
+.order-timestamp-clickable {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.time-adjust-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #d35400;
+  background: #fdf2e9;
+  border-radius: 8px;
+  padding: 0.6em 0;
+  margin-bottom: 1.2em;
+}
+
+.time-adjust-hint {
+  font-size: 0.65em;
+  font-weight: bold;
+  color: #c0392b;
+  min-height: 1em;
+}
+
+.time-adjust-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  margin-bottom: 1.5em;
+}
+
+.time-adjust-btn {
+  padding: 1em;
+  font-size: 1.2em;
+  font-weight: bold;
+  border: 2px solid #d35400;
+  border-radius: 8px;
+  background: #fff;
+  color: #d35400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-adjust-btn:hover {
+  background: #d35400;
+  color: #fff;
+}
+
 /* Eat Type Selector Grid */
 .eat-type-selector-grid {
   display: grid;

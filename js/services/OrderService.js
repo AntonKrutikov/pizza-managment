@@ -135,6 +135,19 @@ export class OrderService {
 		}
 	}
 
+	updateOrderTimestamp(orderId, newTimestamp) {
+		const order = this.repository.orders.find(o => o.id === orderId)
+		if (order) {
+			const oldValue = order.timestamp
+			order.timestamp = newTimestamp
+			// Keep the displayed time-of-day in sync with the shifted timestamp.
+			// Note: the order id is left unchanged (it's the lookup key).
+			order.time = new Date(newTimestamp).toLocaleTimeString()
+			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_UPDATED, { order, orderId, field: 'timestamp', oldValue, newValue: newTimestamp })
+		}
+	}
+
 	removeItemFromOrder(orderId, itemIndex) {
 		const order = this.repository.orders.find(o => o.id === orderId)
 		if (order && order.items && order.items[itemIndex]) {
