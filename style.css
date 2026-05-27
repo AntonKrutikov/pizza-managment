@@ -1891,6 +1891,62 @@ ul#orders-list {
   color: #fff;
 }
 
+/* Item Price Keypad */
+.price-keypad-display {
+  font-size: 2.2em;
+  font-weight: bold;
+  color: #d35400;
+  background: #fdf2e9;
+  border-radius: 8px;
+  padding: 0.4em 0;
+  margin-bottom: 1em;
+}
+
+.price-keypad-currency {
+  margin-right: 0.1em;
+}
+
+.price-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5em;
+  margin-bottom: 1.5em;
+}
+
+.price-keypad-btn {
+  padding: 0.7em;
+  font-size: 1.4em;
+  font-weight: bold;
+  border: 2px solid #d35400;
+  border-radius: 8px;
+  background: #fff;
+  color: #d35400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.price-keypad-btn:hover {
+  background: #d35400;
+  color: #fff;
+}
+
+.price-keypad-btn-action {
+  border-color: #bbb;
+  color: #777;
+}
+
+.price-keypad-btn-action:hover {
+  background: #777;
+  color: #fff;
+}
+
+/* Editable item price hint */
+.item-price-clickable {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
 /* Eat Type Selector Grid */
 .eat-type-selector-grid {
   display: grid;

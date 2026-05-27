@@ -1,6 +1,6 @@
 import { LocalStorageOrderRepository } from "./js/repositories/LocalStorageOrderRepository.js"
 import { OrderService } from "./js/services/OrderService.js"
-import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup, resetHistoryPagination } from "./js/orderList.js"
+import { renderOrders, renderHistoryOrders, initOrderPopups, showPaymentTypePopup, showPriceKeypadPopup, resetHistoryPagination } from "./js/orderList.js"
 import { Analytics, generatePieChart, generateLegend, generateBarChart } from "./js/analytics.js"
 import { AchievementsManager } from "./js/achievements.js"
 import { backupToFirestore, getLastBackupInfo } from "./js/firebase.js"
@@ -555,8 +555,23 @@ function updateCurrentOrderDisplay() {
 		const li = document.createElement("li")
 		li.classList.add("current-order-item")
 
+		// Name + clickable price (delivery prices can differ from the menu)
 		const itemText = document.createElement("span")
-		itemText.textContent = `${item.name} - ${item.price} THB`
+		itemText.appendChild(document.createTextNode(`${item.name} - `))
+
+		const priceText = document.createElement("span")
+		priceText.classList.add("item-price-clickable")
+		priceText.textContent = `${item.price} THB`
+		priceText.title = "Click to edit price"
+		priceText.addEventListener("click", (e) => {
+			e.stopPropagation()
+			showPriceKeypadPopup(`Edit Price — ${item.name}`, item.price, (newPrice) => {
+				currentOrderItems[index].price = newPrice
+				updateCurrentOrderDisplay()
+				checkSendOrderReady()
+			})
+		})
+		itemText.appendChild(priceText)
 
 		const removeBtn = document.createElement("button")
 		removeBtn.textContent = "Remove"

@@ -120,6 +120,36 @@ export function hidePaymentTypePopup() {
 	paymentTypeSelectorSelectedValue = null
 }
 
+// Price keypad popup state. The callback closes over the order id + item index
+// from the render scope, so we don't track them here.
+let priceKeypadValue = ""
+let priceKeypadFresh = true // first digit press replaces the prefilled value
+let priceKeypadCallback = null
+
+function updatePriceKeypadDisplay() {
+	document.getElementById("price-keypad-value").textContent = priceKeypadValue || "0"
+	const price = parseInt(priceKeypadValue)
+	document.getElementById("price-keypad-confirm").disabled = isNaN(price) || price <= 0
+}
+
+export function showPriceKeypadPopup(title, currentPrice, callback) {
+	const popup = document.getElementById("price-keypad-popup")
+	document.getElementById("price-keypad-title").textContent = title
+	priceKeypadValue = currentPrice != null ? String(currentPrice) : ""
+	priceKeypadFresh = true
+	priceKeypadCallback = callback
+	updatePriceKeypadDisplay()
+	popup.style.display = "flex"
+}
+
+export function hidePriceKeypadPopup() {
+	const popup = document.getElementById("price-keypad-popup")
+	popup.style.display = "none"
+	priceKeypadValue = ""
+	priceKeypadFresh = true
+	priceKeypadCallback = null
+}
+
 // Initialize popup event listeners (call once on page load)
 export function initOrderPopups(orderService, updateCallback) {
 	// Number selector popup - selection
@@ -250,6 +280,45 @@ export function initOrderPopups(orderService, updateCallback) {
 	paymentTypePopup.addEventListener("click", (e) => {
 		if (e.target.id === "payment-type-popup") {
 			hidePaymentTypePopup()
+		}
+	})
+
+	// Price keypad popup - digit / clear / backspace
+	const priceKeypadPopup = document.getElementById("price-keypad-popup")
+	priceKeypadPopup.querySelector(".price-keypad-grid").addEventListener("click", (e) => {
+		const btn = e.target.closest(".price-keypad-btn")
+		if (!btn) return
+		const key = btn.dataset.key
+
+		if (key === "clear") {
+			priceKeypadValue = ""
+		} else if (key === "back") {
+			priceKeypadValue = priceKeypadValue.slice(0, -1)
+		} else {
+			if (priceKeypadFresh) priceKeypadValue = ""
+			if (priceKeypadValue.length < 6) priceKeypadValue += key // cap at 6 digits
+		}
+
+		priceKeypadFresh = false
+		updatePriceKeypadDisplay()
+	})
+
+	// Price keypad confirm
+	document.getElementById("price-keypad-confirm").addEventListener("click", () => {
+		const newPrice = parseInt(priceKeypadValue)
+		if (priceKeypadCallback && !isNaN(newPrice) && newPrice > 0) {
+			priceKeypadCallback(newPrice)
+			hidePriceKeypadPopup()
+			updateCallback()
+		}
+	})
+
+	document.getElementById("price-keypad-cancel").addEventListener("click", hidePriceKeypadPopup)
+
+	// Close on overlay click
+	priceKeypadPopup.addEventListener("click", (e) => {
+		if (e.target.id === "price-keypad-popup") {
+			hidePriceKeypadPopup()
 		}
 	})
 }
@@ -411,13 +480,20 @@ export function renderOrders(orders, container, orderService, onOrderChange = nu
 				})
 				itemsList.appendChild(nameSpan)
 
-				// Item price span
+				// Item price span - clickable to edit (delivery prices can differ from menu)
 				const priceSpan = document.createElement("span")
-				priceSpan.classList.add("item-price-text")
+				priceSpan.classList.add("item-price-text", "item-price-clickable")
 				if (item.served) {
 					priceSpan.classList.add("item-served")
 				}
 				priceSpan.textContent = `฿${item.price}`
+				priceSpan.title = "Click to edit price"
+				priceSpan.addEventListener("click", (e) => {
+					e.stopPropagation()
+					showPriceKeypadPopup(`Edit Price — ${item.name}`, item.price, (newPrice) => {
+						orderService.updateItemPrice(order.id, itemIndex, newPrice)
+					})
+				})
 				itemsList.appendChild(priceSpan)
 
 				// Remove button (disabled if item is served)

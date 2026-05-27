@@ -23,6 +23,7 @@ export const OrderEvents = {
 	ORDER_ITEM_UNSERVED: 'order:item:unserved',
 	ORDER_ITEM_REMOVED: 'order:item:removed',
 	ORDER_ITEMS_ADDED: 'order:items:added',
+	ORDER_ITEM_PRICE_UPDATED: 'order:item:price:updated',
 
 	// Bulk operations
 	ORDERS_IMPORTED: 'orders:imported',

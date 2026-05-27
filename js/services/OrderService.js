@@ -189,6 +189,22 @@ export class OrderService {
 		return false
 	}
 
+	updateItemPrice(orderId, itemIndex, newPrice) {
+		const order = this.repository.orders.find(o => o.id === orderId)
+		if (order && order.items && order.items[itemIndex]) {
+			const price = parseInt(newPrice)
+			if (isNaN(price) || price < 0) return false
+			const oldPrice = order.items[itemIndex].price
+			order.items[itemIndex].price = price
+			// Recompute order total the same way add/remove item do
+			order.price = order.items.reduce((sum, item) => sum + parseInt(item.price), 0)
+			this.repository._saveToStorage()
+			EventBus.emit(OrderEvents.ORDER_ITEM_PRICE_UPDATED, { order, orderId, itemIndex, oldPrice, newPrice: price })
+			return true
+		}
+		return false
+	}
+
 	// === Query Methods ===
 
 	getOrders() {
