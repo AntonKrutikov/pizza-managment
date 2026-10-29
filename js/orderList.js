@@ -132,9 +132,10 @@ function updatePriceKeypadDisplay() {
 	document.getElementById("price-keypad-confirm").disabled = isNaN(price) || price <= 0
 }
 
-export function showPriceKeypadPopup(title, currentPrice, callback) {
+export function showPriceKeypadPopup(title, currentPrice, callback, confirmLabel = "Save") {
 	const popup = document.getElementById("price-keypad-popup")
 	document.getElementById("price-keypad-title").textContent = title
+	document.getElementById("price-keypad-confirm").textContent = confirmLabel
 	priceKeypadValue = currentPrice != null ? String(currentPrice) : ""
 	priceKeypadFresh = true
 	priceKeypadCallback = callback

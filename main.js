@@ -288,83 +288,13 @@ function addItemToOrder(displayName, price, image) {
 	updateFloatingButton()
 }
 
-// Custom price popup handling
-let currentCustomItemName = null
-let currentCustomItemImage = null
-let currentCustomCard = null
-
+// Reuse the price keypad when adding a custom menu item.
 function showCustomPricePopup(itemName, itemImage, card) {
-	currentCustomItemName = itemName
-	currentCustomItemImage = itemImage
-	currentCustomCard = card
-
-	const popup = document.getElementById("custom-price-popup")
-	const input = document.getElementById("custom-price-input")
-	const confirmBtn = document.getElementById("custom-price-confirm")
-
-	// Reset input
-	input.value = ""
-	confirmBtn.disabled = true
-
-	// Show popup
-	popup.style.display = "flex"
-
-	// Focus input after a short delay (for mobile keyboards)
-	setTimeout(() => input.focus(), 100)
+	showPriceKeypadPopup("Custom Pizza Price", null, (price) => {
+		addItemToOrder(itemName, price, itemImage)
+		card.classList.remove("selected")
+	}, "Add to Order")
 }
-
-function hideCustomPricePopup() {
-	const popup = document.getElementById("custom-price-popup")
-	popup.style.display = "none"
-
-	// Deselect card
-	if (currentCustomCard) {
-		currentCustomCard.classList.remove("selected")
-	}
-
-	currentCustomItemName = null
-	currentCustomItemImage = null
-	currentCustomCard = null
-}
-
-// Custom price popup event listeners
-document.getElementById("custom-price-input").addEventListener("input", function () {
-	const confirmBtn = document.getElementById("custom-price-confirm")
-	const value = parseInt(this.value)
-	confirmBtn.disabled = !value || value <= 0
-})
-
-document.getElementById("custom-price-cancel").addEventListener("click", hideCustomPricePopup)
-
-document.getElementById("custom-price-confirm").addEventListener("click", function () {
-	const input = document.getElementById("custom-price-input")
-	const price = parseInt(input.value)
-
-	if (price && price > 0 && currentCustomItemName) {
-		addItemToOrder(currentCustomItemName, price, currentCustomItemImage)
-		hideCustomPricePopup()
-	}
-})
-
-// Close popup on overlay click
-document.getElementById("custom-price-popup").addEventListener("click", function (e) {
-	if (e.target === this) {
-		hideCustomPricePopup()
-	}
-})
-
-// Handle Enter key in custom price input
-document.getElementById("custom-price-input").addEventListener("keydown", function (e) {
-	if (e.key === "Enter") {
-		const confirmBtn = document.getElementById("custom-price-confirm")
-		if (!confirmBtn.disabled) {
-			confirmBtn.click()
-		}
-	}
-	if (e.key === "Escape") {
-		hideCustomPricePopup()
-	}
-})
 
 // Track if current order section is in viewport
 let isOrderSectionVisible = false
